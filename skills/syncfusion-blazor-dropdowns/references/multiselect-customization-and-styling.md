@@ -31,9 +31,9 @@ Built-in themes are applied via CSS file:
 ### Custom CSS Class
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                CssClass="custom-multiselect">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -58,22 +58,24 @@ Built-in themes are applied via CSS file:
 ### Inline Styles
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               Style="width: 100%; max-width: 500px;">
+               DataSource="@Items"
+               Width="100%">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 ```
+
+**Note:** Use the `Width` property instead of inline styles for better control.
 
 ## Placeholder and Labels
 
 ### Custom Placeholder
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Select employees or departments">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -84,24 +86,24 @@ Built-in themes are applied via CSS file:
 Enable floating label for modern form appearance:
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedItems"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedItems"
                FloatLabelType="FloatLabelType.Always"
                Placeholder="Select options">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 @code {
-    private List<string> SelectedItems { get; set; } = new();
+    private string[] SelectedItems { get; set; } = Array.Empty<string>();
 }
 ```
 
-**FloatLabelType options:**
-- `Never` - No floating label
-- `Auto` - Float on focus or when value present (default)
-- `Always` - Always float (label at top)
+**FloatLabelType enum options:**
+- `FloatLabelType.Never` - No floating label
+- `FloatLabelType.Auto` - Float on focus or when value present (default)
+- `FloatLabelType.Always` - Always float (label at top)
 
 ## Icon Support
 
@@ -111,15 +113,15 @@ Enable floating label for modern form appearance:
 @page "/icons"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Select items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
-        <PrefixTemplate>
+        <FooterTemplate>
             <span class="e-icons e-search"></span>
-        </PrefixTemplate>
+        </FooterTemplate>
     </MultiSelectTemplates>
 </SfMultiSelect>
 
@@ -127,6 +129,8 @@ Enable floating label for modern form appearance:
     private List<Item> Items { get; set; } = new();
 }
 ```
+
+**Note:** MultiSelect doesn't have a `PrefixTemplate`. Use `HeaderTemplate` or `FooterTemplate` for custom content in the popup.
 
 ### Custom Icon Classes
 
@@ -148,14 +152,14 @@ Use Syncfusion icon set or Font Awesome:
 <!-- Or use Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
-        <PrefixTemplate>
-            <i class="fas fa-filter"></i>
-        </PrefixTemplate>
+        <HeaderTemplate>
+            <i class="fas fa-filter"></i> Filter Items
+        </HeaderTemplate>
     </MultiSelectTemplates>
 </SfMultiSelect>
 ```
@@ -165,9 +169,9 @@ Use Syncfusion icon set or Font Awesome:
 ### Popup Width and Height
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                PopupWidth="400px"
                PopupHeight="300px">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -177,9 +181,9 @@ Use Syncfusion icon set or Font Awesome:
 ### Popup Position
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                PopupHeight="300px"
                PopupWidth="100%">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -196,27 +200,27 @@ Use Syncfusion icon set or Font Awesome:
 ### Box Mode (Chip Style)
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedItems"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedItems"
                Mode="VisualMode.Box"
                Placeholder="Items display as removable chips">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 @code {
-    private List<string> SelectedItems { get; set; } = new();
+    private string[] SelectedItems { get; set; } = Array.Empty<string>();
 }
 ```
 
 ### Custom Chip Styling
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedItems"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedItems"
                Mode="VisualMode.Box"
                CssClass="custom-chips">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -237,20 +241,24 @@ Use Syncfusion icon set or Font Awesome:
 </style>
 
 @code {
-    private List<string> SelectedItems { get; set; } = new();
+    private string[] SelectedItems { get; set; } = Array.Empty<string>();
 }
 ```
 
 ### Delimiter Mode
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
                Mode="VisualMode.Delimiter"
-               Delimiter=","
+               DelimiterChar=","
                Placeholder="Items shown comma-separated">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 ```
+
+**Note:** Use `DelimiterChar` property (not `Delimiter`) to set the separator character.
 
 ## RTL Support
 
@@ -261,9 +269,9 @@ Use Syncfusion icon set or Font Awesome:
 @using Syncfusion.Blazor.DropDowns
 
 <div dir="rtl">
-    <SfMultiSelect DataSource="@Items" 
-                   TValue="List<string>"
+    <SfMultiSelect TValue="string[]"
                    TItem="Item"
+                   DataSource="@Items"
                    EnableRtl="true"
                    Placeholder="اختر العناصر">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -308,6 +316,7 @@ Use Syncfusion icon set or Font Awesome:
 ```csharp
 @page "/dark-mode-auto"
 @using Syncfusion.Blazor.DropDowns
+@inject IJSRuntime JS
 
 @if (IsDarkMode)
 {
@@ -318,9 +327,9 @@ else
     <link href="_content/Syncfusion.Blazor.Themes/bootstrap5.css" rel="stylesheet" />
 }
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -360,9 +369,9 @@ else
 </style>
 
 <div class="dark-theme">
-    <SfMultiSelect DataSource="@Items" 
-                   TValue="List<string>"
-                   TItem="Item">
+    <SfMultiSelect TValue="string[]"
+                   TItem="Item"
+                   DataSource="@Items">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     </SfMultiSelect>
 </div>
@@ -386,9 +395,9 @@ else
     }
 </style>
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                CssClass="custom-multiselect">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -421,9 +430,9 @@ else
     }
 </style>
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                CssClass="branded-select"
                Mode="VisualMode.Box"
                Placeholder="Select branded items">

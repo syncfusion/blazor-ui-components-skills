@@ -436,7 +436,7 @@ private List<Employee> Employees = GetFirst1000Employees();
 <SfComboBox TItem="Employee" TValue="int"
     AllowFiltering="true"
     MinFilterLength="2">
-    <SfDataManager Url="https://api.example.com/search" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor"></SfDataManager>
 </SfComboBox>
 ```

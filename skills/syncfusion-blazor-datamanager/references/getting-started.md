@@ -163,15 +163,18 @@ Use the `Json` property of `SfDataManager` to bind an in-memory collection. The 
 
 ## Binding to OData (Remote)
 
-Set `Url` to the service endpoint and `Adaptor` to the matching adaptor type.
+Set `Url` to the service endpoint and `Adaptor` to the matching adaptor type. Always use string variables for endpoints and validate against a whitelist before binding.
+
+> ⚠️ **SECURITY WARNING**: Only connect to trusted, authenticated services. Use HTTPS, validate endpoints against a whitelist, and sanitize all API responses to prevent injection attacks. See [Security Best Practices](#security-best-practices) below.
 
 ```razor
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
 <SfGrid TValue="Order" ID="Grid" AllowPaging="true">
-    <SfDataManager Url="https://services.odata.org/Northwind/Northwind.svc/Orders"
+    <SfDataManager Url="@ODataEndpointUrl"
                    Adaptor="Adaptors.ODataAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -186,6 +189,27 @@ Set `Url` to the service endpoint and `Adaptor` to the matching adaptor type.
 </SfGrid>
 
 @code {
+    // Whitelist of trusted OData endpoints
+    private static readonly HashSet<string> TrustedODataEndpoints = new()
+    {
+        "https://services.odata.org/Northwind/Northwind.svc/",
+        "https://api.yourtrusted-domain.com/odata/"
+    };
+
+    // String variable for endpoint URL
+    private string ODataEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://services.odata.org/Northwind/Northwind.svc/Orders";
+        
+        if (!TrustedODataEndpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        ODataEndpointUrl = endpoint;
+    }
+
     public class Order
     {
         public int? OrderID { get; set; }
@@ -237,18 +261,106 @@ Set `Url` to the service endpoint and `Adaptor` to the matching adaptor type.
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.DropDowns
 
+<!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
 <SfDropDownList Placeholder="Name" TItem="Contact" TValue="Contact">
-    <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc/Customers"
+    <SfDataManager Url="@ODataV4EndpointUrl"
                    Adaptor="Adaptors.ODataV4Adaptor">
     </SfDataManager>
     <DropDownListFieldSettings Value="CustomerID" Text="ContactName"></DropDownListFieldSettings>
 </SfDropDownList>
 
 @code {
+    // Whitelist of trusted OData v4 endpoints
+    private static readonly HashSet<string> TrustedODataV4Endpoints = new()
+    {
+        "https://services.odata.org/V4/Northwind/Northwind.svc/",
+        "https://api.yourtrusted-domain.com/odata/v4/"
+    };
+
+    // String variable for endpoint URL
+    private string ODataV4EndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://services.odata.org/V4/Northwind/Northwind.svc/Customers";
+        
+        if (!TrustedODataV4Endpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        ODataV4EndpointUrl = endpoint;
+    }
+
     public class Contact
     {
         public string? ContactName { get; set; }
         public string? CustomerID { get; set; }
+    }
+}
+```
+
+---
+
+## Security Best Practices
+
+### Trust Only Known Endpoints
+
+When using remote data binding with `Url` and adaptors, always:
+
+- ✅ **Use HTTPS** for all remote endpoints
+- ✅ **Authenticate requests** via tokens or custom headers (see [Adding Custom Headers](how-to.md#adding-custom-http-headers))
+- ✅ **Validate endpoints** — whitelist only approved service URLs in your application
+- ✅ **Implement server-side validation** on your backend to validate incoming requests
+- ❌ **Never accept arbitrary user input** as the `Url` value (e.g., from query parameters or user text fields)
+- ❌ **Never use unsigned/untrusted APIs** without verification
+
+### Prevent Indirect Prompt Injection
+
+Third-party API responses can introduce malicious content. Mitigate by:
+
+1. **Bind to trusted services only** — verify endpoint ownership and reputation
+2. **Implement response validation** — validate the schema and content types
+3. **Use model binding** — ensure strongly-typed models (`TValue`) for data validation
+4. **Sanitize rendered content** — if displaying user-generated data, use Blazor's built-in XSS protection
+5. **Monitor and log requests** — track all remote data fetches for audit trails
+
+### Example: Validated Remote Binding
+
+```csharp
+// In Program.cs — define trusted endpoints
+var trustedEndpoints = new HashSet<string>
+{
+    "https://services.odata.org/Northwind/Northwind.svc/",
+    "https://api.mycompany.com/data/",
+};
+
+// Validate before use
+public static bool IsEndpointTrusted(string url)
+{
+    var uri = new Uri(url);
+    return trustedEndpoints.Any(endpoint => uri.AbsoluteUri.StartsWith(endpoint));
+}
+```
+
+Then in your component:
+
+```razor
+@code {
+    private string RemoteUrl = "https://services.odata.org/Northwind/Northwind.svc/Orders";
+
+    protected override void OnInitialized()
+    {
+        if (!IsEndpointTrusted(RemoteUrl))
+            throw new InvalidOperationException("Untrusted endpoint");
+    }
+
+    private static bool IsEndpointTrusted(string url)
+    {
+        var trustedEndpoints = new[] {
+            "https://services.odata.org/Northwind/Northwind.svc/",
+            "https://api.mycompany.com/data/"
+        };
+        return trustedEndpoints.Any(endpoint => url.StartsWith(endpoint));
     }
 }
 ```

@@ -87,8 +87,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 
-string openAIApiKey = "API-KEY";
-string openAIModel = "OPENAI_MODEL";  // e.g., gpt-3.5-turbo, gpt-4
+// Load secrets from environment or configuration. Never hardcode API keys in source.
+string openAIApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+string openAIModel = Environment.GetEnvironmentVariable("OPENAI_MODEL") ?? "gpt-3.5-turbo";  // e.g., gpt-3.5-turbo, gpt-4
 
 OpenAIClient openAIClient = new OpenAIClient(openAIApiKey);
 IChatClient openAIChatClient = openAIClient.GetChatClient(openAIModel).AsIChatClient();
@@ -128,9 +129,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 
-string azureOpenAIKey = "AZURE_OPENAI_KEY";
-string azureOpenAIEndpoint = "AZURE_OPENAI_ENDPOINT";
-string azureOpenAIModel = "AZURE_OPENAI_MODEL";
+// Load Azure OpenAI configuration from environment or configuration
+string azureOpenAIKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_KEY");
+string azureOpenAIEndpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+string azureOpenAIModel = Environment.GetEnvironmentVariable("AZURE_OPENAI_MODEL") ?? "gpt-35-turbo";
 
 AzureOpenAIClient azureOpenAIClient = new AzureOpenAIClient(
     new Uri(azureOpenAIEndpoint),
@@ -176,8 +178,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 
-string ModelName = "MODEL_NAME";  // e.g., llama2:13b
-IChatClient chatClient = new OllamaApiClient("http://localhost:11434", ModelName);
+string ModelName = Environment.GetEnvironmentVariable("OLLAMA_MODEL") ?? "MODEL_NAME";  // e.g., llama2:13b
+string ollamaEndpoint = Environment.GetEnvironmentVariable("OLLAMA_ENDPOINT") ?? "http://localhost:11434";
+// `http://localhost` is for development only. For production, use HTTPS or a server-side proxy to avoid exposing endpoints.
+IChatClient chatClient = new OllamaApiClient(ollamaEndpoint, ModelName);
 builder.Services.AddChatClient(chatClient);
 
 builder.Services.AddSyncfusionSmartComponents()

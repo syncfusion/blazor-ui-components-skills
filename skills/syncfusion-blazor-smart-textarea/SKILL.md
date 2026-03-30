@@ -20,10 +20,6 @@ Use this skill when you need to:
 - Implement a custom AI backend for Claude, DeepSeek, Groq, Gemini, etc.
 - Troubleshoot missing suggestions or AI connectivity issues
 
-**Do NOT use for:**
-- General Blazor project setup → use `syncfusion-blazor-common`
-- Smart Paste Button (clipboard-to-form filling) → use `syncfusion-blazor-smart-paste`
-
 ## Prerequisites
 
 - Blazor Web App (.NET 8.0+) with **Interactive Server** render mode
@@ -59,7 +55,7 @@ Guidance on customizing suggestion appearance and leveraging inherited TextArea 
 ### 3. Custom AI Service Integration
 Detailed procedures for implementing custom AI backends beyond the default providers.
 
-→ [Full Custom AI Integration Guide](./references/custom-ai-integration.md)
+→ [Full Custom AI Integration Guide](https://blazor.syncfusion.com/documentation/smart-textarea/custom-inference-backend)
 
 **Key Topics:**
 - `IChatInferenceService` interface overview
@@ -89,20 +85,6 @@ Detailed procedures for implementing custom AI backends beyond the default provi
 | **ShowSuggestionOnPopup** | Controls display mode: `true` (popup) or `false` (inline, default) |
 | **IChatInferenceService** | Interface for implementing custom AI backends |
 | **ChatParameters** | Standardized input for AI response generation |
-
-## Common Tasks
-
-### Task: Set up OpenAI integration
-See: [Getting Started Guide → OpenAI Configuration](./references/getting-started.md#openai-configuration)
-
-### Task: Change suggestion display to popup mode
-See: [Customization Guide → Popup-Based Suggestions](./references/customization-features.md#popup-based-suggestions)
-
-### Task: Implement a custom Claude AI service
-See: [Custom AI Integration → Claude Integration](./references/custom-ai-integration.md#claude-integration)
-
-### Task: Debug "No Suggestions Displayed" issue
-See: [Custom AI Integration → Troubleshooting](./references/custom-ai-integration.md#troubleshooting)
 
 ## NuGet Packages
 

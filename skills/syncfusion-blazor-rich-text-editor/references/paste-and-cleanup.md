@@ -14,6 +14,8 @@
 
 ## Paste Cleanup Settings
 
+> **Security:** Always keep `EnableHtmlSanitizer="true"` when accepting untrusted content. Use `DeniedTags` to block `script`, `iframe`, `object`, `embed`.
+
 The `RichTextEditorPasteCleanupSettings` child component controls how content pasted from Word, Outlook, Excel, or other websites is sanitised before insertion.
 
 | Property | Type | Default | Description |

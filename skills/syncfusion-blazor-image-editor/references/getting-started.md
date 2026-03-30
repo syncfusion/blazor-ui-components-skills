@@ -166,7 +166,7 @@ Run your application with `dotnet run` or press Ctrl+F5 in Visual Studio. The Im
     private async void OnCreated()
     {
         // Load an image when component is initialized
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -226,7 +226,7 @@ Make the Image Editor read-only (view-only mode):
 @code {
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
         // User can view but not edit
     }
 }
@@ -396,7 +396,7 @@ This controls the HTML5 Canvas imageSmoothingEnabled property.
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 `

@@ -22,7 +22,7 @@ Customize the border appearance of shapes and freehand drawings:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private void OnShapeChanging(ShapeChangeEventArgs args)
@@ -152,7 +152,7 @@ Add additional fonts using `ImageEditorFontFamily`:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```

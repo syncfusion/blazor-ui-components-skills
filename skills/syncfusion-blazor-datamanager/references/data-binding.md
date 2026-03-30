@@ -74,13 +74,20 @@ Remote data binding connects a component to data hosted on an external service. 
 - Supports large-scale data without memory overhead
 - Operations like filtering and paging can execute server-side
 
+⚠️ **CRITICAL SECURITY REQUIREMENT**: Remote endpoints must be:
+- **Trusted and authenticated** — only use services you control or have contractually verified
+- **HTTPS only** — enforce encrypted communication
+- **Validated on every request** — whitelist allowed URLs in your application configuration
+- **Monitored for suspicious activity** — log all remote requests
+
 ```cshtml
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
 <SfGrid TValue="Order" ID="Grid" AllowPaging="true">
-    <SfDataManager Url="https://js.syncfusion.com/demos/ejServices/Wcf/Northwind.svc/Orders"
+    <SfDataManager Url="@RemoteODataEndpointUrl"
                    Adaptor="Adaptors.ODataAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -95,6 +102,26 @@ Remote data binding connects a component to data hosted on an external service. 
 </SfGrid>
 
 @code {
+    // Whitelist of trusted OData endpoints
+    private static readonly HashSet<string> TrustedODataEndpoints = new()
+    {
+        "https://api.yourtrusted-domain.com/odata/"
+    };
+
+    // String variable for endpoint URL
+    private string RemoteODataEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://api.yourtrusted-domain.com/odata/Orders";
+        
+        if (!TrustedODataEndpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        RemoteODataEndpointUrl = endpoint;
+    }
+
     public class Order
     {
         public int? OrderID { get; set; }
@@ -148,7 +175,8 @@ Both examples below produce the same Grid UI — the difference is where data co
 
 ```cshtml
 <SfGrid TValue="Product" AllowPaging="true">
-    <SfDataManager Url="https://myapi.example.com/api/products"
+    <!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
+    <SfDataManager Url="@WebApiEndpointUrl"
                    Adaptor="Adaptors.WebApiAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -159,6 +187,31 @@ Both examples below produce the same Grid UI — the difference is where data co
 </SfGrid>
 
 @code {
-    public class Product { public int ProductID; public string ProductName; public double Price; }
+    // Whitelist of trusted Web API endpoints
+    private static readonly HashSet<string> TrustedWebApiEndpoints = new()
+    {
+        "https://api.yourtrusted-domain.com/api/"
+    };
+
+    // String variable for endpoint URL
+    private string WebApiEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://api.yourtrusted-domain.com/api/products";
+        
+        if (!TrustedWebApiEndpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        WebApiEndpointUrl = endpoint;
+    }
+
+    public class Product 
+    { 
+        public int ProductID { get; set; }
+        public string ProductName { get; set; }
+        public double Price { get; set; }
+    }
 }
 ```

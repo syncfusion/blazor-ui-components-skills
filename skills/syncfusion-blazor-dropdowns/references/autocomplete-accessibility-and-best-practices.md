@@ -13,8 +13,7 @@ Use proper semantic structure in templates:
 
 <SfAutoComplete TValue="string" TItem="Employee" 
                 DataSource="@Employees">
-    <AutoCompleteFieldSettings Value="EmployeeName" 
-                               Text="EmployeeName">
+    <AutoCompleteFieldSettings Value="EmployeeName">
     </AutoCompleteFieldSettings>
     <AutoCompleteTemplates TItem="Employee">
         <ItemTemplate>
@@ -95,9 +94,7 @@ Provide context for assistive technologies:
 ```blazor
 <SfAutoComplete TValue="string" TItem="Employee" 
                 DataSource="@Employees">
-    <AutoCompleteFieldSettings Value="EmployeeName" 
-                               Text="EmployeeName"
-                               GroupBy="Department">
+    <AutoCompleteFieldSettings Value="EmployeeName" GroupBy="Department">
     </AutoCompleteFieldSettings>
     <AutoCompleteTemplates TItem="Employee">
         <GroupTemplate>
@@ -413,9 +410,7 @@ Display accessible error states:
                 MinLength="2"
                 DebounceDelay="300"
                 EnableVirtualization="true">
-    <AutoCompleteFieldSettings Value="EmployeeName" 
-                               Text="EmployeeName">
-    </AutoCompleteFieldSettings>
+    <AutoCompleteFieldSettings Value="EmployeeName"></AutoCompleteFieldSettings>
 </SfAutoComplete>
 
 @code {

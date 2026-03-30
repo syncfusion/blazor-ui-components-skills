@@ -14,8 +14,9 @@ Create a two-level cascade (Country → State):
     <SfComboBox TItem="Country" TValue="int"
         Placeholder="Select a country"
         DataSource="@Countries"
-        @bind-Value="@SelectedCountry"
-        ValueChange="@OnCountryChange">
+        @bind-Value="@SelectedCountry">
+        <ComboBoxEvents TItem="Country" TValue="int"
+            ValueChange="@OnCountryChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="CountryName" Value="CountryId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>
@@ -91,8 +92,9 @@ Create a three-level cascade (Country → State → City):
     <SfComboBox TItem="Country" TValue="int"
         Placeholder="Select a country"
         DataSource="@Countries"
-        @bind-Value="@SelectedCountry"
-        ValueChange="@OnCountryChange">
+        @bind-Value="@SelectedCountry">
+        <ComboBoxEvents TItem="Country" TValue="int"
+            ValueChange="@OnCountryChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="CountryName" Value="CountryId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>
@@ -103,8 +105,9 @@ Create a three-level cascade (Country → State → City):
         Placeholder="Select a state"
         DataSource="@States"
         @bind-Value="@SelectedState"
-        ValueChange="@OnStateChange"
         Enabled="@(SelectedCountry > 0)">
+        <ComboBoxEvents TItem="State" TValue="int"
+            ValueChange="@OnStateChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="StateName" Value="StateId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>
@@ -198,8 +201,9 @@ Populate other form fields based on ComboBox selection:
     <SfComboBox TItem="Country" TValue="int"
         Placeholder="Choose a country"
         DataSource="@Countries"
-        @bind-Value="@SelectedCountry"
-        ValueChange="@OnCountryChange">
+        @bind-Value="@SelectedCountry">
+        <ComboBoxEvents TItem="Country" TValue="int"
+            ValueChange="@OnCountryChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="Name" Value="CountryId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>
@@ -299,8 +303,9 @@ Cascade ComboBox with data loaded from a remote API:
         Placeholder="Select a category"
         AllowFiltering="true"
         DataSource="@Categories"
-        @bind-Value="@SelectedCategory"
-        ValueChange="@OnCategoryChange">
+        @bind-Value="@SelectedCategory">
+        <ComboBoxEvents TItem="Category" TValue="int"
+            ValueChange="@OnCategoryChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="CategoryName" Value="CategoryId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>
@@ -345,7 +350,7 @@ Cascade ComboBox with data loaded from a remote API:
     {
         SelectedCategory = args.Value;
         // Build API URL with category filter
-        ProductApiUrl = $"https://api.example.com/products?categoryId={args.Value}";
+        ProductApiUrl = $"YOUR_API_ENDPOINT";
     }
 }
 ```

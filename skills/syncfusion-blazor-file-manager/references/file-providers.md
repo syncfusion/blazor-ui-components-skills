@@ -290,7 +290,7 @@ From `sharePoint-file-provider.md`:
     "TenantId": "your-tenant-id",
     "ClientId": "your-client-id",
     "ClientSecret": "your-client-secret",
-    "SiteUrl": "https://your-tenant.sharepoint.com/sites/yoursite",
+    "SiteUrl": "url",
     "FolderId": "Document Library"
   }
 }
@@ -321,7 +321,7 @@ From `Firebase-Real-time-Database-file-system-provider.md`:
 var options = new FirebaseOptions
 {
     Credential = GoogleCredential.FromFile("path/to/serviceAccountKey.json"),
-    DatabaseUrl = "https://your-project.firebaseio.com"
+    DatabaseUrl = "url"
 };
 
 FirebaseApp.Create(options);

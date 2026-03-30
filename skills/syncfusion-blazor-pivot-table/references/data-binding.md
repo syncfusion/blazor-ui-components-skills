@@ -1,6 +1,11 @@
 # Data Binding — Syncfusion Blazor Pivot Table
 
+## ⚠️ SECURITY NOTICE
+
+**CRITICAL**: This documentation contains examples for connecting to remote data sources. **Always use trusted, authenticated data sources only.** Never bind to untrusted URLs, user-provided endpoints, or public APIs without proper validation and security controls. See the [Security Best Practices](#security-best-practices) section below.
+
 ## Table of Contents
+- [Security Best Practices](#security-best-practices)
 - [Local JSON / IEnumerable Binding](#local-json--ienumerable-binding)
 - [SfDataManager with JsonAdaptor](#sfdatamanager-with-jsonadaptor)
 - [Remote Data (WebAPI / OData)](#remote-data-webapi--odata)
@@ -8,6 +13,89 @@
 - [Dynamic Data Objects](#dynamic-data-objects)
 - [ExpandAll on Load](#expandall-on-load)
 - [Refresh Data Programmatically](#refresh-data-programmatically)
+
+---
+
+## Security Best Practices
+
+### Critical Security Guidelines
+
+When implementing data binding for pivot tables, follow these essential security practices:
+
+#### 1. **Use Trusted Data Sources Only**
+
+✅ **RECOMMENDED**: Local in-memory data
+```csharp
+// Safe: Local data list
+public List<ProductDetails> data { get; set; }
+protected override void OnInitialized()
+{
+    data = ProductDetails.GetProductData().ToList();
+}
+```
+
+❌ **AVOID**: Untrusted remote endpoints
+```csharp
+// UNSAFE: Never use arbitrary or user-provided URLs
+Url = userProvidedUrl  // Security risk!
+```
+
+#### 2. **Implement Authentication for Remote Sources**
+
+If you must use remote data, always use authenticated endpoints:
+
+```csharp
+// Use authenticated API with proper configuration
+<SfDataManager Url="@Configuration["ApiEndpoint"]" 
+               Adaptor="Adaptors.WebApiAdaptor"
+               Headers="@headers">
+</SfDataManager>
+
+@code {
+    private object[] headers = new object[] {
+        new { Authorization = $"Bearer {AuthToken}" }
+    };
+}
+```
+
+#### 3. **Validate and Sanitize Data**
+
+Always validate data received from external sources:
+
+```csharp
+protected override async Task OnInitializedAsync()
+{
+    var response = await Http.GetFromJsonAsync<List<ProductDetails>>(trustedEndpoint);
+    
+    // Validate data structure
+    if (ValidateDataStructure(response))
+    {
+        data = SanitizeData(response);
+    }
+}
+```
+
+#### 4. **Use Configuration Settings**
+
+Store API endpoints in configuration, never hardcode:
+
+```json
+// appsettings.json
+{
+  "ApiEndpoint": "https://your-trusted-api.com/data",
+  "AllowedOrigins": ["https://your-domain.com"]
+}
+```
+
+### Security Risks to Avoid
+
+| Risk | Description | Mitigation |
+|------|-------------|------------|
+| **Indirect Prompt Injection** | Malicious data manipulating AI behavior | Validate and sanitize all external data |
+| **Data Exfiltration** | Unauthorized access to sensitive data | Use authentication and authorization |
+| **SSRF Attacks** | Server-side request forgery via URLs | Whitelist allowed endpoints |
+| **XSS via Data** | Malicious scripts in data fields | Sanitize and escape all data |
+| **Credential Exposure** | API keys or tokens in code | Use configuration and secure storage |
 
 ---
 
@@ -87,7 +175,9 @@ Use `SfDataManager` with `JsonAdaptor` when you need to pass in-memory JSON (e.g
 
 ## Remote Data (WebAPI / OData)
 
-Point `SfDataManager` at an API endpoint and choose the appropriate adaptor:
+⚠️ **SECURITY WARNING**: Only use trusted, authenticated endpoints. Never bind to user-provided or untrusted URLs.
+
+Point `SfDataManager` at a **trusted and authenticated** API endpoint and choose the appropriate adaptor:
 - `WebApiAdaptor` — REST API returning JSON
 - `ODataV4Adaptor` — OData v4 protocol
 - `UrlAdaptor` — Custom endpoint with Syncfusion query format
@@ -95,10 +185,12 @@ Point `SfDataManager` at an API endpoint and choose the appropriate adaptor:
 ```razor
 @using Syncfusion.Blazor.PivotView
 @using Syncfusion.Blazor.Data
+@inject IConfiguration Configuration
 
 <SfPivotView TValue="OrderData" Height="450">
     <PivotViewDataSourceSettings TValue="OrderData" ExpandAll="false">
-        <SfDataManager Url="https://yourapi.example.com/api/orders"
+        <!-- ⚠️ SECURITY: Only use controlled, trusted endpoints -->
+        <SfDataManager Url="@Configuration["ApiEndpoint"]"
                        Adaptor="Syncfusion.Blazor.Adaptors.WebApiAdaptor" CrossDomain="true">
         </SfDataManager>
         <PivotViewColumns>

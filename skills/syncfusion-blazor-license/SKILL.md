@@ -8,7 +8,7 @@ metadata:
 
 # Syncfusion Blazor License Configuration
 
-Manage Syncfusion Blazor license keys across all project types — Server, WebAssembly, Auto, and Razor Class Libraries.
+Manage Syncfusion Blazor license keys across all Blazor project types - Server, WebAssembly, Auto, and Razor Class Libraries.
 
 ## When to Use
 
@@ -22,117 +22,45 @@ Use this skill when you need to:
 **Do NOT use for:**
 - Initial Blazor project setup → use `syncfusion-blazor-common`
 
-## Quick Reference
+## Key Rules
 
-| Topic | Reference |
-|-------|-----------|
-| Generate Key | [license-registration.md — Part 1](references/license-registration.md#part-1-generating-license-keys) |
-| Register Key | [license-registration.md — Part 2](references/license-registration.md#part-2-registering-license-keys-in-applications) |
-| Razor Class Library | [license-registration.md — Part 3](references/license-registration.md#part-3-registering-when-consuming-a-razor-class-library-rcl) |
-| WASM Security | [license-registration.md — Part 4](references/license-registration.md#part-4-secure-registration-in-blazor-wasm-apps) |
-| Troubleshooting | [license-registration.md — Part 5](references/license-registration.md#part-6-troubleshooting-licensing-errors) |
-| FAQ | [license-registration.md — Part 6](references/license-registration.md#part-7-licensing-faq) |
+- **Version Specific**: License keys are version-specific for the Syncfusion platform
+- **Platform Specific**: Different keys for different platforms (Blazor, ASP.NET, etc.)
+- **WASM Security**: Never register license keys in client-side Blazor WebAssembly `Program.cs` — use licensed NuGet packages instead
+- **Confidentiality**: License keys are secrets. Never share or commit them to source
 
-## Prerequisites
+## Common Scenarios
 
-- Syncfusion account ([start a free trial](https://www.syncfusion.com/account/manage-trials/start-trials) if needed)
-- Syncfusion NuGet packages installed in the project
-- Access to `Program.cs` of the server and/or client project
+### Generate a license key
 
-> **Key rules**: License keys are **version-specific** and **platform-specific**. Always generate a key for the **Blazor** platform that matches your installed NuGet package version.
+* [Reference: Generating License Keys](./references/license-registration#generating-license-keys)
 
-**NOTE**: DON'T ask user to share their license key if they encounter errors. Instead, guide them to generate a new key and register it correctly. License keys are confidential and should never be shared publicly.
+### Register a license key
 
-## 1. Generate a License Key
+* [Reference: Registering License Keys](./references/license-registration#registering-license-keys-in-applications)
 
-**Detailed guide**: [license-registration.md — Part 1](references/license-registration.md#part-1-generating-license-keys)
+### Razor Class Library with Syncfusion Blazor components
 
-| Account Status | Portal | Key Type |
-|----------------|--------|----------|
-| Active paid | [License & Downloads](https://syncfusion.com/account/downloads) | Full, no expiry |
-| Active trial | [Trial & Downloads](https://www.syncfusion.com/account/manage-trials/downloads) | 30-day trial |
-| Expired | [License & Downloads](https://syncfusion.com/account/downloads) | Temporary 5-day |
-| No account | [Register](https://www.syncfusion.com/account/register) then [Start Trial](https://syncfusion.com/account/manage-trials/start-trials) | 30-day trial |
+* [Reference: Registering in RCLs](./references/license-registration#registering-when-consuming-a-razor-class-library-rcl)
 
-## 2. Register the License Key
+### Blazor WebAssembly app (security concern)
 
-**Detailed guide**: [license-registration.md — Part 2](references/license-registration.md#part-2-registering-license-keys-in-applications)
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
 
-Register **before** any Syncfusion component initializes in `Program.cs`:
+⚠️ **Do NOT register keys in client-side code.** See secure deployment options:
 
-```csharp
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_LICENSE_KEY");
-```
+* [Reference: Secure Registration in WASM Apps](./references/license-registration#secure-registration-in-blazor-wasm-apps)
 
-### Registration by Project Type
+Recommended: Use licensed NuGet packages instead
 
-| Project Type | Where to Register |
-|--------------|-------------------|
-| Interactive Server | Server `Program.cs` only |
-| Interactive Auto | Server **and** Client `Program.cs` |
-| Interactive WASM | Server **and** Client `Program.cs` |
-| Standalone WASM | Client `Program.cs` only |
-| Razor Class Library | Consuming app's `Program.cs` |
+* [Reference: Web Installer - How to Download](./references/syncfusion-blazor-web-installer-download)
+* [Reference: Web Installer - How to Install](./references/syncfusion-blazor-web-installer-install)
 
-## 3. WASM Security — Licensed NuGet Packages
+### Troubleshooting license errors
 
-**Detailed guide**: [license-registration.md — Part 4](references/license-registration.md#part-4-secure-registration-in-blazor-wasm-apps)
+* [Reference:  Troubleshooting Licensing Errors](./references/license-registration#troubleshooting-licensing-errors)
 
-⚠️ **Security Issue**: Registering license keys in WASM `Program.cs` exposes them in browser-downloadable assemblies. Use licensed NuGet packages instead.
+### FAQ
 
-### Recommended Solution
+* [Licensing FAQ](./references/license-registration#licensing-faq)
 
-Use licensed NuGet packages (no key registration needed):
-
-1. Download from [web installer](https://blazor.syncfusion.com/documentation/installation/web-installer/how-to-download)
-2. Configure local/private NuGet source
-3. Verify DLL properties: No "LR" in file description = licensed
-
-**If trial assemblies persist**:
-```bash
-dotnet nuget locals all --clear
-# Delete bin/ and obj/, rebuild
-```
-
-### Alternative: Azure Key Vault
-
-Store keys in [Azure Key Vault](https://help.syncfusion.com/common/essential-studio/licensing/licensing-faq/how-to-securely-store-and-use-syncfusion-license-keys-in-azure-key-vault) and retrieve at runtime
-
-## 4. CI License Validation
-
-**Detailed guide**: [license-registration.md — Part 5](references/license-registration.md#part-5-ci-license-validation)
-
-### LicenseKeyValidator Tool
-
-1. Download [LicenseKeyValidator.zip](https://s3.amazonaws.com/files2.syncfusion.com/Installs/LicenseKeyValidation/LicenseKeyValidator.zip)
-2. Edit `LicenseKeyValidation.ps1`:
-   ```powershell
-   $result = & $PSScriptRoot"\LicenseKeyValidatorConsole.exe" /platform:"Blazor" /version:"26.2.4" /licensekey:"Your Key"
-   Write-Host $result
-   ```
-3. Integrate into Azure Pipelines, GitHub Actions, or other CI systems
-
-### Programmatic Validation
-
-```csharp
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_KEY");
-bool isValid = SyncfusionLicenseProvider.ValidateLicense(Platform.Blazor);
-```
-
-## 5. Troubleshooting License Errors
-
-**Detailed guide**: [license-registration.md — Part 6](references/license-registration.md#part-6-troubleshooting-licensing-errors)
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| Trial banner | Key not registered | Register before component init |
-| Invalid key | Wrong version/platform | Regenerate for Blazor + current NuGet version |
-| Platform mismatch | Non-Blazor key | Generate Blazor-specific key |
-| Version mismatch | Key ≠ package version | Clean bin/obj, clear NuGet cache, rebuild |
-
-### Quick Checklist
-
-1. ✓ `Syncfusion.Licensing` version matches other packages
-2. ✓ Key registered **before** component initialization
-3. ✓ Key platform is **Blazor**
-4. ✓ Key version matches installed NuGet version

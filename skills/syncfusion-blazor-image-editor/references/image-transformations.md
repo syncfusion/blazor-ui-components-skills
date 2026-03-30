@@ -29,7 +29,7 @@ The Image Editor supports multiple crop selection types:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```

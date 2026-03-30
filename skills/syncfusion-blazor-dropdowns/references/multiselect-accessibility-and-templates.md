@@ -33,10 +33,10 @@
 @page "/keyboard-navigation"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               ShowCheckbox="true"
+               DataSource="@Items"
+               Mode="VisualMode.CheckBox"
                Placeholder="Use arrow keys to navigate">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -78,11 +78,11 @@ Syncfusion components automatically include ARIA attributes:
 ### Custom ARIA Labels
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Select options"
-               AriaLabel="Select one or more options from the list">
+               HtmlAttributes="@(new Dictionary<string, object> { { "aria-label", "Select one or more options from the list" } })">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -91,14 +91,16 @@ Syncfusion components automatically include ARIA attributes:
 }
 ```
 
+**Note:** Use `HtmlAttributes` to add custom ARIA attributes (there's no direct `AriaLabel` property).
+
 ### Accessible Label Association
 
 ```csharp
 <label for="multiselect-id">Choose your preferences:</label>
-<SfMultiSelect DataSource="@Items" 
-               ID="multiselect-id"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               ID="multiselect-id"
                Placeholder="Select options">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -157,9 +159,9 @@ Components follow WCAG 2.1 Level AA standards:
 @using Syncfusion.Blazor.DropDowns
 
 <SfMultiSelect @ref="MultiSelectRef"
-               DataSource="@Items" 
-               TValue="List<string>"
+               TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Click button to focus">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -167,7 +169,7 @@ Components follow WCAG 2.1 Level AA standards:
 <button @onclick="FocusDropdown">Focus Dropdown</button>
 
 @code {
-    private SfMultiSelect<Item, List<string>> MultiSelectRef;
+    private SfMultiSelect<string[], Item> MultiSelectRef;
     private List<Item> Items { get; set; } = new();
 
     protected override void OnInitialized()
@@ -207,9 +209,9 @@ Visible focus indicators are critical for keyboard users:
     }
 </style>
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -226,17 +228,17 @@ Visible focus indicators are critical for keyboard users:
 @page "/item-template"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Employee"
+               DataSource="@Items"
                Placeholder="Select employees">
     <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Employee">
-        <ItemTemplate>
+        <ItemTemplate Context="employee">
             <div>
-                <span>@((context as Employee).Name)</span>
+                <span>@employee.Name</span>
                 <br />
-                <small>@((context as Employee).Department)</small>
+                <small>@employee.Department</small>
             </div>
         </ItemTemplate>
     </MultiSelectTemplates>
@@ -267,9 +269,9 @@ Visible focus indicators are critical for keyboard users:
 
 ```csharp
 <MultiSelectTemplates TItem="Item">
-    <ItemTemplate>
+    <ItemTemplate Context="item">
         <div class="item-with-icon">
-            @if ((context as Item).Status == "Active")
+            @if (item.Status == "Active")
             {
                 <span class="status-icon active"></span>
             }
@@ -277,7 +279,7 @@ Visible focus indicators are critical for keyboard users:
             {
                 <span class="status-icon inactive"></span>
             }
-            <span>@((context as Item).Name)</span>
+            <span>@item.Name</span>
         </div>
     </ItemTemplate>
 </MultiSelectTemplates>
@@ -304,15 +306,15 @@ Visible focus indicators are critical for keyboard users:
 ### Value Template (Selected Item Display)
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Select items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
-        <ValueTemplate>
+        <ValueTemplate Context="item">
             <span style="color: #2196F3; font-weight: bold;">
-                ✓ @((context as Item).Name)
+                ✓ @item.Name
             </span>
         </ValueTemplate>
     </MultiSelectTemplates>
@@ -327,20 +329,19 @@ Visible focus indicators are critical for keyboard users:
 @page "/group-template"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               AllowGrouping="true"
+               DataSource="@Items"
                Placeholder="Grouped with custom headers">
     <MultiSelectFieldSettings Text="Name" Value="ID" GroupBy="Category"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
         <GroupTemplate>
             <div class="group-header">
                 <span style="font-weight: bold; color: #2196F3;">
-                    @((context as IGroupsData<Item>).Key)
+                    @context.Text
                 </span>
                 <span style="float: right; color: #999;">
-                    (@((context as IGroupsData<Item>).Items.Count) items)
+                    (@context.Items.Count() items)
                 </span>
             </div>
         </GroupTemplate>
@@ -369,14 +370,16 @@ Visible focus indicators are critical for keyboard users:
 }
 ```
 
+**Note:** Removed `AllowGrouping` property (doesn't exist). Grouping is enabled automatically when `GroupBy` is set in `MultiSelectFieldSettings`. The GroupTemplate context has `Text` (group name) and `Items` (group members).
+
 ## Header and Footer Templates
 
 ### Header Template
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="With custom header">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
@@ -399,23 +402,23 @@ Visible focus indicators are critical for keyboard users:
 ### Footer Template
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedItems"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedItems"
                Placeholder="With footer">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
         <FooterTemplate>
             <div style="padding: 10px; border-top: 1px solid #e0e0e0; text-align: center;">
-                <small>Selected: @SelectedItems.Count items</small>
+                <small>Selected: @(SelectedItems?.Length ?? 0) items</small>
             </div>
         </FooterTemplate>
     </MultiSelectTemplates>
 </SfMultiSelect>
 
 @code {
-    private List<string> SelectedItems { get; set; } = new();
+    private string[] SelectedItems { get; set; } = Array.Empty<string>();
     private List<Item> Items { get; set; } = new();
 }
 ```
@@ -426,11 +429,11 @@ Visible focus indicators are critical for keyboard users:
 
 ```csharp
 <MultiSelectTemplates TItem="Employee">
-    <ItemTemplate>
-        <div role="option" aria-label="@((context as Employee).Name) - @((context as Employee).Department)">
-            <strong>@((context as Employee).Name)</strong>
+    <ItemTemplate Context="employee">
+        <div role="option" aria-label="@employee.Name - @employee.Department">
+            <strong>@employee.Name</strong>
             <br />
-            <small>@((context as Employee).Department)</small>
+            <small>@employee.Department</small>
         </div>
     </ItemTemplate>
 </MultiSelectTemplates>
@@ -476,9 +479,9 @@ Visible focus indicators are critical for keyboard users:
     }
 </style>
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                CssClass="accessible-list">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>

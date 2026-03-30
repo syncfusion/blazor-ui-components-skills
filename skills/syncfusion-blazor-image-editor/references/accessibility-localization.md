@@ -202,7 +202,7 @@ The Image Editor supports multiple language localizations through Syncfusion loc
     
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -248,7 +248,7 @@ Create custom localization resources:
         };
         
         // Apply custom localization
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -280,7 +280,7 @@ Configure for RTL languages:
     
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```

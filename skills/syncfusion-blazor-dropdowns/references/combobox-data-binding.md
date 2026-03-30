@@ -162,7 +162,7 @@ Fetch data from a remote server using DataManager:
 
 <SfComboBox TItem="Employee" TValue="int"
     Placeholder="Select an employee">
-    <SfDataManager Url="https://api.example.com/employees" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor"></SfDataManager>
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
 </SfComboBox>
@@ -217,7 +217,7 @@ Connect to a REST API endpoint:
 
 <SfComboBox TItem="Product" TValue="int"
     Placeholder="Select a product">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.WebApiAdaptor"></SfDataManager>
     <ComboBoxFieldSettings Text="ProductName" Value="ProductID"></ComboBoxFieldSettings>
 </SfComboBox>
@@ -291,8 +291,9 @@ Load data dynamically based on user actions:
     <SfComboBox TItem="Category" TValue="int"
         Placeholder="Choose a category"
         DataSource="@Categories"
-        @bind-Value="@SelectedCategory"
-        ValueChange="@OnCategoryChange">
+        @bind-Value="@SelectedCategory">
+        <ComboBoxEvents TItem="Category" TValue="int"
+            ValueChange="@OnCategoryChange"></ComboBoxEvents>
         <ComboBoxFieldSettings Text="CategoryName" Value="CategoryId"></ComboBoxFieldSettings>
     </SfComboBox>
 </div>

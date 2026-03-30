@@ -170,7 +170,7 @@ The `DataSource` property accepts both `List<T>` and `SfDataManager` instances. 
         // Configure DataManager with Web API endpoint
         WebApiManager = new SfDataManager
         {
-            Url = "https://api.example.com/employees",
+            Url = "url",
             Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.WebApiAdaptor
         };
     }
@@ -213,7 +213,7 @@ The `DataSource` property accepts both `List<T>` and `SfDataManager` instances. 
     {
         ODataManager = new SfDataManager
         {
-            Url = "https://services.odata.org/v4/northwind/northwind.svc/Employees",
+            Url = "url",
             Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.ODataV4Adaptor
         };
         ODataQuery = new Query()
@@ -253,7 +253,7 @@ The `DataSource` property accepts both `List<T>` and `SfDataManager` instances. 
     {
         ODataV4Manager = new SfDataManager
         {
-            Url = "https://services.odata.org/v4/northwind/northwind.svc/Employees",
+            Url = "url",
             Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.ODataV4Adaptor
         };
         ODataV4Query = new Query()
@@ -483,7 +483,7 @@ public List<MailItem> LocalData { get; set; }
 // Remote data (DataManager)
 SfDataManager remoteData = new SfDataManager
 {
-    Url = "https://api.example.com/items",
+    Url = "url",
     Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.JsonAdaptor
 };
 
@@ -667,7 +667,7 @@ Apply filtering and sorting to remote data:
 @code {
     SfDataManager Manager = new SfDataManager
     {
-        Url = "https://api.example.com/employees",
+        Url = "url",
         Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.ODataV4Adaptor
     };
     

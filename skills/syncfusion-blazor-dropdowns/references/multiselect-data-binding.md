@@ -25,9 +25,9 @@ Data binding connects your MultiSelect Dropdown to data sources. The component s
 @page "/data-binding-list"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@CountryList" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="string"
+               DataSource="@CountryList"
                Placeholder="Select countries">
 </SfMultiSelect>
 
@@ -47,9 +47,9 @@ Data binding connects your MultiSelect Dropdown to data sources. The component s
 @page "/data-binding-complex"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Employees" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Employee"
+               DataSource="@Employees"
                Placeholder="Select employees">
     <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -88,9 +88,9 @@ For real-time updates when data changes:
 @using System.Collections.ObjectModel
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -128,9 +128,9 @@ For real-time updates when data changes:
 @using Syncfusion.Blazor.DropDowns
 @inject HttpClient Http
 
-<SfMultiSelect DataSource="@ApiData" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="ApiProduct"
+               DataSource="@ApiData"
                Placeholder="Select products">
     <MultiSelectFieldSettings Text="ProductName" Value="ProductID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -143,7 +143,7 @@ For real-time updates when data changes:
     {
         try
         {
-            ApiData = await Http.GetFromJsonAsync<List<ApiProduct>>("https://api.example.com/products");
+            ApiData = await Http.GetFromJsonAsync<List<ApiProduct>>("YOUR_API_ENDPOINT");
             IsLoading = false;
         }
         catch (Exception ex)
@@ -177,9 +177,9 @@ else if (ApiData == null || ApiData.Count == 0)
 }
 else
 {
-    <SfMultiSelect DataSource="@ApiData" 
-                   TValue="List<string>"
-                   TItem="Product">
+    <SfMultiSelect TValue="string[]"
+                   TItem="Product"
+                   DataSource="@ApiData">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     </SfMultiSelect>
 }
@@ -214,7 +214,7 @@ For OData-compliant APIs:
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect TValue="List<string>" 
+<SfMultiSelect TValue="int[]"
                TItem="OrderData"
                Placeholder="Select orders">
     <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc/Orders" 
@@ -237,9 +237,9 @@ For OData-compliant APIs:
 For RESTful APIs:
 
 ```csharp
-<SfMultiSelect TValue="List<string>" 
+<SfMultiSelect TValue="string[]"
                TItem="CustomerData">
-    <SfDataManager Url="https://api.example.com/customers" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Adaptors.WebApiAdaptor">
     </SfDataManager>
     <MultiSelectFieldSettings Text="CustomerName" Value="CustomerID"></MultiSelectFieldSettings>
@@ -259,17 +259,17 @@ For RESTful APIs:
 ### Two-Way Binding
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedValues"
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedValues">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
-<p>Selected: @string.Join(", ", SelectedValues)</p>
+<p>Selected: @string.Join(", ", SelectedValues ?? Array.Empty<string>())</p>
 
 @code {
-    private List<string> SelectedValues { get; set; } = new();
+    private string[] SelectedValues { get; set; } = Array.Empty<string>();
     private List<Item> Items { get; set; } = new();
 
     protected override void OnInitialized()
@@ -281,7 +281,7 @@ For RESTful APIs:
         };
         
         // Set initial selection
-        SelectedValues = new List<string> { "1" };
+        SelectedValues = new string[] { "1" };
     }
 
     public class Item { public string ID { get; set; } public string Name { get; set; } }
@@ -291,15 +291,15 @@ For RESTful APIs:
 ### One-Way Binding
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               Value="SelectedValues"
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               Value="SelectedValues">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 @code {
-    private List<string> SelectedValues { get; set; } = new() { "1", "2" };
+    private string[] SelectedValues { get; set; } = new string[] { "1", "2" };
 }
 ```
 
@@ -309,17 +309,17 @@ For RESTful APIs:
 @page "/complex-binding"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Products" 
-               @bind-Value="SelectedProducts"
-               TValue="List<Product>"
+<SfMultiSelect TValue="Product[]"
                TItem="Product"
+               DataSource="@Products"
+               @bind-Value="SelectedProducts"
                Placeholder="Select products">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 @code {
     private List<Product> Products { get; set; } = new();
-    private List<Product> SelectedProducts { get; set; } = new();
+    private Product[] SelectedProducts { get; set; } = Array.Empty<Product>();
 
     protected override void OnInitialized()
     {
@@ -346,9 +346,9 @@ For RESTful APIs:
 @page "/null-handling"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="No items available">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -375,9 +375,9 @@ For RESTful APIs:
 }
 else
 {
-    <SfMultiSelect DataSource="@Items" 
-                   TValue="List<string>"
-                   TItem="Item">
+    <SfMultiSelect TValue="string[]"
+                   TItem="Item"
+                   DataSource="@Items">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     </SfMultiSelect>
 }
@@ -393,11 +393,11 @@ else
 ### Enable Virtualization for Large Datasets
 
 ```csharp
-<SfMultiSelect DataSource="@LargeDataSet" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@LargeDataSet"
                EnableVirtualization="true"
-               ItemsCount="50">
+               PopupHeight="300px">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -425,7 +425,7 @@ protected override async Task OnInitializedAsync()
         .AddParams("$skip", 0)      // Skip first 0 items
         .AddParams("$take", 50);    // Take 50 items
 
-    ApiData = await Http.GetFromJsonAsync<List<Item>>($"https://api.example.com/items?skip=0&take=50");
+    ApiData = await Http.GetFromJsonAsync<List<Item>>($"YOUR_API_ENDPOINT?skip=0&take=50");
 }
 ```
 
@@ -444,7 +444,7 @@ protected override async Task OnInitializedAsync()
     }
     else
     {
-        Items = await Http.GetFromJsonAsync<List<Item>>("https://api.example.com/categories");
+        Items = await Http.GetFromJsonAsync<List<Item>>("YOUR_API_ENDPOINT");
         DataCache[cacheKey] = Items;
     }
 }

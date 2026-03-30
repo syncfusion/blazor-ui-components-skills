@@ -330,7 +330,7 @@ Controls how selected mention appears:
         </div>
     </SpinnerTemplate>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/users" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.WebApiAdaptor">
         </SfDataManager>
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
@@ -372,7 +372,7 @@ Controls how selected mention appears:
         </div>
     </SpinnerTemplate>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/users" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.WebApiAdaptor">
         </SfDataManager>
         <MentionFieldSettings Text="Name"></MentionFieldSettings>

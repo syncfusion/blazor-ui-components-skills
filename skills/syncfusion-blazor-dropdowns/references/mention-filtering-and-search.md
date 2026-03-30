@@ -60,7 +60,7 @@ Especially important for large datasets or slow APIs:
         <input id="remoteUser" type="text" placeholder="Type @ + 3 chars..." />
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/users" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.WebApiAdaptor">
         </SfDataManager>
         <MentionFieldSettings Text="UserName"></MentionFieldSettings>

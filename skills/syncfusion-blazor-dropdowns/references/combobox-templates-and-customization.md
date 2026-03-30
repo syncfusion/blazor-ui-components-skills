@@ -23,12 +23,14 @@ Customize the appearance of each list item using the `ItemTemplate` property:
     Placeholder="Select an employee"
     DataSource="@Employees">
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
-    <ItemTemplate>
-        <div style="padding: 5px; border-bottom: 1px solid #e0e0e0;">
-            <div style="font-weight: bold;">@context.Name</div>
-            <div style="font-size: 0.9em; color: #666;">@context.Department - $@context.Salary</div>
-        </div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Employee">
+        <ItemTemplate>
+            <div style="padding: 5px; border-bottom: 1px solid #e0e0e0;">
+                <div style="font-weight: bold;">@context.Name</div>
+                <div style="font-size: 0.9em; color: #666;">@context.Department - $@context.Salary</div>
+            </div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -62,16 +64,18 @@ Customize group headers when data is grouped:
     Placeholder="Select an employee"
     DataSource="@Employees"
     Fields="@Fields">
-    <GroupTemplate>
-        <div style="padding: 10px; background-color: #f0f0f0; font-weight: bold;">
-            <span>📁 @context.Department</span>
-        </div>
-    </GroupTemplate>
-    <ItemTemplate>
-        <div style="padding: 8px; padding-left: 20px;">
-            <span>👤 @context.Name</span>
-        </div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Employee">
+        <GroupTemplate>
+            <div style="padding: 10px; background-color: #f0f0f0; font-weight: bold;">
+                <span>📁 @context.Department</span>
+            </div>
+        </GroupTemplate>
+        <ItemTemplate>
+            <div style="padding: 8px; padding-left: 20px;">
+                <span>👤 @context.Name</span>
+            </div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -113,20 +117,22 @@ Add a custom header at the top of the popup list:
     DataSource="@Products"
     AllowFiltering="true">
     <ComboBoxFieldSettings Text="ProductName" Value="ProductId"></ComboBoxFieldSettings>
-    <HeaderTemplate>
-        <div style="padding: 15px; background-color: #007bff; color: white; font-weight: bold;">
-            <div style="display: flex; justify-content: space-between;">
-                <span>Product List</span>
-                <span>@Products.Count items</span>
+    <ComboBoxTemplates TItem="Product">
+        <HeaderTemplate>
+            <div style="padding: 15px; background-color: #007bff; color: white; font-weight: bold;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Product List</span>
+                    <span>@Products.Count items</span>
+                </div>
             </div>
-        </div>
-    </HeaderTemplate>
-    <ItemTemplate>
-        <div style="padding: 8px; display: flex; justify-content: space-between;">
-            <span>@context.ProductName</span>
-            <span style="color: #28a745;">$@context.Price</span>
-        </div>
-    </ItemTemplate>
+        </HeaderTemplate>
+        <ItemTemplate>
+            <div style="padding: 8px; display: flex; justify-content: space-between;">
+                <span>@context.ProductName</span>
+                <span style="color: #28a745;">$@context.Price</span>
+            </div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -159,14 +165,16 @@ Add a custom footer at the bottom of the popup list:
     Placeholder="Select an employee"
     DataSource="@Employees">
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
-    <FooterTemplate>
-        <div style="padding: 10px; background-color: #f5f5f5; border-top: 1px solid #ddd; text-align: center;">
-            <small>Total: @Employees.Count employees</small>
-        </div>
-    </FooterTemplate>
-    <ItemTemplate>
-        <div style="padding: 8px;">@context.Name</div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Employee">
+        <FooterTemplate>
+            <div style="padding: 10px; background-color: #f5f5f5; border-top: 1px solid #ddd; text-align: center;">
+                <small>Total: @Employees.Count employees</small>
+            </div>
+        </FooterTemplate>
+        <ItemTemplate>
+            <div style="padding: 8px;">@context.Name</div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -199,18 +207,20 @@ Customize how the selected value is displayed in the input field:
     DataSource="@Countries"
     @bind-Value="@SelectedCountry">
     <ComboBoxFieldSettings Text="Name" Value="Code"></ComboBoxFieldSettings>
-    <ValueTemplate>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.2em;">🌍</span>
-            <span>@context.Name (@context.Code)</span>
-        </div>
-    </ValueTemplate>
-    <ItemTemplate>
-        <div style="display: flex; justify-content: space-between; padding: 8px;">
-            <span>@context.Name</span>
-            <span style="color: #999;">@context.Code</span>
-        </div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Country">
+        <ValueTemplate>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2em;">🌍</span>
+                <span>@context.Name (@context.Code)</span>
+            </div>
+        </ValueTemplate>
+        <ItemTemplate>
+            <div style="display: flex; justify-content: space-between; padding: 8px;">
+                <span>@context.Name</span>
+                <span style="color: #999;">@context.Code</span>
+            </div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -245,15 +255,17 @@ Display a message when no items match the filter:
     DataSource="@Products"
     AllowFiltering="true">
     <ComboBoxFieldSettings Text="ProductName" Value="ProductId"></ComboBoxFieldSettings>
-    <NoRecordsTemplate>
-        <div style="padding: 20px; text-align: center; color: #999;">
-            <p style="font-size: 1.1em; margin-bottom: 10px;">😔 No Products Found</p>
-            <p>Try searching with different keywords</p>
-        </div>
-    </NoRecordsTemplate>
-    <ItemTemplate>
-        <div style="padding: 8px;">@context.ProductName</div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Product">
+        <NoRecordsTemplate>
+            <div style="padding: 20px; text-align: center; color: #999;">
+                <p style="font-size: 1.1em; margin-bottom: 10px;">😔 No Products Found</p>
+                <p>Try searching with different keywords</p>
+            </div>
+        </NoRecordsTemplate>
+        <ItemTemplate>
+            <div style="padding: 8px;">@context.ProductName</div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -286,32 +298,34 @@ Create a rich, multi-line item template with images and details:
     DataSource="@Employees"
     PopupHeight="300px">
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
-    <HeaderTemplate>
-        <div style="padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd;">
-            Available Employees
-        </div>
-    </HeaderTemplate>
-    <ItemTemplate>
-        <div style="padding: 10px; border-bottom: 1px solid #f0f0f0; min-height: 70px;">
-            <div style="display: flex; gap: 10px;">
-                <div style="width: 50px; height: 50px; background-color: #007bff; color: white; 
-                            display: flex; align-items: center; justify-content: center; 
-                            border-radius: 50%; font-weight: bold;">
-                    @context.Name.Substring(0, 1)
-                </div>
-                <div>
-                    <div style="font-weight: bold; font-size: 1em;">@context.Name</div>
-                    <div style="font-size: 0.9em; color: #666;">@context.Department</div>
-                    <div style="font-size: 0.85em; color: #999;">@context.Email</div>
+    <ComboBoxTemplates TItem="Employee">
+        <HeaderTemplate>
+            <div style="padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd;">
+                Available Employees
+            </div>
+        </HeaderTemplate>
+        <ItemTemplate>
+            <div style="padding: 10px; border-bottom: 1px solid #f0f0f0; min-height: 70px;">
+                <div style="display: flex; gap: 10px;">
+                    <div style="width: 50px; height: 50px; background-color: #007bff; color: white; 
+                                display: flex; align-items: center; justify-content: center; 
+                                border-radius: 50%; font-weight: bold;">
+                        @context.Name.Substring(0, 1)
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 1em;">@context.Name</div>
+                        <div style="font-size: 0.9em; color: #666;">@context.Department</div>
+                        <div style="font-size: 0.85em; color: #999;">@context.Email</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </ItemTemplate>
-    <FooterTemplate>
-        <div style="padding: 10px; background-color: #f5f5f5; text-align: center; font-size: 0.9em;">
-            Total: @Employees.Count employees
-        </div>
-    </FooterTemplate>
+        </ItemTemplate>
+        <FooterTemplate>
+            <div style="padding: 10px; background-color: #f5f5f5; text-align: center; font-size: 0.9em;">
+                Total: @Employees.Count employees
+            </div>
+        </FooterTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {

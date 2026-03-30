@@ -1,10 +1,9 @@
-﻿```skill
 ---
 name: syncfusion-blazor-themes
 description: Customize and apply Syncfusion Blazor themes — Theme Studio color customization, CSS/SCSS integration, lightweight themes, component filtering, and Sass variable overrides
 metadata:
   author: "Syncfusion Inc"
-  version: "1.0.0"
+  version: "33.1.44"
 ---
 
 # Syncfusion Blazor Themes
@@ -80,4 +79,4 @@ Add to `<head>` in `wwwroot/index.html`:
 @use 'material3.scss' with (
   $primary: var(#{--color-primary-override})
 );
-```
+

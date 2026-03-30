@@ -24,10 +24,10 @@
     
     <div class="form-group">
         <label>Select at least 2 employees:</label>
-        <SfMultiSelect DataSource="@Employees" 
-                       @bind-Value="FormData.SelectedEmployees"
-                       TValue="List<string>"
+        <SfMultiSelect TValue="string[]"
                        TItem="Employee"
+                       DataSource="@Employees"
+                       @bind-Value="FormData.SelectedEmployees"
                        Placeholder="Select employees">
             <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
         </SfMultiSelect>
@@ -62,7 +62,7 @@
     {
         [Required(ErrorMessage = "Please select employees")]
         [MinLength(2, ErrorMessage = "Select at least 2 employees")]
-        public List<string> SelectedEmployees { get; set; } = new();
+        public string[] SelectedEmployees { get; set; } = Array.Empty<string>();
     }
 
     public class Employee
@@ -81,7 +81,7 @@ public class TeamSelectionValidator
     [Required(ErrorMessage = "At least one person required")]
     [MinLength(1)]
     [MaxLength(10, ErrorMessage = "Cannot exceed 10 people")]
-    public List<string> SelectedMembers { get; set; } = new();
+    public string[] SelectedMembers { get; set; } = Array.Empty<string>();
 
     [CustomValidation(typeof(TeamSelectionValidator), nameof(ValidateTeamDiversity))]
     public string TeamDiversity { get; set; }
@@ -89,7 +89,7 @@ public class TeamSelectionValidator
     public static ValidationResult ValidateTeamDiversity(string value, ValidationContext context)
     {
         var instance = context.ObjectInstance as TeamSelectionValidator;
-        if (instance?.SelectedMembers?.Count > 5)
+        if (instance?.SelectedMembers?.Length > 5)
         {
             return new ValidationResult("Large teams require manager approval");
         }
@@ -113,9 +113,9 @@ public class TeamSelectionValidator
     <button @onclick="() => SetLanguage('fr')">Français</button>
 </div>
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="@GetPlaceholder(CurrentLanguage)">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -164,9 +164,9 @@ public class TeamSelectionValidator
 <div dir="rtl" style="text-align: right;">
     <h3>اختر الموظفين</h3>
     
-    <SfMultiSelect DataSource="@Employees" 
-                   TValue="List<string>"
+    <SfMultiSelect TValue="string[]"
                    TItem="Employee"
+                   DataSource="@Employees"
                    EnableRtl="true"
                    Placeholder="اختر موظف">
         <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
@@ -198,15 +198,15 @@ public class TeamSelectionValidator
 @page "/custom-tags"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect @bind-Value="SelectedTags"
-               DataSource="@TagList" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Tag"
+               DataSource="@TagList"
+               @bind-Value="SelectedTags"
                AllowCustomValue="true"
                Placeholder="Type or select tags">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Tag"
-                       CustomValueSelection="OnCustomTag">
+    <MultiSelectEvents TValue="string[]" TItem="Tag"
+                       CustomValueSpecifier="OnCustomTag">
     </MultiSelectEvents>
 </SfMultiSelect>
 
@@ -219,7 +219,7 @@ public class TeamSelectionValidator
 </div>
 
 @code {
-    private List<string> SelectedTags { get; set; } = new();
+    private string[] SelectedTags { get; set; } = Array.Empty<string>();
     private List<Tag> TagList { get; set; } = new();
 
     protected override void OnInitialized()
@@ -232,18 +232,19 @@ public class TeamSelectionValidator
         };
     }
 
-    private void OnCustomTag(CustomValueEventArgs args)
+    private void OnCustomTag(CustomValueEventArgs<Tag> args)
     {
-        // Automatically add custom tag
-        if (!SelectedTags.Contains(args.NewValue))
-        {
-            SelectedTags.Add(args.NewValue);
-        }
+        // Create and set new tag item
+        var newTag = new Tag { ID = Guid.NewGuid().ToString(), Name = args.Text };
+        args.NewData = newTag;
+        TagList.Add(newTag);
     }
 
     public class Tag { public string ID { get; set; } public string Name { get; set; } }
 }
 ```
+
+**Note:** Changed `CustomValueSelection` to `CustomValueSpecifier`. Use `args.Text` for input and set `args.Item` with created object.
 
 ## Performance Optimization
 
@@ -253,14 +254,13 @@ public class TeamSelectionValidator
 @page "/lazy-loading"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@VisibleItems" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@VisibleItems"
                EnableVirtualization="true"
-               ItemsCount="50"
                Placeholder="Scroll to load more">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
+    <MultiSelectEvents TValue="string[]" TItem="Item"
                        Filtering="OnFilter">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -301,6 +301,8 @@ public class TeamSelectionValidator
 }
 ```
 
+**Note:** Removed `ItemsCount` property (it's obsolete in current version).
+
 ### Memoization for Filter Results
 
 ```csharp
@@ -335,23 +337,25 @@ private void OnFilter(FilteringEventArgs args)
     <!-- Master Dropdown -->
     <div>
         <h4>Categories</h4>
-        <SfMultiSelect @bind-Value="SelectedCategories"
-                       DataSource="@Categories" 
-                       TValue="List<string>"
+        <SfMultiSelect TValue="string[]"
                        TItem="Category"
-                       Change="OnCategoryChange"
+                       DataSource="@Categories"
+                       @bind-Value="SelectedCategories"
                        Placeholder="Select categories">
             <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+            <MultiSelectEvents TValue="string[]" TItem="Category"
+                               ValueChange="OnCategoryChange">
+            </MultiSelectEvents>
         </SfMultiSelect>
     </div>
 
     <!-- Detail Dropdown -->
     <div>
         <h4>Products in selected categories</h4>
-        <SfMultiSelect @bind-Value="SelectedProducts"
-                       DataSource="@FilteredProducts" 
-                       TValue="List<string>"
+        <SfMultiSelect TValue="string[]"
                        TItem="Product"
+                       DataSource="@FilteredProducts"
+                       @bind-Value="SelectedProducts"
                        Placeholder="Select products">
             <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
         </SfMultiSelect>
@@ -359,8 +363,8 @@ private void OnFilter(FilteringEventArgs args)
 </div>
 
 @code {
-    private List<string> SelectedCategories { get; set; } = new();
-    private List<string> SelectedProducts { get; set; } = new();
+    private string[] SelectedCategories { get; set; } = Array.Empty<string>();
+    private string[] SelectedProducts { get; set; } = Array.Empty<string>();
     private List<Category> Categories { get; set; } = new();
     private List<Product> AllProducts { get; set; } = new();
     private List<Product> FilteredProducts { get; set; } = new();
@@ -383,9 +387,9 @@ private void OnFilter(FilteringEventArgs args)
         FilteredProducts = AllProducts;
     }
 
-    private void OnCategoryChange(MultiSelectChangeEventArgs<List<string>> args)
+    private void OnCategoryChange(MultiSelectChangeEventArgs<string[]> args)
     {
-        if (args.Value?.Count > 0)
+        if (args.Value?.Length > 0)
         {
             FilteredProducts = AllProducts
                 .Where(p => args.Value.Contains(p.CategoryID))
@@ -427,9 +431,10 @@ private void OnFilter(FilteringEventArgs args)
 **Cons:** Loads all data upfront
 
 ### Server-Side Filtering (For large datasets)
-
 ```csharp
-<SfMultiSelect DataSource="@ServerData" 
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@ServerData"
                AllowFiltering="true">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     <MultiSelectEvents TValue="List<string>" TItem="Item"
@@ -445,12 +450,11 @@ private void OnFilter(FilteringEventArgs args)
         args.PreventDefaultAction = true;
         
         // Call API with filter term
+        
         ServerData = await Http.GetFromJsonAsync<List<Item>>(
-            $"https://api.example.com/items?filter={Uri.EscapeDataString(args.Text)}"
+            $"YOUR_API_ENDPOINT?filter={Uri.EscapeDataString(args.Text)}"
         );
     }
-
-    @inject HttpClient Http
 }
 ```
 
@@ -477,11 +481,11 @@ private async Task ProcessPayroll(List<string> selectedEmployeeIds)
 ### Permission/Role Assignment
 
 ```csharp
-<SfMultiSelect DataSource="@AvailableRoles" 
-               @bind-Value="UserRoles"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Role"
-               ShowCheckbox="true">
+               DataSource="@AvailableRoles"
+               @bind-Value="UserRoles"
+               Mode="VisualMode.CheckBox">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 ```
@@ -491,12 +495,12 @@ private async Task ProcessPayroll(List<string> selectedEmployeeIds)
 ```csharp
 <button @onclick="() => BulkDelete(SelectedItems)" 
         class="btn btn-danger" 
-        disabled="@(SelectedItems.Count == 0)">
-    Delete Selected (@SelectedItems.Count)
+        disabled="@(SelectedItems.Length == 0)">
+    Delete Selected (@SelectedItems.Length)
 </button>
 
 @code {
-    private async Task BulkDelete(List<string> itemIds)
+    private async Task BulkDelete(string[] itemIds)
     {
         if (!await ConfirmDelete()) return;
         
@@ -505,7 +509,7 @@ private async Task ProcessPayroll(List<string> selectedEmployeeIds)
             await DeleteItemAsync(id);
         }
         
-        SelectedItems.Clear();
+        SelectedItems = Array.Empty<string>();
     }
 }
 ```
@@ -515,26 +519,36 @@ private async Task ProcessPayroll(List<string> selectedEmployeeIds)
 ### Handling Null Values
 
 ```csharp
-private void SafeHandleSelection(MultiSelectChangeEventArgs<List<string>> args)
+private void SafeHandleSelection(MultiSelectChangeEventArgs<string[]> args)
 {
-    var selected = args.Value ?? new List<string>();
-    Console.WriteLine($"Selected {selected.Count} items");
+    var selected = args.Value ?? Array.Empty<string>();
+    Console.WriteLine($"Selected {selected.Length} items");
 }
 ```
 
 ### Large Selection Count Performance
 
 ```csharp
-// Limit selections programmatically
-private void OnSelectionChange(MultiSelectChangeEventArgs<List<string>> args)
+// Limit selections using MaximumSelectionLength property
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               MaximumSelectionLength="50"
+               Placeholder="Maximum 50 items">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+</SfMultiSelect>
+
+// Or validate programmatically
+private void OnSelectionChange(MultiSelectChangeEventArgs<string[]> args)
 {
     const int MaxSelections = 50;
     
-    if (args.Value?.Count > MaxSelections)
+    if (args.Value?.Length > MaxSelections)
     {
-        args.Value.RemoveAt(args.Value.Count - 1);  // Remove latest
-        ErrorMessage = $"Maximum {MaxSelections} items allowed";
-    }
+        // Use Take to limit selectionsstring[] selected)
+{
+    var uniqueSelected = selected.Distinct().ToArray();
+    if (uniqueSelected.Length != selected.Length
 }
 ```
 

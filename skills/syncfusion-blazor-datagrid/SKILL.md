@@ -218,12 +218,15 @@ If unsure:
 
 📄 **Read:** [references/web-api-adaptor.md](references/web-api-adaptor.md)
 - Web API with { Items, Count } response, manual $filter/$orderby/$skip/$top QueryString parsing, CRUD with GET/POST/PUT/DELETE
+- **Security note:** Do NOT bind `SfDataManager.Url` to arbitrary user-supplied URLs. Use an operator-configured string variable (for example `Url="@DataApiUrl"` where `DataApiUrl` is read from `ALLOWED_API_URL` in configuration), an internal proxy/gateway, field/operator whitelists, and server-side validation/sanitization. See [references/web-api-adaptor.md](references/web-api-adaptor.md) `Security Considerations` for examples.
 
 📄 **Read:** [references/url-adaptor.md](references/url-adaptor.md)
 - Custom API with { result, count } response, DataManagerRequest POST body, DataOperations helpers, InsertUrl/UpdateUrl/RemoveUrl/CrudUrl/BatchUrl
+- **Security note:** Use a configuration-backed URL variable (for example `Url="@DataApiUrl"` where `DataApiUrl` is read from `ALLOWED_API_URL` in configuration), avoid user-supplied endpoints, and route third-party requests through an internal proxy/gateway. See [references/url-adaptor.md](references/url-adaptor.md) for examples and configuration snippets.
 
 📄 **Read:** [references/custom-adaptor.md](references/custom-adaptor.md)
 - DataAdaptor abstract class, override Read/Insert/Update/Remove/BatchUpdate, service injection, adaptor as component, custom parameters via Query.AddParams
+- **Security note:** When implementing `CustomAdaptor`, do not trust `dm.Params` or user-supplied endpoints. Use operator-configured endpoints, validate `dm.Params`, whitelist fields/operators, and route third-party calls through a proxy. See [references/custom-adaptor.md](references/custom-adaptor.md) `Security Considerations` for examples.
 
 ### Columns
 📄 **Read:** [references/columns.md](references/columns.md)

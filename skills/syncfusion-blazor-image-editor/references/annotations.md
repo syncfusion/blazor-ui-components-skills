@@ -27,7 +27,7 @@ Insert text annotations at specific coordinates using `DrawTextAsync`:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private async void AddSimpleText()
@@ -183,7 +183,7 @@ Activate freehand drawing to sketch directly on the image:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private async void EnableFreehand()

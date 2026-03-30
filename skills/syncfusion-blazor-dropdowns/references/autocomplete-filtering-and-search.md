@@ -127,7 +127,7 @@ When using remote data sources (Web API, OData), filtering requests are sent to 
 <SfAutoComplete TValue="string" TItem="Product" 
                 AllowFiltering="true"
                 FilterType="FilterType.Contains">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
     <AutoCompleteFieldSettings Value="ProductName" >
@@ -155,7 +155,7 @@ Control the frequency of filtering operations with **DebounceDelay** (in millise
 <SfAutoComplete TValue="string" TItem="Product" 
                 AllowFiltering="true"
                 DebounceDelay="300">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
 </SfAutoComplete>
@@ -169,7 +169,7 @@ Control the frequency of filtering operations with **DebounceDelay** (in millise
 <SfAutoComplete TValue="string" TItem="Product" 
                 AllowFiltering="true"
                 DebounceDelay="100">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
 </SfAutoComplete>
@@ -183,7 +183,7 @@ Control the frequency of filtering operations with **DebounceDelay** (in millise
 <SfAutoComplete TValue="string" TItem="Product" 
                 AllowFiltering="true"
                 DebounceDelay="0">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
 </SfAutoComplete>
@@ -215,7 +215,7 @@ For large datasets, require minimum input to reduce noise:
                 AllowFiltering="true"
                 MinLength="3"
                 DebounceDelay="500">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
 </SfAutoComplete>

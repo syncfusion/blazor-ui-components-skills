@@ -39,7 +39,7 @@ Fine-tuning provides slider-based controls for image adjustments:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -99,7 +99,7 @@ Predefined filters for quick image enhancement:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -149,7 +149,7 @@ Add decorative borders and frame effects to images:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```

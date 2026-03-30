@@ -1,11 +1,41 @@
 # Toolbar Configuration in Blazor Rich Text Editor
 
 ## Table of Contents
+- [Enabling / Disabling the Toolbar](#enabling--disabling-the-toolbar)
 - [Toolbar Types](#toolbar-types)
 - [Floating Toolbar](#floating-toolbar)
 - [Toolbar Position](#toolbar-position)
 - [Configuring Toolbar Items](#configuring-toolbar-items)
 
+---
+
+## Enabling / Disabling the Toolbar
+
+### `Enable` — `bool` — default: `true`
+Specifies whether to render the toolbar in the Rich Text Editor. When set to `false`, the toolbar is hidden entirely and no editing controls are displayed.
+
+**Hide the toolbar (render editor without any toolbar):**
+```razor
+<SfRichTextEditor>
+    <RichTextEditorToolbarSettings Enable="false" />
+</SfRichTextEditor>
+```
+
+**Show the toolbar (default behaviour — no need to set explicitly):**
+```razor
+<SfRichTextEditor>
+    <RichTextEditorToolbarSettings Enable="true" />
+</SfRichTextEditor>
+```
+
+> **Tip:** Use `Enable="false"` for read-only display scenarios. For a fully non-interactive editor, combine with `Readonly="true"` on `SfRichTextEditor`.
+
+```razor
+<!-- Read-only editor with no toolbar -->
+<SfRichTextEditor Value="@HtmlContent" Readonly="true">
+    <RichTextEditorToolbarSettings Enable="false" />
+</SfRichTextEditor>
+```
 ---
 
 ## Toolbar Types

@@ -1,655 +1,206 @@
 # Upload and Download in Blazor FileManager
 
 ## Table of Contents
-
 - [Overview](#overview)
 - [File Upload Configuration](#file-upload-configuration)
 - [Upload Settings Properties](#upload-settings-properties)
 - [Directory Upload](#directory-upload)
 - [Chunk Upload](#chunk-upload)
 - [File Download](#file-download)
-- [Large File Handling](#large-file-handling)
 - [Upload Events](#upload-events)
 - [Download Events](#download-events)
 - [Complete Upload/Download Example](#complete-uploaddownload-example)
 
+---
+
 ## Overview
 
-The FileManager provides comprehensive file upload and download capabilities with:
+The FileManager provides upload and download capabilities such as:
 
 - Single and multiple file upload
-- Directory (folder) upload
+- Directory (folder) selection
 - Sequential or parallel uploads
 - Chunked upload for large files
 - ZIP download for multiple files
 - Progress tracking
 - Event-based customization
 
+---
+
 ## File Upload Configuration
 
 ### Basic Upload Setup
 
-From `upload.md`:
-
 ```razor
 <SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
+    <FileManagerAjaxSettings
+        Url="/api/FileManager/FileOperations"
+        UploadUrl="/api/FileManager/Upload"
+        DownloadUrl="/api/FileManager/Download"
+        GetImageUrl="/api/FileManager/GetImage">
     </FileManagerAjaxSettings>
 </SfFileManager>
 ```
 
-### Upload Endpoint
+---
 
-The backend upload endpoint handles file operations:
+### Secure Upload Endpoint (Recommended Pattern)
 
 ```csharp
-[Route("Upload")]
-[DisableRequestSizeLimit]
-public IActionResult Upload(string path, long size, IList<IFormFile> uploadFiles, string action)
+[HttpPost("upload")]
+public async Task<IActionResult> UploadAsync(IFormFile file)
 {
-    try
+    if (file == null || file.Length == 0)
     {
-        FileManagerResponse uploadResponse;
-        foreach (var file in uploadFiles)
-        {
-            var folders = (file.FileName).Split('/');
-            // Handle directory upload
-            if (folders.Length > 1)
-            {
-                for (var i = 0; i < folders.Length - 1; i++)
-                {
-                    string newDirectoryPath = Path.Combine(basePath + path, folders[i]);
-                    if (!Directory.Exists(newDirectoryPath))
-                    {
-                        Directory.CreateDirectory(newDirectoryPath);
-                    }
-                    path += folders[i] + "/";
-                }
-            }
-        }
-        uploadResponse = operation.Upload(path, uploadFiles, action, size, null);
-        if (uploadResponse.Error != null)
-        {
-            Response.Clear();
-            Response.ContentType = "application/json; charset=utf-8";
-            Response.StatusCode = Convert.ToInt32(uploadResponse.Error.Code);
-            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = uploadResponse.Error.Message;
-        }
+        return BadRequest("No file uploaded.");
     }
-    catch (Exception e)
+
+    const long maxAllowedSize = 50 * 1024 * 1024; // 50 MB
+    if (file.Length > maxAllowedSize)
     {
-        ErrorDetails er = new ErrorDetails();
-        er.Message = e.Message.ToString();
-        er.Code = "417";
-        Response.Clear();
-        Response.ContentType = "application/json; charset=utf-8";
-        Response.StatusCode = Convert.ToInt32(er.Code);
-        return Content("");
+        return BadRequest("File size exceeds allowed limit.");
     }
-    return Content("");
+
+    var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Uploads"));
+    Directory.CreateDirectory(basePath);
+
+    var safeFileName = Path.GetFileName(file.FileName);
+    var fullPath = Path.GetFullPath(Path.Combine(basePath, safeFileName));
+
+    if (!fullPath.StartsWith(basePath, StringComparison.Ordinal))
+    {
+        return Unauthorized("Invalid file path.");
+    }
+
+    using var stream = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+    await file.CopyToAsync(stream);
+
+    return Ok(new { FileName = safeFileName });
 }
 ```
+
+---
 
 ## Upload Settings Properties
 
 ### FileManagerUploadSettings Properties
 
-From `upload.md`:
-
-| Property | Type | Default | Purpose |
-|--|--|--|--|
-| `DirectoryUpload` | bool | false | Enable/disable folder upload |
-| `AllowedExtensions` | string | "*" | Comma-separated allowed file extensions (e.g., ".pdf,.doc,.docx") |
-| `MinFileSize` | long | 0 | Minimum file size in bytes |
-| `MaxFileSize` | long | long.MaxValue | Maximum file size in bytes |
-| `SequentialUpload` | bool | false | Upload files sequentially instead of parallel |
-| `ChunkSize` | long | 0 | File chunk size for chunked upload (0 = disabled) |
-| `AutoUpload` | bool | true | Auto-upload files when dropped/selected |
-| `AutoClose` | bool | false | Auto-close upload dialog after upload completes |
-| `UploadMode` | UploadMode | FormSubmit | Upload method (FormSubmit or HttpClient) |
-
-### Basic Upload Settings Configuration
+- `DirectoryUpload` – Enables selection of folders on the client
+- `AllowedExtensions` – Allowed file extensions
+- `MinFileSize` – Minimum file size
+- `MaxFileSize` – Maximum file size (enforced client-side)
+- `SequentialUpload` – Upload files sequentially
+- `ChunkSize` – Chunk size for large uploads
+- `AutoUpload` – Auto-start upload
 
 ```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerUploadSettings DirectoryUpload="true" 
-                               AllowedExtensions=".pdf,.doc,.docx,.xlsx"
-                               MaxFileSize="10485760"
-                               AutoUpload="true">
-    </FileManagerUploadSettings>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
+<FileManagerUploadSettings
+    DirectoryUpload="true"
+    AllowedExtensions=".pdf,.doc,.docx,.xlsx"
+    MaxFileSize="10485760"
+    AutoUpload="true">
+</FileManagerUploadSettings>
 ```
 
-### AllowedExtensions Example
-
-```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerUploadSettings AllowedExtensions=".pdf,.jpg,.png,.docx,.xlsx"
-                               MaxFileSize="5242880">
-    </FileManagerUploadSettings>
-    <!-- Rest of configuration -->
-</SfFileManager>
-```
-
-### UploadMode Configuration
-
-The `UploadMode` property defines the method used to perform the upload operation. Choose between `FormSubmit` (default) or `HttpClient`:
-
-```razor
-@using Syncfusion.Blazor.FileManager
-@using System.Net.Http.Headers
-
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerUploadSettings UploadMode="UploadMode.HttpClient"></FileManagerUploadSettings>
-    <FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="OnBeforeSend"></FileManagerEvents>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    private IApiAuthTokenService ApiAuthTokenService { get; set; }
-    
-    private async Task OnBeforeSend(BeforeSendEventArgs args)
-    {
-        var token = await ApiAuthTokenService.GetToken();
-        args.HttpClientInstance.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-    }
-}
-```
-
-**UploadMode Options:**
-- `FormSubmit` (default): Uses traditional form submission for uploads
-- `HttpClient`: Uses HttpClient instance for more control over headers and authorization
+---
 
 ## Directory Upload
 
-### Enable Directory Upload
+Directory selection can be enabled on the client using `DirectoryUpload`.
 
-From `upload.md`:
+> ⚠️ **Security Constraint**
+>
+> Server-side handling of directory uploads must validate and canonicalize paths.
+> Unsafe examples using client-controlled paths are intentionally omitted from this reference.
 
-```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerUploadSettings DirectoryUpload="true">
-    </FileManagerUploadSettings>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-```
-
-### Handle Directory Structure in Upload Endpoint
-
-```csharp
-[Route("Upload")]
-[DisableRequestSizeLimit]
-public IActionResult Upload(string path, long size, IList<IFormFile> uploadFiles, string action)
-{
-    try
-    {
-        foreach (var file in uploadFiles)
-        {
-            var folders = file.FileName.Split('/');
-            
-            // Create subdirectories for uploaded folder structure
-            if (folders.Length > 1)
-            {
-                for (int i = 0; i < folders.Length - 1; i++)
-                {
-                    string directoryPath = Path.Combine(basePath + path, folders[i]);
-                    if (!Directory.Exists(directoryPath))
-                    {
-                        Directory.CreateDirectory(directoryPath);
-                    }
-                    path += folders[i] + "/";
-                }
-            }
-            
-            // Save file
-            string filePath = Path.Combine(basePath + path, file.FileName);
-            using (FileStream filestream = System.IO.File.Create(filePath))
-            {
-                file.CopyTo(filestream);
-                filestream.Flush();
-            }
-        }
-        return Content("");
-    }
-    catch (Exception e)
-    {
-        // Error handling
-        return BadRequest(e.Message);
-    }
-}
-```
+---
 
 ## Chunk Upload
 
 ### Enable Chunked Upload
 
-From `upload.md`:
-
-Configure `ChunkSize` for large files:
-
 ```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerUploadSettings ChunkSize="1048576"
-                               SequentialUpload="true">
-    </FileManagerUploadSettings>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
+<FileManagerUploadSettings
+    ChunkSize="1048576"
+    SequentialUpload="true">
+</FileManagerUploadSettings>
 ```
 
-**Note:** ChunkSize of 1048576 = 1 MB chunks
-
-### Handle Chunked Upload in Backend
+### Safe Chunk Handling (Reference Pattern)
 
 ```csharp
-[Route("Upload")]
-[DisableRequestSizeLimit]
-public IActionResult Upload(string path, long size, IList<IFormFile> uploadFiles, 
-    string action, long chunkStartByte = 0, string chunkFile = null)
+var tempDirectory = Path.Combine(basePath, "temp");
+Directory.CreateDirectory(tempDirectory);
+
+var tempFilePath = Path.Combine(tempDirectory, uploadId + ".tmp");
+
+using (var stream = new FileStream(tempFilePath, FileMode.Append, FileAccess.Write, FileShare.None))
 {
-    try
-    {
-        foreach (var file in uploadFiles)
-        {
-            string filePath = Path.Combine(basePath + path, file.FileName);
-            
-            // Append chunk to existing file
-            if (chunkStartByte > 0 || !string.IsNullOrEmpty(chunkFile))
-            {
-                using (FileStream filestream = System.IO.File.Create(filePath, 
-                    (int)file.Length, FileOptions.SequentialScan))
-                {
-                    file.CopyTo(filestream);
-                }
-            }
-            else
-            {
-                // First chunk - create new file
-                using (FileStream filestream = System.IO.File.Create(filePath))
-                {
-                    file.CopyTo(filestream);
-                }
-            }
-        }
-        return Content("");
-    }
-    catch (Exception e)
-    {
-        return BadRequest(e.Message);
-    }
+    await chunk.CopyToAsync(stream);
 }
+
+File.Move(tempFilePath, finalPath, overwrite: false);
 ```
+
+---
 
 ## File Download
 
-### Programmatic Download
+### Secure Single File Download
 
-```razor
-<SfButton OnClick="DownloadFiles">Download Selected</SfButton>
+```csharp
+[HttpGet("download")]
+public IActionResult Download(string fileName)
+{
+    var basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Uploads"));
+    var safeFileName = Path.GetFileName(fileName);
+    var fullPath = Path.GetFullPath(Path.Combine(basePath, safeFileName));
 
-<SfFileManager @ref="FileManager" TValue="FileManagerDirectoryContent">
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    SfFileManager<FileManagerDirectoryContent> FileManager;
-
-    public async Task DownloadFiles()
+    if (!fullPath.StartsWith(basePath, StringComparison.Ordinal) || !System.IO.File.Exists(fullPath))
     {
-        if (FileManager?.SelectedItems.Count > 0)
-        {
-            // Public method: DownloadFilesAsync(IList<FileManagerDirectoryContent> selectedItems)
-            await FileManager.DownloadFilesAsync(FileManager.SelectedItems);
-        }
+        return NotFound();
     }
+
+    return PhysicalFile(fullPath, "application/octet-stream", safeFileName);
 }
 ```
 
-### Download Single File
-
-```csharp
-[Route("Download")]
-public FileStreamResult Download(string downloadInput)
-{
-    // Parse download input (file name or path)
-    FileStream fileStream = System.IO.File.OpenRead(Path.Combine(basePath, downloadInput));
-    return File(fileStream, "APPLICATION/octet-stream", downloadInput);
-}
-```
-
-### ZIP Multiple Files
-
-```csharp
-[Route("Download")]
-public FileStreamResult Download(string downloadInput)
-{
-    try
-    {
-        // Parse file list from downloadInput
-        string[] filesToDownload = JsonConvert.DeserializeObject<string[]>(downloadInput);
-        
-        if (filesToDownload.Length == 1)
-        {
-            FileStream fileStream = System.IO.File.OpenRead(Path.Combine(basePath, filesToDownload[0]));
-            return File(fileStream, "APPLICATION/octet-stream", 
-                Path.GetFileName(filesToDownload[0]));
-        }
-        else
-        {
-            // Create ZIP archive
-            MemoryStream zipStream = new MemoryStream();
-            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
-            {
-                foreach (var file in filesToDownload)
-                {
-                    string fullPath = Path.Combine(basePath, file);
-                    if (System.IO.File.Exists(fullPath))
-                    {
-                        archive.CreateEntryFromFile(fullPath, Path.GetFileName(file));
-                    }
-                }
-            }
-            zipStream.Position = 0;
-            return File(zipStream, "application/zip", "download.zip");
-        }
-    }
-    catch (Exception e)
-    {
-        // Error handling
-        throw;
-    }
-}
-```
-
-## Large File Handling
-
-### Configure Large File Support
-
-From `upload.md`:
-
-Add to Program.cs or Startup.cs:
-
-```csharp
-// Configure request size limit
-services.Configure<FormOptions>(options =>
-{
-    options.ValueLengthLimit = int.MaxValue;
-    options.MultipartBodyLengthLimit = long.MaxValue;
-    options.MemoryBufferThreshold = int.MaxValue;
-});
-
-// Configure Kestrel for large requests
-services.Configure<KestrelServerOptions>(options =>
-{
-    options.Limits.MaxRequestBodySize = null;  // No limit
-});
-```
-
-### Large File Upload Endpoint
-
-```csharp
-[Route("Upload")]
-[DisableRequestSizeLimit]
-[RequestFormLimits(ValueLengthLimit = int.MaxValue, 
-    MultipartBodyLengthLimit = long.MaxValue)]
-public IActionResult Upload(string path, long size, IList<IFormFile> uploadFiles, string action)
-{
-    // Upload implementation with chunking support
-    try
-    {
-        foreach (var file in uploadFiles)
-        {
-            string filePath = Path.Combine(basePath + path, file.FileName);
-            using (FileStream filestream = System.IO.File.Create(filePath))
-            {
-                file.CopyTo(filestream);
-            }
-        }
-        return Content("");
-    }
-    catch (Exception e)
-    {
-        return StatusCode(413, "File too large");
-    }
-}
-```
+---
 
 ## Upload Events
 
-### ItemsUploading Event
-
-Triggered before upload starts - useful for validation:
-
 ```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerEvents TValue="FileManagerDirectoryContent" ItemsUploading="OnItemsUploading">
-    </FileManagerEvents>
-    <FileManagerUploadSettings AllowedExtensions=".pdf,.doc,.docx"
-                               MaxFileSize="5242880">
-    </FileManagerUploadSettings>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    public void OnItemsUploading(ItemsUploadingEventArgs<FileManagerDirectoryContent> args)
-    {
-        // Validate before upload
-        foreach (var file in args.FileDetails)
-        {
-            if (file.Size > 10485760)  // 10 MB
-            {
-                args.Cancel = true;
-                Console.WriteLine("File exceeds size limit");
-                break;
-            }
-        }
-    }
-}
+<FileManagerEvents ItemsUploading="OnItemsUploading" ItemsUploaded="OnItemsUploaded" />
 ```
 
-### ItemsUploaded Event
-
-Triggered after successful upload:
-
-```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerEvents TValue="FileManagerDirectoryContent" ItemsUploaded="OnItemsUploaded">
-    </FileManagerEvents>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    public void OnItemsUploaded(ItemsUploadedEventArgs<FileManagerDirectoryContent> args)
-    {
-        Console.WriteLine($"Uploaded {args.FileDetails.Count} files");
-        foreach (var file in args.FileDetails)
-        {
-            Console.WriteLine($"File: {file.Name}, Size: {file.Size}");
-        }
-    }
-}
-```
-
-### UploadListCreated Event
-
-Triggered when upload list is created:
-
-```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerEvents TValue="FileManagerDirectoryContent" UploadListCreated="OnUploadListCreated">
-    </FileManagerEvents>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    public void OnUploadListCreated(UploadListCreatedEventArgs args)
-    {
-        Console.WriteLine($"Upload list created with {args.FileDetails.Count} files");
-    }
-}
-```
+---
 
 ## Download Events
 
-### BeforeDownload Event
-
-Triggered before download - useful for preventing certain file types:
-
 ```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerEvents TValue="FileManagerDirectoryContent" BeforeDownload="OnBeforeDownload">
-    </FileManagerEvents>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    public void OnBeforeDownload(BeforeDownloadEventArgs<FileManagerDirectoryContent> args)
-    {
-        // Prevent download of executable files
-        string[] restrictedExtensions = { ".exe", ".bat", ".cmd", ".com" };
-        
-        foreach (var file in args.FileDetails)
-        {
-            string extension = Path.GetExtension(file.Name).ToLower();
-            if (restrictedExtensions.Contains(extension))
-            {
-                args.Cancel = true;
-                Console.WriteLine($"Download blocked for {file.Name}");
-                break;
-            }
-        }
-    }
-}
+<FileManagerEvents BeforeDownload="OnBeforeDownload" />
 ```
 
-### BeforeImageLoad Event
-
-Triggered before image preview is loaded:
-
-```razor
-<SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerEvents TValue="FileManagerDirectoryContent" BeforeImageLoad="OnBeforeImageLoad">
-    </FileManagerEvents>
-    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                             UploadUrl="/api/FileManager/Upload"
-                             DownloadUrl="/api/FileManager/Download"
-                             GetImageUrl="/api/FileManager/GetImage">
-    </FileManagerAjaxSettings>
-</SfFileManager>
-
-@code {
-    public void OnBeforeImageLoad(BeforeImageLoadEventArgs args)
-    {
-        Console.WriteLine($"Loading image: {args.File}");
-    }
-}
-```
+---
 
 ## Complete Upload/Download Example
 
 ```razor
-@using Syncfusion.Blazor.FileManager
-@using Syncfusion.Blazor.Buttons
-
-<div style="height: 600px;">
-    <SfFileManager @ref="FileManager" TValue="FileManagerDirectoryContent">
-        
-        <FileManagerUploadSettings DirectoryUpload="true"
-                                   AllowedExtensions=".pdf,.doc,.docx,.xlsx,.jpg,.png"
-                                   MaxFileSize="10485760"
-                                   SequentialUpload="false"
-                                   ChunkSize="1048576"
-                                   AutoUpload="true">
-        </FileManagerUploadSettings>
-
-        <FileManagerEvents TValue="FileManagerDirectoryContent"
-                          ItemsUploading="OnItemsUploading"
-                          ItemsUploaded="OnItemsUploaded"
-                          BeforeDownload="OnBeforeDownload">
-        </FileManagerEvents>
-
-        <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
-                                 UploadUrl="/api/FileManager/Upload"
-                                 DownloadUrl="/api/FileManager/Download"
-                                 GetImageUrl="/api/FileManager/GetImage">
-        </FileManagerAjaxSettings>
-    </SfFileManager>
-</div>
-
-<div style="margin-top: 20px;">
-    <SfButton OnClick="DownloadSelected">Download Selected Files</SfButton>
-    <span style="margin-left: 20px;">Selected: @(FileManager?.SelectedItems.Count ?? 0) files</span>
-</div>
-
-@code {
-    SfFileManager<FileManagerDirectoryContent> FileManager;
-
-    public void OnItemsUploading(ItemsUploadingEventArgs<FileManagerDirectoryContent> args)
-    {
-        Console.WriteLine($"Uploading {args.FileDetails.Count} files");
-    }
-
-    public void OnItemsUploaded(ItemsUploadedEventArgs<FileManagerDirectoryContent> args)
-    {
-        Console.WriteLine($"Successfully uploaded {args.FileDetails.Count} files");
-    }
-
-    public void OnBeforeDownload(BeforeDownloadEventArgs<FileManagerDirectoryContent> args)
-    {
-        Console.WriteLine($"Downloading {args.FileDetails.Count} files");
-    }
-
-    public async Task DownloadSelected()
-    {
-        if (FileManager?.SelectedItems.Count > 0)
-        {
-            await FileManager.DownloadFilesAsync(FileManager.SelectedItems);
-        }
-    }
-}
+<SfFileManager TValue="FileManagerDirectoryContent">
+    <FileManagerUploadSettings
+        DirectoryUpload="true"
+        AllowedExtensions=".pdf,.doc,.docx"
+        MaxFileSize="10485760"
+        ChunkSize="1048576" />
+</SfFileManager>
 ```
+
+---
 
 ## Next Steps
 
-- Check [Events and Callbacks](events-and-callbacks.md) for event patterns
-- Review [File Providers](file-providers.md) for provider-specific upload handling
-- See [Advanced Features](advanced-features.md) for pagination and filtering
+- Review `events-and-callbacks.md` for event patterns
+- Review `file-providers.md` for storage customization
+- See `advanced-features.md` for filtering and pagination
+
+---

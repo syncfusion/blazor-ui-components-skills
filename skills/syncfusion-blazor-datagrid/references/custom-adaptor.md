@@ -27,6 +27,19 @@
 **Usage:** `AdaptorInstance="@typeof(CustomAdaptor)"`  
 **NuGet:** `Syncfusion.Blazor.Data` (for `DataAdaptor`, `DataOperations`, `DataManagerRequest`)
 
+## Security Considerations
+
+When building a `CustomAdaptor` you have full control — with that power comes responsibility. Follow these rules to avoid introducing remote-content or configuration injection risks:
+
+- **Do not use user-supplied endpoints:** If your `CustomAdaptor` forwards requests to remote services, use operator-configured endpoints (environment variables or secure config) rather than URLs provided by end users.
+- **Validate `dm.Params`:** If you accept custom parameters via `Query.AddParams`, validate keys and values against an allowlist and reject unexpected entries. Do not treat `dm.Params` as executable configuration.
+- **Whitelist fields and operations:** When applying filters, sorting, or grouping, restrict to known model fields and supported operators. Reject or sanitize unknown expressions.
+- **Sanitize external content:** If the adaptor ingests textual data from third-party sources, sanitize or escape content before using it in logic or rendering.
+- **Prefer server-side proxies:** When integrating third-party APIs, call them from a server-side proxy that enforces TLS, authentication, rate limits, and content-type checks. Normalize responses before the adaptor consumes them.
+- **Log and audit sources:** Record provenance, the configured endpoint, and request metadata for any external data source.
+
+Implement small defensive checks inside `Read` (e.g., strict parsing of `dm.Where`, `dm.Sorted`, numeric validation for `dm.Skip`/`dm.Take`) rather than trusting incoming requests.
+
 ---
 
 ## When to Use CustomAdaptor

@@ -1,4 +1,4 @@
-﻿# Customization and Styling
+# Customization and Styling
 
 ## Table of Contents
 - [Themes and Visual Styles](#themes-and-visual-styles)
@@ -42,7 +42,7 @@ Apply predefined visual themes to your maps:
 ```csharp
 <SfMaps Theme="Theme.Bootstrap5">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -131,7 +131,7 @@ The Syncfusion Maps component renders with specific CSS classes you can override
 Configure text appearance globally or for specific elements.
 
 ```csharp
-<MapsFontSettings FontSize="12px"
+<MapsFontSettings Size="12px"
                   FontFamily="Arial, sans-serif"
                   FontStyle="normal"
                   FontWeight="normal"
@@ -157,7 +157,7 @@ Configure title and subtitle appearance.
 <MapsTitleSettings Text="World Population Map"
                    Alignment="Alignment.Center"
                    Description="Population density by country">
-    <MapsTitleTextStyle FontSize="18px"
+    <MapsTitleTextStyle Size="18px"
                         FontWeight="bold"
                         Color="#333333">
     </MapsTitleTextStyle>
@@ -165,7 +165,7 @@ Configure title and subtitle appearance.
 
 <MapsSubtitleSettings Text="2023 Data"
                       Alignment="Alignment.Center">
-    <MapsSubtitleTextStyle FontSize="14px"
+    <MapsSubtitleTextStyle Size="14px"
                            Color="#666666">
     </MapsSubtitleTextStyle>
 </MapsSubtitleSettings>
@@ -176,18 +176,9 @@ Configure title and subtitle appearance.
 Set space around the map.
 
 ```csharp
-<SfMaps Margin="@mapMargin">
+<SfMaps>
+    <MapsMargin Left="50" Right="50" Top="50" Bottom="60" />
 </SfMaps>
-
-@code {
-    private MapsMargin mapMargin = new MapsMargin
-    {
-        Top = 10,
-        Bottom = 10,
-        Left = 10,
-        Right = 10
-    };
-}
 ```
 
 ### Border Classes
@@ -207,11 +198,23 @@ Configure borders for various elements.
                   Opacity="0.8">
 </MapsMarkerBorder>
 
+// DataLabelBorder - label outline
+<MapsLayerDataLabelBorder Color="darkblue"
+                  Width="2"
+                  Opacity="0.8">
+</MapsLayerDataLabelBorder>
+
 // MapsShapeBorder - Shape outline
 <MapsShapeBorder Color="blue"
                  Width="1"
                  Opacity="0.9">
 </MapsShapeBorder>
+
+// MapsLegendShapeBorder - legend Shape outline
+<MapsLegendShapeBorder Color="blue"
+                 Width="1"
+                 Opacity="0.9">
+</MapsLegendShapeBorder>
 
 // MapsBubbleBorder - Bubble outline
 <MapsBubbleBorder Color="blue"
@@ -264,6 +267,15 @@ Configure interactive element styling.
                                Width="2">
     </MapsMarkerHighlightBorder>
 </MapsMarkerHighlightSettings>
+
+<!-- Bubble hover effect -->
+<MapsBubbleHighlightSettings Enable="true"
+                             Fill="red"
+                             Opacity="0.8">
+    <MapsBubbleHighlightBorder Color="darkred"
+                               Width="2">
+    </MapsBubbleHighlightBorder>
+</MapsBubbleHighlightSettings>
 ```
 
 ### MapsLegendSettings for Styling
@@ -272,17 +284,21 @@ Configure legend appearance.
 
 ```csharp
 <MapsLegendSettings Visible="true"
-                    Position="LegendPosition.BottomRight"
+                    Position="LegendPosition.Bottom"
                     Arrangement="LegendArrangement.Vertical">
     <MapsLegendBorder Color="#cccccc"
                       Width="1"
                       Opacity="1">
     </MapsLegendBorder>
-    <MapsLegendTextStyle FontSize="12px"
+    <MapsLegendShapeBorder Color="#cccccc"
+                      Width="1"
+                      Opacity="1">
+    </MapsLegendShapeBorder>
+    <MapsLegendTextStyle Size="12px"
                          Color="#333333">
     </MapsLegendTextStyle>
     <MapsLegendTitle Text="Legend">
-        <MapsLegendTitleStyle FontSize="14px"
+        <MapsLegendTitleStyle Size="14px"
                               FontWeight="bold">
         </MapsLegendTitleStyle>
     </MapsLegendTitle>
@@ -294,98 +310,73 @@ Configure legend appearance.
 Style tooltips globally.
 
 ```csharp
-<MapsTooltipSettings Visible="true"
-                     Gesture="TooltipGesture.Move"
-                     EnableAnimation="true">
+<MapsTooltipSettings Visible="true">
     <MapsTooltipBorder Color="black"
                        Width="1"
                        Opacity="1">
     </MapsTooltipBorder>
-    <MapsTooltipTextStyle FontSize="12px"
+    <MapsTooltipTextStyle Size="12px"
                           Color="white">
     </MapsTooltipTextStyle>
 </MapsTooltipSettings>
 ```
 
-## CSS Class Customization
-
-    /* Target legend -->
-    .e-legend {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 10px;
-    }
-</style>
-```
-
 ### Marker Custom Styling
 
 ```csharp
-<style>
-    .custom-marker {
-        transition: transform 0.2s;
-    }
-
-    .custom-marker:hover {
-        transform: scale(1.2);
-    }
-
-    .custom-marker.selected {
-        filter: drop-shadow(0 0 8px gold);
-    }
-</style>
-
+@using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095"
-                    CssClass="custom-marker"
-                    Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
+                    Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
+
+@code {
+     public class MapMarkerDataSource
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    };
+    public List<MapMarkerDataSource> MarkerData = new List<MapMarkerDataSource>
+    {
+        new MapMarkerDataSource { Latitude = 47.60621, Longitude = -122.332071 }
+    };
+}
 ```
 
 ### Shape Custom Styling
 
 ```csharp
-<style>
-    .region-highlight {
-        transition: all 0.3s ease;
-        opacity: 0.7;
-    }
-
-    .region-highlight:hover {
-        opacity: 1;
-        stroke-width: 2;
-    }
-
-    .region-highlight.high-value {
-        fill: #d32f2f;
-    }
-
-    .region-highlight.medium-value {
-        fill: #f57c00;
-    }
-
-    .region-highlight.low-value {
-        fill: #388e3c;
-    }
-</style>
-
+@using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="StateData" DataSource="@StateData">
-            <MapsShapeSettings Fill="lightblue"
-                CssClass="region-highlight">
-            </MapsShapeSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
+                    Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15" Fill="lightblue">
+                </MapsMarker>
+            </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
+
+@code {
+     public class MapMarkerDataSource
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    };
+    public List<MapMarkerDataSource> MarkerData = new List<MapMarkerDataSource>
+    {
+        new MapMarkerDataSource { Latitude = 47.60621, Longitude = -122.332071 }
+    };
+}
 ```
 
 ## Theme Studio Integration
@@ -413,34 +404,27 @@ Syncfusion provides pre-built themes. Import in your layout:
 @inject IJSRuntime JS
 
 <div style="margin-bottom: 20px;">
-    <button @onclick="() => SwitchTheme('bootstrap5')">Bootstrap</button>
-    <button @onclick="() => SwitchTheme('material')">Material</button>
-    <button @onclick="() => SwitchTheme('fabric')">Fabric</button>
-    <button @onclick="() => SwitchTheme('tailwind')">Tailwind</button>
+    <button @onclick='() => SwitchTheme("bootstrap5")'>Bootstrap</button>
+    <button @onclick='() => SwitchTheme("material")'>Material</button>
+    <button @onclick='() => SwitchTheme("fabric")'>Fabric</button>
+    <button @onclick='() => SwitchTheme("tailwind")'>Tailwind</button>
 </div>
 
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps @ref="mapInstance" Theme="Theme">
+<MapsZoomSettings ZoomFactor="1"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
     private SfMaps mapInstance;
+    Syncfusion.Blazor.Theme Theme;
 
     private async Task SwitchTheme(string theme)
-    {
-        // Remove existing theme link
-        await JS.InvokeVoidAsync("removeThemeLink");
-
-        // Add new theme
-        string cssUrl = $"_content/Syncfusion.Blazor/styles/{theme}.css";
-        await JS.InvokeVoidAsync("addThemeLink", cssUrl);
-
-        // Refresh map
-        await mapInstance.RefreshAsync();
+    {        
+       Theme = theme == "bootstrap5" ? Syncfusion.Blazor.Theme.Bootstrap5 : theme == "material" ? Syncfusion.Blazor.Theme.Material : theme == "fabric" ? Syncfusion.Blazor.Theme.Fabric : Syncfusion.Blazor.Theme.Tailwind;
     }
 }
 ```
@@ -481,14 +465,14 @@ Create custom themes with Syncfusion Theme Studio:
 ### Individual Marker Styling
 
 ```csharp
-<MapsMarker Latitude="37.368" Longitude="-122.095"
+<MapsMarker DataSource="@MarkerData"
     Shape="MarkerType.Circle"
     Width="20" Height="20"
     Fill="red"
-    BorderColor="darkred"
-    BorderWidth="2"
+    OffsetX="20"
+    OffsetY="20"
     Opacity="0.8"
-    Tooltip="San Francisco">
+    Visible="true">
 </MapsMarker>
 ```
 
@@ -499,41 +483,35 @@ Style markers based on data:
 ```csharp
 @page "/conditional-markers"
 @using Syncfusion.Blazor.Maps
-
 <SfMaps>
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                @foreach (var location in Locations)
-                {
-                    var markerColor = location.Value > 50 ? "red" : 
-                                     location.Value > 25 ? "orange" : "green";
-                    var markerSize = location.Value > 50 ? 20 : 15;
-
-                    <MapsMarker Latitude="@location.Latitude" 
-                        Longitude="@location.Longitude"
-                        Shape="MarkerType.Circle"
-                        Width="@markerSize" Height="@markerSize"
-                        Fill="@markerColor"
-                        Tooltip="@location.Name">
+                    <MapsMarker DataSource="@LocationOne" Visible="true"
+                        Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
+                        Width="20" Height="20"
+                        Fill="red" TValue="LocationData">
                     </MapsMarker>
-                }
+                    <MapsMarker DataSource="@LocationTwo" Visible="true"
+                        Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
+                        Width="20" Height="20"
+                        Fill="red" TValue="LocationData">
+                    </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private int ZoomLevel = 4;
-
-    private List<LocationData> Locations = new()
+    private List<LocationData> LocationOne = new()
     {
         new LocationData { Latitude = 37.368, Longitude = -122.095, Name = "SF", Value = 75 },
-        new LocationData { Latitude = 40.7128, Longitude = -74.0060, Name = "NYC", Value = 45 },
+        new LocationData { Latitude = 40.7128, Longitude = -74.0060, Name = "NYC", Value = 45 }
+    };
+    private List<LocationData> LocationTwo = new()
+    {
         new LocationData { Latitude = 34.0522, Longitude = -118.2437, Name = "LA", Value = 20 }
     };
-
     public class LocationData
     {
         public double Latitude { get; set; }
@@ -544,98 +522,31 @@ Style markers based on data:
 }
 ```
 
-### Shape Styling with Color Gradients
+### Shape Styling with Color
 
 ```csharp
 <MapsShapeSettings>
-                    <MapsShapeBorder Color="darkblue" Width="2"></MapsShapeBorder>
-                </MapsShapeSettings>
-
-<!-- Define SVG gradient -->
-<svg width="0" height="0">
-    <defs>
-        <linearGradient id="shapeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:lightblue;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:darkblue;stop-opacity:1" />
-        </linearGradient>
-    </defs>
-</svg>
+    <MapsShapeBorder Color="darkblue" Width="2"></MapsShapeBorder>
+</MapsShapeSettings>
 ```
 
 ## Map Controls Styling
 
-### Navigation Buttons
+### Custom Zoom Control Positioning
 
 ```csharp
-<style>
-    .e-nav-button {
-        background-color: #007bff;
-        color: white;
-        border-radius: 4px;
-        padding: 8px 12px;
-        margin: 4px;
-    }
-
-    .e-nav-button:hover {
-        background-color: #0056b3;
-    }
-
-    .e-nav-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-</style>
-
-<SfMaps NavigationButtons="true">
+@using Syncfusion.Blazor.Maps
+<SfMaps>
+<MapsZoomSettings Enable="true">
+        <MapsZoomToolbarSettings BackgroundColor="pink" BorderColor="green" BorderOpacity="1" BorderWidth="3" Orientation="Syncfusion.Blazor.Maps.Orientation.Vertical" VerticalAlignment="Syncfusion.Blazor.Maps.Alignment.Near">
+            <MapsZoomToolbarButton ToolbarItems="new List<Syncfusion.Blazor.Maps.ToolbarItem>() { Syncfusion.Blazor.Maps.ToolbarItem.Zoom, Syncfusion.Blazor.Maps.ToolbarItem.ZoomIn, Syncfusion.Blazor.Maps.ToolbarItem.ZoomOut, Syncfusion.Blazor.Maps.ToolbarItem.Pan, Syncfusion.Blazor.Maps.ToolbarItem.Reset }"></MapsZoomToolbarButton>
+        </MapsZoomToolbarSettings>
+    </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-```
-
-### Custom Control Positioning
-
-```csharp
-<style>
-    .map-controls-custom {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 100;
-    }
-
-    .control-button {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 10px 15px;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .control-button:hover {
-        background: #f5f5f5;
-    }
-</style>
-
-<div class="map-controls-custom">
-    <button class="control-button" @onclick="ZoomIn">+</button>
-    <button class="control-button" @onclick="ZoomOut">−</button>
-    <button class="control-button" @onclick="Reset">⟲</button>
-</div>
-
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
 ```
 
 ## Dark Mode and Responsive Design
@@ -643,58 +554,25 @@ Style markers based on data:
 ### Dark Mode Implementation
 
 ```csharp
-<style>
-    :root {
-        --map-bg: white;
-        --map-text: black;
-        --map-border: #ddd;
-    }
-
-    :root[data-theme="dark"] {
-        --map-bg: #1e1e1e;
-        --map-text: white;
-        --map-border: #444;
-    }
-
-    .e-maps {
-        background-color: var(--map-bg);
-        color: var(--map-text);
-    }
-
-    .e-legend {
-        background-color: var(--map-bg);
-        border-color: var(--map-border);
-        color: var(--map-text);
-    }
-
-    .e-tooltip {
-        background-color: var(--map-bg) !important;
-        color: var(--map-text);
-        border: 1px solid var(--map-border);
-    }
-</style>
-
-@page "/dark-mode"
 @using Syncfusion.Blazor.Maps
 
 <button @onclick="ToggleDarkMode">Toggle Dark Mode</button>
 
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps Theme="@Theme">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
     private bool IsDarkMode = false;
-
-    private async Task ToggleDarkMode()
+    private Syncfusion.Blazor.Theme Theme = Syncfusion.Blazor.Theme.Bootstrap5;
+    private void ToggleDarkMode()
     {
         IsDarkMode = !IsDarkMode;
         // Toggle data-theme attribute on root element
-        var theme = IsDarkMode ? "dark" : "light";
+        Theme = IsDarkMode ? Syncfusion.Blazor.Theme.Bootstrap5Dark : Syncfusion.Blazor.Theme.Bootstrap5;
         // Implementation depends on your framework setup
     }
 }
@@ -703,6 +581,7 @@ Style markers based on data:
 ### Responsive Container
 
 ```csharp
+@using Syncfusion.Blazor.Maps
 <style>
     .map-container {
         width: 100%;
@@ -711,7 +590,7 @@ Style markers based on data:
     }
 
     /* Mobile devices (≤768px) */
-    @media (max-width: 768px) {
+    @@media (max-width: 768px) {
         .map-container {
             height: 70vh;
         }
@@ -728,14 +607,14 @@ Style markers based on data:
     }
 
     /* Tablets (769px - 1024px) */
-    @media (min-width: 769px) and (max-width: 1024px) {
+    @@media (min-width: 769px) and (max-width: 1024px) {
         .map-container {
             height: 80vh;
         }
     }
 
     /* Desktops (>1024px) */
-    @media (min-width: 1025px) {
+    @@media (min-width: 1025px) {
         .map-container {
             height: 100vh;
         }
@@ -743,15 +622,13 @@ Style markers based on data:
 </style>
 
 <div class="map-container">
-    <SfMaps >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+    <SfMaps Width="100%" Height="100%">
+    <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
         <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+            <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             </MapsLayer>
         </MapsLayers>
     </SfMaps>
 </div>
 
 ```
-
-

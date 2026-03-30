@@ -1,4 +1,4 @@
-﻿# Spatial Features and Overlays
+# Spatial Features and Overlays
 
 ## Table of Contents
 
@@ -46,14 +46,7 @@ Polygons display geographic boundaries, regions, and areas on the map. They're i
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-        <MapsLayer TValue="string">
-            <MapsLayerShapeSettings DataSource="@GeoJsonData">
-                <MapsShapeSettings Fill="lightblue">
-                    <MapsShapeBorder Color="blue" Width="1"></MapsShapeBorder>
-                </MapsShapeSettings>
-            </MapsLayerShapeSettings>
+        <MapsLayer ShapeData="@GeoJsonData" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -99,15 +92,12 @@ Each polygon is defined by an array of coordinate pairs [longitude, latitude].
 @page "/state-map"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
         <MapsLayer TValue="string"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'
-                   DataSource="@StateData"
-                   ShapePropertyPath='new string[] { "name" }'>
+                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'>
                 <MapsShapeSettings Fill="rgba(0, 100, 200, 0.3)">
                     <MapsShapeBorder Color="blue" Width="1"></MapsShapeBorder>
                 </MapsShapeSettings>
@@ -118,7 +108,6 @@ Each polygon is defined by an array of coordinate pairs [longitude, latitude].
 </SfMaps>
 
 @code {
-    private int ZoomLevel = 4;
     private object StateData; // Loaded from GeoJSON
 
     protected override async Task OnInitializedAsync()
@@ -155,12 +144,12 @@ Each polygon is defined by an array of coordinate pairs [longitude, latitude].
 ### Polygon with Hover Effects
 
 ```csharp
-<MapsShapeSettings Fill="lightblue" Stroke="blue" StrokeWidth="1">
+<MapsShapeSettings Fill="lightblue">
 </MapsShapeSettings>
 
-<MapsShapeSelectionSettings Enable="true" 
-    Fill="orange" Stroke="red" StrokeWidth="2">
-</MapsShapeSelectionSettings>
+<MapsLayerSelectionSettings Enable="true" Fill="green">
+    <MapsLayerSelectionBorder Color="white" Width="2"></MapsLayerSelectionBorder>
+</MapsLayerSelectionSettings>
 ```
 
 When user hovers over or selects a polygon, it changes to the selection colors.
@@ -172,23 +161,18 @@ Polylines connect multiple points to show routes, paths, or connections between 
 ### Basic Polyline
 
 ```csharp
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
             <MapsNavigationLines>
                 <MapsNavigationLine Visible="true" Color="red" Angle="90" Width="3" DashArray="5"
-                    Latitude="@new double[] { 37.368, 40.7128, 34.0522 }"
-                    Longitude="@new double[] { -122.095, -74.0060, -118.2437 }">
+                    Latitude="new double[] { 37.368, 40.7128, 34.0522 }"
+                    Longitude="new double[] { -122.095, -74.0060, -118.2437 }">
                 </MapsNavigationLine>
             </MapsNavigationLines>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
-@code {
-    private int ZoomLevel = 4;
-}
 ```
 
 This creates a polyline connecting San Francisco → New York → Los Angeles.
@@ -199,22 +183,22 @@ This creates a polyline connecting San Francisco → New York → Los Angeles.
 <MapsNavigationLines>
     <!-- Route segment 1 -->
     <MapsNavigationLine 
-        Latitude="@new double[] { 37.368, 40.7128 }"
-        Longitude="@new double[] { -122.095, -74.0060 }"
+        Latitude="new double[] { 37.368, 40.7128 }"
+        Longitude="new double[] { -122.095, -74.0060 }"
         Color="blue" Width="2">
     </MapsNavigationLine>
 
     <!-- Route segment 2 -->
     <MapsNavigationLine 
-        Latitude="@new double[] { 40.7128, 34.0522 }"
-        Longitude="@new double[] { -74.0060, -118.2437 }"
+        Latitude="new double[] { 40.7128, 34.0522 }"
+        Longitude="new double[] { -74.0060, -118.2437 }"
         Color="green" Width="2">
     </MapsNavigationLine>
 
     <!-- Route segment 3 -->
     <MapsNavigationLine 
-        Latitude="@new double[] { 34.0522, 37.368 }"
-        Longitude="@new double[] { -118.2437, -122.095 }"
+        Latitude="new double[] { 34.0522, 37.368 }"
+        Longitude="new double[] { -118.2437, -122.095 }"
         Color="red" Width="2">
     </MapsNavigationLine>
 </MapsNavigationLines>
@@ -229,8 +213,8 @@ This creates a polyline connecting San Francisco → New York → Los Angeles.
     Angle="90"
     Width="2"
     DashArray="5"
-    Latitude="@new double[] { }"
-    Longitude="@new double[] { }">
+    Latitude="new double[] { }"
+    Longitude="new double[] { }">
 </MapsNavigationLine>
 ```
 
@@ -240,65 +224,57 @@ This creates a polyline connecting San Francisco → New York → Los Angeles.
 @page "/route-builder"
 @using Syncfusion.Blazor.Maps
 
-<button @onclick="AddWaypoint">Add Waypoint</button>
-<button @onclick="ClearRoute">Clear Route</button>
-
-<div style="width: 100%; height: 500px;">
-    <SfMaps @ref="mapInstance" >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-        <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-                <!-- Polyline connecting waypoints -->
-                @if (Waypoints.Count > 1)
-                {
-                    <MapsNavigationLine 
-                        Latitude="@Waypoints.Select(w => w.Latitude).ToArray()"
-                        Longitude="@Waypoints.Select(w => w.Longitude).ToArray()"
-                        Color="blue" Width="3">
-                    </MapsNavigationLine>
-                }
-
-                <!-- Waypoint markers -->
-                <MapsMarkerSettings>
-                    @foreach (var wp in Waypoints)
-                    {
-                        <MapsMarker Latitude="@wp.Latitude" Longitude="@wp.Longitude"
-                            Shape="MarkerType.Circle" Width="12" Height="12"
-                            Fill="green">
-                        </MapsMarker>
-                    }
-                </MapsMarkerSettings>
-            </MapsLayer>
-        </MapsLayers>
-    </SfMaps>
+<div style="margin-bottom:10px;">
+    <button @onclick="UpdateRoute">Update Route</button>
 </div>
-
+<SfMaps @ref="mapInstance">
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+                   TValue="string">
+            <MapsNavigationLines>
+                <MapsNavigationLine Visible="true"
+                                    Color="red"
+                                    Angle="90"
+                                    Width="3"
+                                    DashArray="5"
+                                    Latitude="@RouteLatitudes"
+                                    Longitude="@RouteLongitudes">
+                </MapsNavigationLine>
+            </MapsNavigationLines>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 @code {
     private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    private List<WaypointData> Waypoints = new();
-    private Random random = new();
-
-    private async Task AddWaypoint()
+    // ✅ Bindable coordinate arrays
+    private double[] RouteLatitudes = new double[]
     {
-        Waypoints.Add(new WaypointData 
-        { 
-            Latitude = 25 + (random.NextDouble() * 50), 
-            Longitude = -125 + (random.NextDouble() * 50) 
-        });
-        await mapInstance.RefreshAsync();
-    }
+        37.368,     // California
+        40.7128,    // New York
+        34.0522     // Los Angeles
+    };
 
-    private async Task ClearRoute()
+    private double[] RouteLongitudes = new double[]
     {
-        Waypoints.Clear();
-        await mapInstance.RefreshAsync();
-    }
-
-    public class WaypointData
+        -122.095,
+        -74.0060,
+        -118.2437
+    };
+    private async Task UpdateRoute()
     {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        // ✅ Update route dynamically
+        RouteLatitudes = new double[]
+        {
+            28.6139,   // New Delhi
+            51.5074,   // London
+            48.8566    // Paris
+        };
+        RouteLongitudes = new double[]
+        {
+            77.2090,
+            -0.1278,
+            2.3522
+        };
     }
 }
 ```
@@ -307,37 +283,49 @@ This creates a polyline connecting San Francisco → New York → Los Angeles.
 
 Annotations are text labels, icons, or custom HTML elements placed at specific coordinates on the map. Use them for callouts, labels, or context information.
 
+> **Security Warning:** Annotations render HTML content. When binding to external data sources, always sanitize content to prevent XSS attacks and prompt injection. See [Sanitizing External Content](user-interactions.md#sanitizing-external-content) for detailed guidance.
+
 ### Text Annotations
 
 ```csharp
+@using Syncfusion.Blazor.Maps
+
 <SfMaps>
+    <MapsAnnotations>
+        <MapsAnnotation X="0%" Y="50%">
+            <ContentTemplate>
+                <div>
+                    Annotation
+                </div>
+            </ContentTemplate>
+        </MapsAnnotation>
+    </MapsAnnotations>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsAnnotations>
-                <MapsAnnotation Latitude="37.368" Longitude="-122.095"
-                    Content="<div style='background: white; padding: 5px; border-radius: 3px;'>San Francisco</div>">
-                </MapsAnnotation>
-                <MapsAnnotation Latitude="40.7128" Longitude="-74.0060"
-                    Content="<div style='background: white; padding: 5px; border-radius: 3px;'>New York</div>">
-                </MapsAnnotation>
-            </MapsAnnotations>
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+                   ShapePropertyPath='new string[] {"name"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 ```
 
+> **Note:** The above example uses hardcoded content which is safe. When content comes from variables, databases, or APIs, sanitization is required.
+
 ### Icon Annotations
 
 ```csharp
-<MapsAnnotation Latitude="37.368" Longitude="-122.095"
-    Content="<img src='/images/info-icon.png' width='24' height='24' />">
+<MapsAnnotation X="0%" Y="50%">
+    <ContentTemplate>
+        <div>
+            <img style="height: 30px; width: 40px" src='https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/wheel.png'>
+        </div>
+    </ContentTemplate>
 </MapsAnnotation>
 ```
 
 ### Custom HTML Annotations
 
 ```csharp
-<MapsAnnotation Latitude="37.368" Longitude="-122.095">
+<MapsAnnotation X="0%" Y="50%">
     <Content>
         <div style="background: lightblue; padding: 10px; border-radius: 5px; border: 1px solid blue;">
             <strong>Location Details</strong>
@@ -350,45 +338,121 @@ Annotations are text labels, icons, or custom HTML elements placed at specific c
 
 ### Dynamic Annotations from Data
 
+> **Security Critical:** This example demonstrates UNSAFE binding. See secure version below.
+
 ```csharp
 @page "/annotated-map"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<div style="margin-bottom:10px;">
+    <button @onclick="UpdateAnnotation">Update Annotation</button>
+</div>
+
+<SfMaps>
+    <MapsAnnotations>
+        <MapsAnnotation X="@X" Y="@Y">
+            <Content>
+                <div style="background: lightblue; padding: 5px; border-radius: 5px; border: 1px solid blue;">
+                    <strong>Location Details</strong>
+                    <p>Latitude: @Latitude</p>
+                    <p>Longitude: @Longitude</p>
+                </div>
+            </Content>
+        </MapsAnnotation>
+    </MapsAnnotations>
+
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsAnnotations>
-                @foreach (var location in Locations)
-                {
-                    <MapsAnnotation Latitude="@location.Latitude" 
-                        Longitude="@location.Longitude"
-                        Content="@($"<div style='background: white; padding: 5px; font-weight: bold;'>{location.Name}</div>")">
-                    </MapsAnnotation>
-                }
-            </MapsAnnotations>
+        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   ShapePropertyPath='new string[] { "name" }'
+                   TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
 @code {
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
+    private double Latitude = 37.368;
+    private double Longitude = -122.095;
 
-    private List<LocationData> Locations = new()
-    {
-        new LocationData { Latitude = 37.368, Longitude = -122.095, Name = "San Francisco" },
-        new LocationData { Latitude = 40.7128, Longitude = -74.0060, Name = "New York" },
-        new LocationData { Latitude = 34.0522, Longitude = -118.2437, Name = "Los Angeles" }
-    };
+    // Annotation position
+    private string X = "0%";
+    private string Y = "50%";
 
-    public class LocationData
+    private void UpdateAnnotation()
     {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string Name { get; set; }
+        // ✅ Dynamically update values
+        Latitude = 28.6139;     // New Delhi
+        Longitude = 77.2090;
+
+        // ✅ Move annotation position
+        X = "50%";
+        Y = "30%";
+
+        // ✅ Re-render annotation content
+        StateHasChanged();
     }
 }
 ```
+
+#### Secure Version with HTML Encoding
+
+```csharp
+@page "/annotated-map-secure"
+@using Syncfusion.Blazor.Maps
+@using System.Text.Encodings.Web
+
+<div style="margin-bottom:10px;">
+    <button @onclick="UpdateAnnotation">Update Annotation</button>
+</div>
+<SfMaps>
+    <MapsAnnotations>
+        <MapsAnnotation X="@X" Y="@Y">
+            <Content>
+                <div style="background: lightblue; padding: 5px; border-radius: 5px; border: 1px solid blue;">
+                    <strong>Location Details</strong>
+                    <p>Latitude: @Encode(Latitude)</p>
+                    <p>Longitude: @Encode(Longitude)</p>
+                </div>
+            </Content>
+        </MapsAnnotation>
+    </MapsAnnotations>
+    <MapsLayers>
+        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   ShapePropertyPath='new string[] { "name" }'
+                   TValue="string">
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+@code {
+    private double Latitude = 37.368;
+    private double Longitude = -122.095;
+    private string X = "0%";
+    private string Y = "50%";
+
+    // ✅ Centralized HTML Encoder
+    private static readonly HtmlEncoder Encoder = HtmlEncoder.Default;
+
+    // ✅ Encoding helper
+    private string Encode(object value)
+    {
+        return Encoder.Encode(value?.ToString() ?? string.Empty);
+    }
+
+    private void UpdateAnnotation()
+    {
+        // Example dynamic update (could come from API / user input)
+        Latitude = 28.6139;
+        Longitude = 77.2090;
+
+        X = "50%";
+        Y = "30%";
+
+        // Re-render annotation safely
+        StateHasChanged();
+    }
+}
+``
+```
+
+> **Required Package:** `System.Web.HttpUtility` is available in `System.Web` (or use `Microsoft.AspNetCore.WebUtilities.HtmlEncoder` in modern .NET)
 
 ## Bubbles
 
@@ -399,19 +463,14 @@ Bubbles are circular overlays that represent data values through their size. The
 ### Basic Bubbles
 
 ```csharp
+@using Syncfusion.Blazor.Maps
+
 <SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="CityData" UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png">
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+                   DataSource="PopulationDetails" ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
             <MapsBubbleSettings>
-                <!-- Use MapsBubble component with TValue - NOT MapsBubbles container -->
-                <MapsBubble Visible="true"
-                            DataSource="@CityData"
-                            TValue="CityData"
-                            LatitudeValuePath="Latitude"
-                            LongitudeValuePath="Longitude"
-                            ValuePath="Population"
-                            MinRadius="5" MaxRadius="50"
-                            Fill="blue" Opacity="0.5">
+                <MapsBubble Visible="true" ValuePath="Population" DataSource="PopulationDetails" TValue="Country">
                 </MapsBubble>
             </MapsBubbleSettings>
         </MapsLayer>
@@ -419,19 +478,15 @@ Bubbles are circular overlays that represent data values through their size. The
 </SfMaps>
 
 @code {
-    private List<CityData> CityData = new()
+    public class Country
     {
-        new CityData { Latitude = 37.368, Longitude = -122.095, Population = 870000 },
-        new CityData { Latitude = 40.7128, Longitude = -74.0060, Population = 8300000 },
-        new CityData { Latitude = 34.0522, Longitude = -118.2437, Population = 3900000 }
+        public string Name { get; set; }
+        public double Population { get; set; }
     };
 
-    public class CityData
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public int Population { get; set; }
-    }
+    public List<Country> PopulationDetails = new List<Country> {
+        new Country { Name = "United States", Population = 325020000 }
+    };
 }
 ```
 
@@ -442,8 +497,6 @@ Bubbles are circular overlays that represent data values through their size. The
     <MapsBubble Visible="true"
                 DataSource="@BubbleData"
                 TValue="BubbleDataClass"
-                LatitudeValuePath="Latitude"
-                LongitudeValuePath="Longitude"
                 ValuePath="Population"
                 MinRadius="10" MaxRadius="40"
                 ColorValuePath="GrowthRate"
@@ -459,10 +512,8 @@ Bubbles automatically size proportionally to the `ValuePath` field and color bas
 ```csharp
 <MapsBubbleSettings>
     <MapsBubble Visible="true"
-                DataSource="@CityData"
+                DataSource="@CityDataSource"
                 TValue="CityData"
-                LatitudeValuePath="Latitude"
-                LongitudeValuePath="Longitude"
                 ValuePath="Population"
                 MinRadius="10" MaxRadius="40"
                 Fill="orange" Opacity="0.5">
@@ -481,17 +532,14 @@ Bubbles automatically size proportionally to the `ValuePath` field and color bas
 @page "/interactive-shapes"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps @ref="mapInstance" OnShapeSelected="ShapeSelected">
+<SfMaps @ref="mapInstance">
+    <MapsEvents ShapeSelected="ShapeSelected" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-        <MapsLayer TValue="string">
-            <MapsLayerShapeSettings DataSource="@StateData">
-                <MapsShapeSettings Fill="lightblue" Stroke="blue" StrokeWidth="1">
-                </MapsShapeSettings>
-                <MapsShapeSelectionSettings Enable="true" Fill="orange" Stroke="red">
-                </MapsShapeSelectionSettings>
-            </MapsLayerShapeSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsShapeSettings Fill="lightblue"/>
+                 <MapsLayerSelectionSettings Enable="true" Fill="green">
+                    <MapsLayerSelectionBorder Color="white" Width="2"></MapsLayerSelectionBorder>
+                </MapsLayerSelectionSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -510,20 +558,6 @@ Bubbles automatically size proportionally to the `ValuePath` field and color bas
 }
 ```
 
-### Hover Effects on Annotations
-
-```csharp
-<div @onmouseenter="() => HoverAnnotation = true" 
-     @onmouseleave="() => HoverAnnotation = false"
-     style="@(HoverAnnotation ? "background: yellow;" : "background: white;")">
-    Important Location
-</div>
-
-@code {
-    private bool HoverAnnotation = false;
-}
-```
-
 ## API Reference
 
 ### MapsPolygon
@@ -531,28 +565,23 @@ Bubbles automatically size proportionally to the `ValuePath` field and color bas
 Defines a polygon shape on the map.
 
 ```csharp
-<MapsPolygon PolygonType="PolygonShapeType.Polygon"
-             Points="@polygonPoints"
-             Fill="rgba(0, 0, 255, 0.3)"
-             Opacity="0.7">
-    <MapsPolygonHighlightSettings Enable="true"
-                                  Fill="yellow"
-                                  Opacity="0.5">
-        <MapsPolygonHighlightBorder Color="orange" Width="2">
-        </MapsPolygonHighlightBorder>
+<MapsPolygons>
+    <MapsPolygon Fill="transparent" BorderColor="red" Points="@Coordinates" TooltipText="Line String" BorderWidth="2" ShapeType="PolygonShapeType.Polygon">
+    </MapsPolygon>
+    <MapsPolygonTooltipSettings Visible="true" BorderColor="Red" BorderWidth="1">
+    </MapsPolygonTooltipSettings>
+    <MapsPolygonHighlightSettings Enable=true Fill="yellow" Opacity="0.4">
+        <MapsPolygonHighlightBorder Color="blue" Opacity="1" Width="1"></MapsPolygonHighlightBorder>
     </MapsPolygonHighlightSettings>
-    <MapsPolygonSelectionSettings Enable="true"
-                                  Fill="cyan"
-                                  Opacity="0.7">
-        <MapsPolygonSelectionBorder Color="blue" Width="3">
-        </MapsPolygonSelectionBorder>
+    <MapsPolygonSelectionSettings Enable=true EnableMultiSelect=false Fill="violet" Opacity="0.8">
+        <MapsPolygonSelectionBorder Color="cyan" Opacity="1" Width="1"></MapsPolygonSelectionBorder>
     </MapsPolygonSelectionSettings>
-</MapsPolygon>
+</MapsPolygons>
 ```
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `PolygonType` | `PolygonShapeType` | Shape: Circle, Rectangle, Triangle, Polygon |
+| `PolygonType` | `PolygonShapeType` | Shape: LineString, Polygon |
 | `Points` | `Coordinate[]` | Array of lat/lng points forming polygon |
 | `Fill` | string | Fill color (hex, rgb, or named) |
 | `Opacity` | double | Transparency (0-1) |
@@ -575,32 +604,14 @@ Container for multiple polygon shapes.
 Defines a line connecting two or more locations.
 
 ```csharp
-<MapsNavigationLine Coordinates="@lineCoordinates"
-                    Fill="blue"
-                    Stroke="blue"
-                    StrokeWidth="2"
-                    Opacity="0.8">
-    <MapsArrow Position="ArrowPosition.End"
-               Width="10"
-               Height="10"
-               Fill="blue">
-    </MapsArrow>
-    <!-- Highlight settings with border customization -->
-    <MapsNavigationLineHighlightSettings Enable="true"
-                                         Fill="yellow"
-                                         Opacity="0.6">
-        <MapsNavigationLineHighlightBorder Color="orange" Width="2">
-        </MapsNavigationLineHighlightBorder>
-    </MapsNavigationLineHighlightSettings>
-    
-    <!-- Selection settings with border customization (NEW - Previously Missing) -->
-    <MapsNavigationLineSelectionSettings Enable="true" 
-                                         Fill="cyan"
-                                         Opacity="0.7">
-        <MapsNavigationLineSelectionBorder Color="blue" Width="3">
-        </MapsNavigationLineSelectionBorder>
-    </MapsNavigationLineSelectionSettings>
-</MapsNavigationLine>
+<MapsNavigationLines>
+    <MapsNavigationLine Visible="true" Color="blue" Angle="90" Width="2" DashArray="4"
+                        Latitude="new double[]{ 40.7128, 36.7783 }" Longitude="new double[]{ -74.0060, -119.4179 }">
+        <MapsArrow ShowArrow="true" Color="blue"></MapsArrow>
+        <MapsNavigationLineHighlightSettings Fill="green" Enable="true"></MapsNavigationLineHighlightSettings>
+        <MapsNavigationLineSelectionSettings Fill="blue" Enable="true"></MapsNavigationLineSelectionSettings>
+    </MapsNavigationLine>
+</MapsNavigationLines>
 ```
 
 | Property | Type | Description |
@@ -616,7 +627,7 @@ Defines a line connecting two or more locations.
 Defines arrow head on navigation lines.
 
 ```csharp
-<MapsArrow Position="ArrowPosition.End"
+<MapsArrow Position="End"
            Width="10"
            Height="10"
            Fill="blue"
@@ -626,7 +637,7 @@ Defines arrow head on navigation lines.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Position` | `ArrowPosition` | Start, End, or Both |
+| `Position` | string | Start, End |
 | `Width` | double | Arrow width in pixels |
 | `Height` | double | Arrow height in pixels |
 | `Fill` | string | Arrow color |
@@ -637,17 +648,22 @@ Defines arrow head on navigation lines.
 Defines text, image, or shape annotations.
 
 ```csharp
-<MapsAnnotation Content="Important Location"
-                X="37.368"
-                Y="-122.095"
-                Alignment="AnnotationAlignment.Center"
-                VerticalAlignment="VerticalAlignment.Middle">
-</MapsAnnotation>
+<MapsAnnotations>
+    <MapsAnnotation X="0%" Y="10%"
+                VerticalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center" 
+                HorizontalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center">
+        <ContentTemplate>
+                <div>
+                    <div id="first"><h1>Maps</h1></div>
+                </div>
+            </ContentTemplate>
+    </MapsAnnotation>
+</MapsAnnotations>
 ```
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Content` | string | Text, HTML, or template content |
+| `ContentTemplate` | Tag | Text, HTML, or template content |
 | `X` | double | Latitude coordinate |
 | `Y` | double | Longitude coordinate |
 | `Alignment` | `AnnotationAlignment` | Horizontal alignment |
@@ -660,9 +676,23 @@ Container for multiple annotations.
 
 ```csharp
 <MapsAnnotations>
-    <MapsAnnotation Content="Location 1" X="37.368" Y="-122.095">
+    <MapsAnnotation X="0%" Y="10%"
+                VerticalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center" 
+                HorizontalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center">
+        <ContentTemplate>
+                <div>
+                    <div id="first"><h1>Maps</h1></div>
+                </div>
+            </ContentTemplate>
     </MapsAnnotation>
-    <MapsAnnotation Content="Location 2" X="40.7128" Y="-74.0060">
+    <MapsAnnotation X="0%" Y="30%"
+                VerticalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center" 
+                HorizontalAlignment="Syncfusion.Blazor.Maps.AnnotationAlignment.Center">
+        <ContentTemplate>
+                <div>
+                    <div id="first"><h1>Annotation</h1></div>
+                </div>
+            </ContentTemplate>
     </MapsAnnotation>
 </MapsAnnotations>
 ```
@@ -676,8 +706,6 @@ Defines data bubbles on the map. **Always requires `TValue` generic parameter.**
     <MapsBubble Visible="true"
                 DataSource="@BubbleData"
                 TValue="MyBubbleClass"
-                LatitudeValuePath="Latitude"
-                LongitudeValuePath="Longitude"
                 ValuePath="DataValue"
                 Fill="blue"
                 Opacity="0.7">
@@ -698,8 +726,6 @@ Defines data bubbles on the map. **Always requires `TValue` generic parameter.**
 |----------|------|-------------|
 | `DataSource` | IEnumerable<object> | Data collection for bubbles |
 | `TValue` | Generic | Data model type (REQUIRED) |
-| `LatitudeValuePath` | string | Data field for latitude |
-| `LongitudeValuePath` | string | Data field for longitude |
 | `ValuePath` | string | Data field affecting bubble size |
 | `ColorValuePath` | string | Data field affecting bubble color |
 | `Fill` | string | Bubble color |
@@ -712,17 +738,34 @@ Defines data bubbles on the map. **Always requires `TValue` generic parameter.**
 Configure default bubble appearance.
 
 ```csharp
-<MapsBubbleSettings MinRadius="5"
-                    MaxRadius="25"
-                    ValuePath="sales"
-                    ColorValuePath="revenue"
-                    Fill="blue"
-                    Opacity="0.7">
-    <MapsBubbleColorMappings>
-        <MapsBubbleColorMapping StartRange="0" EndRange="100000" Color='new string[] { "#B3E5FC" }'>
-        </MapsBubbleColorMapping>
-    </MapsBubbleColorMappings>
-</MapsBubbleSettings>
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+                   DataSource="PopulationDetails" ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
+            <MapsBubbleSettings>
+                <MapsBubble MinRadius="5" MaxRadius="25" Visible="true" ValuePath="Population" ColorValuePath="Color" DataSource="PopulationDetails" TValue="Country">
+                </MapsBubble>
+            </MapsBubbleSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+
+@code {
+    public class Country
+    {
+        public string Name { get; set; }
+        public double Population { get; set; }
+        public string Color { get; set; }
+    };
+
+    public List<Country> PopulationDetails = new List<Country> {
+        new Country { Name = "United States", Population = 325020000, Color = "#b5e485" },
+        new Country { Name = "Russia", Population = 142905208, Color = "#7bc1e8" },
+       new Country { Name ="India", Population=1198003000, Color = "#df819c" }
+    };
+}
 ```
 
 | Property | Type | Description |
@@ -731,26 +774,3 @@ Configure default bubble appearance.
 | `MaxRadius` | double | Maximum bubble radius |
 | `ValuePath` | string | Data field for bubble size |
 | `ColorValuePath` | string | Data field for color |
-
-### Coordinate Class
-
-Represents a latitude/longitude point.
-
-```csharp
-public class Coordinate
-{
-    public double Latitude { get; set; }   // -90 to 90
-    public double Longitude { get; set; }  // -180 to 180
-}
-
-// Usage
-var point = new Coordinate { Latitude = 37.368, Longitude = -122.095 };
-var coordinates = new Coordinate[]
-{
-    new() { Latitude = 37.368, Longitude = -122.095 },
-    new() { Latitude = 40.7128, Longitude = -74.0060 },
-    new() { Latitude = 34.0522, Longitude = -118.2437 }
-};
-```
-
-

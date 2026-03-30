@@ -39,7 +39,6 @@ Override default expand/collapse icons with custom icons:
 
 ```html
 <!-- Add Font Awesome library -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 
 <style>
     .e-treeview .e-expand-icon {

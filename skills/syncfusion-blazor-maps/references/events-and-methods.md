@@ -1,4 +1,4 @@
-﻿# Events and Methods
+# Events and Methods
 
 ## Table of Contents
 
@@ -7,7 +7,7 @@
    - [OnMarkerClick](#onmarkerclick)
    - [OnShapeSelected](#onshapeselected)
    - [OnDoubleClick](#ondoubleclick)
-   - [🔧 CRITICAL FIX: OnMouseMove - Wrong Event Argument Class](#-critical-fix-onmousemove---wrong-event-argument-class)
+   - [ CRITICAL FIX: OnMouseMove - Wrong Event Argument Class](#-critical-fix-onmousemove---wrong-event-argument-class)
    - [OnMarkerMouseLeave](#onmarkermouseleave)
    - [OnMarkerClusterClick](#onmarkerclusterclick)
    - [OnMarkerClusterMove](#onmarkerclustermove)
@@ -54,9 +54,10 @@ Triggered as user moves mouse over the map:
 
 <p>Current position: @MousePos</p>
 
-<SfMaps @ref="mapInstance" OnMouseMove="MouseMoveHandler">
+<SfMaps @ref="mapInstance">
+    <MapsEvents MouseMove="MouseMoveHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -64,8 +65,7 @@ Triggered as user moves mouse over the map:
 @code {
     private SfMaps mapInstance;
     private string MousePos = "Move mouse over map";
-
-    private void MouseMoveHandler(MapClickEventArgs args)
+    private void MouseMoveHandler(MouseMoveEventArgs args)
     {
         MousePos = $"Lat: {args.Latitude:F2}, Lng: {args.Longitude:F2}";
     }
@@ -77,12 +77,13 @@ Triggered as user moves mouse over the map:
 Triggered when user clicks a marker:
 
 ```csharp
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
+<SfMaps>
+    <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                    Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City"
+                    Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -95,21 +96,28 @@ Triggered when user clicks a marker:
         Console.WriteLine($"Marker clicked at Lat: {args.Latitude}, Lng: {args.Longitude}");
         // Update UI, show details, trigger navigation, etc.
     }
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+    public List<City> MarkerData = new List<City> {
+        new City {Latitude = 35.145083,Longitude = -117.960260}
+    };
 }
 ```
 
 **Event args:**
 - `Latitude`: Marker latitude coordinate
 - `Longitude`: Marker longitude coordinate
-- `MarkerType`: Type of marker (Circle, Rectangle, etc.)
-- `Color`: Marker fill color
 
 ### OnShapeSelected
 
 Triggered when user selects (clicks) a shape/polygon:
 
 ```csharp
-<SfMaps @ref="mapInstance" OnShapeSelected="ShapeSelectHandler">
+<SfMaps @ref="mapInstance" >
+    <MapsEvents OnShapeSelected="ShapeSelectHandler" />
     <MapsLayers>
         <MapsLayer TValue="StateData" DataSource="@StateData">
             <MapsShapeSettings Fill="lightblue">
@@ -136,9 +144,10 @@ Triggered when user selects (clicks) a shape/polygon:
 Triggered on double-click anywhere on map:
 
 ```csharp
-<SfMaps OnDoubleClick="DoubleClickHandler">
+<SfMaps>
+    <MapsEvents OnDoubleClick="DoubleClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -152,9 +161,9 @@ Triggered on double-click anywhere on map:
 }
 ```
 
-### 🔧 CRITICAL FIX: OnMouseMove - Wrong Event Argument Class
+### CRITICAL FIX: OnMouseMove - Wrong Event Argument Class
 
-**❌ INCORRECT (Currently Documented):**
+** INCORRECT (Currently Documented):**
 ```csharp
 private void MouseMoveHandler(MapClickEventArgs args) // WRONG CLASS!
 {
@@ -162,14 +171,15 @@ private void MouseMoveHandler(MapClickEventArgs args) // WRONG CLASS!
 }
 ```
 
-**✅ CORRECT:**
+** CORRECT:**
 ```csharp
 @page "/mouse-move"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps OnMouseMove="MouseMoveHandler">
+<SfMaps>
+    <MapsEvents OnMouseMove="MouseMoveHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -195,12 +205,13 @@ private void MouseMoveHandler(MapClickEventArgs args) // WRONG CLASS!
 Triggered when mouse leaves a marker (NEW - Previously Missing):
 
 ```csharp
-<SfMaps OnMarkerMouseLeave="MarkerMouseLeaveHandler">
+<SfMaps>
+    <MapsEvents OnMarkerMouseLeave="MarkerMouseLeaveHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@Markers" TValue="MarkerData"
-                            Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="@Markers" TValue="MarkerData"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -213,13 +224,11 @@ Triggered when mouse leaves a marker (NEW - Previously Missing):
         Console.WriteLine($"Mouse left marker at ({args.Latitude}, {args.Longitude})");
         // Cleanup tooltip, reset styles, etc.
     }
-
     public class MarkerData
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
-
     private List<MarkerData> Markers = new()
     {
         new MarkerData { Latitude = 37.368, Longitude = -122.095 }
@@ -234,16 +243,17 @@ Triggered when mouse leaves a marker (NEW - Previously Missing):
 Triggered when user clicks a cluster of markers (NEW - Previously Missing):
 
 ```csharp
-<SfMaps OnMarkerClusterClick="ClusterClickHandler">
+<SfMaps>
+    <MapsEvents MarkerClusterClick="ClusterClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@LargeMarkerSet" TValue="CityData"
-                            Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="@LargeMarkerSet" TValue="City"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
             <MapsMarkerClusterSettings AllowClustering="true" 
-                                       Shape="MarkerType.Circle" 
+                                       Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" 
                                        Fill="#008CFF" Height="25" Width="25">
             </MapsMarkerClusterSettings>
         </MapsLayer>
@@ -254,26 +264,30 @@ Triggered when user clicks a cluster of markers (NEW - Previously Missing):
     private void ClusterClickHandler(MarkerClusterClickEventArgs args)
     {
         Console.WriteLine($"Cluster clicked at ({args.Latitude}, {args.Longitude})");
-        Console.WriteLine($"Cluster contains {args.ClusterSize} markers");
         Console.WriteLine($"Data: {string.Join(", ", args.Data)}");
-        // Handle cluster interaction - expand, show details, etc.
     }
-
-    public class CityData
+    public class City
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Name { get; set; }
+        public double Area { get; set; }
     }
-
-    private List<CityData> LargeMarkerSet = new() { /* populated with many cities */ };
+    private List<City> LargeMarkerSet = new List<City> {
+        new City { Latitude=40.6971494, Longitude= -74.2598747, Name="New York", Area=8683 },
+        new City { Latitude=40.0024137, Longitude= -75.2581194, Name="Philadelphia", Area=4661 },
+        new City { Latitude=42.3142647, Longitude= -71.11037, Name="Boston", Area=4497 },
+        new City { Latitude=42.3526257, Longitude= -83.239291, Name="Detroit", Area=3267 },
+        new City { Latitude=47.2510905, Longitude= -123.1255834, Name="Washington", Area=2996 },
+        new City { Latitude=25.7823907, Longitude= -80.2994995, Name="Miami", Area=2891 },
+        new City { Latitude=19.3892246, Longitude= -70.1305136, Name="San Juan", Area=2309 }
+    };
 }
 ```
 
 **Event Args Properties:**
 - `Latitude`: Cluster center latitude
 - `Longitude`: Cluster center longitude
-- `ClusterSize`: Number of markers in the cluster
 - `Data`: Array of clustered marker data
 
 ---
@@ -283,16 +297,17 @@ Triggered when user clicks a cluster of markers (NEW - Previously Missing):
 Triggered when mouse moves over a cluster (NEW - Previously Missing):
 
 ```csharp
-<SfMaps OnMarkerClusterMove="ClusterMoveHandler">
+<SfMaps>
+    <MapsEvents MarkerClusterMouseMove="ClusterMoveHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@LargeMarkerSet" TValue="CityData"
-                            Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="@LargeMarkerSet" TValue="City"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
             <MapsMarkerClusterSettings AllowClustering="true" 
-                                       Shape="MarkerType.Circle" 
+                                       Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" 
                                        Fill="#008CFF" Height="25" Width="25">
             </MapsMarkerClusterSettings>
         </MapsLayer>
@@ -302,17 +317,26 @@ Triggered when mouse moves over a cluster (NEW - Previously Missing):
 @code {
     private void ClusterMoveHandler(MarkerClusterMoveEventArgs args)
     {
-        Console.WriteLine($"Mouse over cluster at ({args.Latitude}, {args.Longitude})");
-        // Show tooltip, highlight cluster, etc.
+        Console.WriteLine($"Cluster clicked at ({args.Latitude}, {args.Longitude})");
+        Console.WriteLine($"Data: {string.Join(", ", args.Data)}");
+        // Handle cluster interaction - expand, show details, etc.
     }
-
-    public class CityData
+    public class City
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string Name { get; set; }
+        public double Area { get; set; }
     }
-
-    private List<CityData> LargeMarkerSet = new() { /* populated */ };
+    private List<City> LargeMarkerSet = new List<City> {
+        new City { Latitude=40.6971494, Longitude= -74.2598747, Name="New York", Area=8683 },
+        new City { Latitude=40.0024137, Longitude= -75.2581194, Name="Philadelphia", Area=4661 },
+        new City { Latitude=42.3142647, Longitude= -71.11037, Name="Boston", Area=4497 },
+        new City { Latitude=42.3526257, Longitude= -83.239291, Name="Detroit", Area=3267 },
+        new City { Latitude=47.2510905, Longitude= -123.1255834, Name="Washington", Area=2996 },
+        new City { Latitude=25.7823907, Longitude= -80.2994995, Name="Miami", Area=2891 },
+        new City { Latitude=19.3892246, Longitude= -70.1305136, Name="San Juan", Area=2309 }
+    };
 }
 ```
 
@@ -328,30 +352,29 @@ Triggered when zoom level changes (user zoom, programmatic zoom):
 
 <p>Current zoom level: @CurrentZoomLevel</p>
 
-<SfMaps @ref="mapInstance" OnZoomChange="ZoomChangeHandler" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
+    <MapsEvents OnZoom="ZoomChangeHandler"/>
+    <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-    private int CurrentZoomLevel = 4;
-
-    private void ZoomChangeHandler(ZoomEventArgs args)
+    private int CurrentZoomLevel = 1;
+    private void ZoomChangeHandler(MapZoomEventArgs args)
     {
-        CurrentZoomLevel = (int)args.NewZoomLevel;
-        Console.WriteLine($"Zoomed to level: {args.NewZoomLevel}");
+        CurrentZoomLevel = (int)args.Scale;
+        Console.WriteLine($"Zoomed to level: {args.Scale}");
         // Load new data, adjust display, etc.
     }
 }
 ```
 
 **Event args:**
-- `NewZoomLevel`: The new zoom level
-- `PreviousZoomLevel`: The previous zoom level
+- `TranslatePoint`: The new translate point
+- `Scale`: The previous zoom level
 - `Type`: "ZoomIn", "ZoomOut", or programmatic
 
 ### OnPan
@@ -359,9 +382,11 @@ Triggered when zoom level changes (user zoom, programmatic zoom):
 Triggered when map is panned:
 
 ```csharp
-<SfMaps OnPan="PanHandler">
+<SfMaps>
+    <MapsEvents OnPan="PanHandler" />
+    <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -369,7 +394,7 @@ Triggered when map is panned:
 @code {
     private void PanHandler(MapPanEventArgs args)
     {
-        Console.WriteLine($"Panned to: Lat {args.NewCenterPosition.Latitude}, Lng {args.NewCenterPosition.Longitude}");
+        Console.WriteLine($"Panned to: Lat {args.Latitude}, Lng {args.Longitude}");
         // Update coordinates display, load region-specific data, etc.
     }
 }
@@ -388,53 +413,25 @@ Triggered before each shape/polygon is rendered (NEW - Previously Underdocumente
 @using Syncfusion.Blazor.Maps
 
 <SfMaps>
-    <MapsEvents OnShapeRendering="OnShapeRendering">
-    </MapsEvents>
+    <MapsEvents ShapeRendering="@ShapeRenderingEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer TValue="StateData" 
-                   ShapeDataSource="@ShapeData"
-                   DataSource="@StateData">
-            <MapsShapeSettings Fill="lightblue">
-            </MapsShapeSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private void OnShapeRendering(ShapeRenderingEventArgs args)
+    public void ShapeRenderingEvent(Syncfusion.Blazor.Maps.ShapeRenderingEventArgs args)
     {
-        // Customize shape based on data
-        if (args.ShapeData != null)
-        {
-            var shapeName = args.ShapeData.Properties?.Name;
-            
-            // Example: Highlight specific states
-            if (shapeName == "California")
-                args.Fill = "red";
-            else if (shapeName == "Texas")
-                args.Fill = "blue";
-            else
-                args.Fill = "lightblue";
-        }
-        
-        Console.WriteLine($"Rendering shape: {args.ShapeData?.Properties?.Name}");
-    }
-
-    private object ShapeData = /* GeoJSON data */;
-    private List<StateData> StateData = /* data source */;
-
-    public class StateData
-    {
-        public string Name { get; set; }
-        public int Population { get; set; }
+        // Here you can customize your code
     }
 }
 ```
 
 **Event Args:**
-- `ShapeData`: The shape's data object
+- `Data`: The shape's data object
 - `Fill`: Customize shape fill color (get/set)
-- `Opacity`: Customize transparency (get/set)
+- `Index`: Customize layer index (get/set)
 
 ---
 
@@ -447,7 +444,7 @@ Triggered before each layer is rendered (NEW - Previously Underdocumented):
     <MapsEvents OnLayerRendering="OnLayerRendering">
     </MapsEvents>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
         <MapsLayer TValue="string" ShapeDataSource="@ShapeData">
         </MapsLayer>
@@ -473,15 +470,18 @@ Triggered before each annotation is rendered (NEW - Previously Underdocumented):
 
 ```csharp
 <SfMaps>
-    <MapsEvents OnAnnotationRendering="OnAnnotationRendering">
-    </MapsEvents>
+    <MapsEvents AnnotationRendering="OnAnnotationRendering"/>
+    <MapsAnnotations>
+        <MapsAnnotation X="0%" Y="50%">
+            <ContentTemplate>
+                <div>
+                    Annotation
+                </div>
+            </ContentTemplate>
+        </MapsAnnotation>
+    </MapsAnnotations>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsAnnotations>
-                <MapsAnnotation Latitude="37.368" Longitude="-122.095"
-                    Content="Default Label">
-                </MapsAnnotation>
-            </MapsAnnotations>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -489,9 +489,6 @@ Triggered before each annotation is rendered (NEW - Previously Underdocumented):
 @code {
     private void OnAnnotationRendering(AnnotationRenderingEventArgs args)
     {
-        // Customize annotation content before rendering
-        args.Content = $"<div style='background: yellow; padding: 5px;'>{args.Content}</div>";
-        Console.WriteLine($"Rendering annotation: {args.Content}");
     }
 }
 ```
@@ -533,21 +530,23 @@ Redraw the map (updates layers, markers, data bindings):
 Zoom the map to fit specific geographic coordinates:
 
 ```csharp
-<button @onclick="() => ZoomToRegion()">Zoom to California</button>
+@using Syncfusion.Blazor.Maps
+
+<button @onclick="ZoomToCoordinates">ZoomToCoordinates</button>
+<SfMaps @ref="maps">
+    <MapsZoomSettings Enable="true">
+    </MapsZoomSettings>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-
-    private void ZoomToRegion()
+    SfMaps maps;
+    public void ZoomToCoordinates()
     {
-        // Zoom to fit coordinates
-        // Parameters: minLatitude, minLongitude, maxLatitude, maxLongitude
-        mapInstance.ZoomToCoordinates(
-            minLatitude: 32.5,
-            minLongitude: -124.4,
-            maxLatitude: 42.0,
-            maxLongitude: -114.6
-        );
+        maps.ZoomToCoordinates(0, 0, 100, 100);
     }
 }
 ```
@@ -559,15 +558,27 @@ Zoom the map to fit specific geographic coordinates:
 Zoom the map from a specific center position with a zoom factor:
 
 ```csharp
-<button @onclick="() => ZoomToLocation(37.368, -122.095, 2.0)">Zoom to SF</button>
+@using Syncfusion.Blazor.Maps
+
+<button @onclick="ZoomByPosition">ZoomByPosition</button>
+<SfMaps @ref="maps">
+    <MapsZoomSettings Enable="true">
+    </MapsZoomSettings>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private SfMaps mapInstance;
+    SfMaps maps;
 
-    private void ZoomToLocation(double lat, double lng, double zoomFactor)
+    public void ZoomByPosition()
     {
-        var center = new MapsCenterPosition { Latitude = lat, Longitude = lng };
-        mapInstance.ZoomByPosition(center, zoomFactor);
+        MapsCenterPosition centerPosition = new MapsCenterPosition();
+        centerPosition.Latitude = 35.145083;
+        centerPosition.Longitude = -117.960260;
+        maps.ZoomByPosition(centerPosition, 2);
     }
 }
 ```
@@ -579,17 +590,58 @@ Zoom the map from a specific center position with a zoom factor:
 Get the minimum and maximum coordinates of the visible map area:
 
 ```csharp
-<button @onclick="GetMapBounds">Get Visible Bounds</button>
+@using Syncfusion.Blazor.Maps
+@using System.Collections.ObjectModel;
+
+<button @onclick="GetMinMaxLatitudeLongitude">GetMinMaxLatitudeLongitude</button>
+
+@if(MapBoundCoordinates != null)
+{
+    <div>
+        Maximum Latitude = @MapBoundCoordinates.MaxLatitude <br/>
+        Minimum Latitude = @MapBoundCoordinates.MinLatitude  <br />
+        Maximum Longitude = @MapBoundCoordinates.MaxLongitude <br />
+        Minimum Longitude = @MapBoundCoordinates.MinLongitude
+    </div>
+}
+
+<SfMaps ID="maps" @ref="MapsRef">
+    <MapsZoomSettings Enable="true" ZoomFactor="@ZoomFactor"></MapsZoomSettings>
+    <MapsCenterPosition Latitude="@CenterLat" Longitude="@CenterLong"></MapsCenterPosition>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" DataSource="MarkerDataSource" Height="25" Width="25" TValue="MarkerData" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" AnimationDuration="1500">
+                </MapsMarker>
+            </MapsMarkerSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+
 
 @code {
-    private SfMaps mapInstance;
+    SfMaps MapsRef;
+    public double ZoomFactor = 7;
+    public double CenterLat = 21.815447;
+    public double CenterLong = 80.1932;
+    public MinMaxLatitudeLongitude MapBoundCoordinates;
 
-    private void GetMapBounds()
+    public class MarkerData
     {
-        var bounds = mapInstance.GetMinMaxLatitudeLongitude();
-        Console.WriteLine($"Min Lat: {bounds.MinLatitude}, Max Lat: {bounds.MaxLatitude}");
-        Console.WriteLine($"Min Lng: {bounds.MinLongitude}, Max Lng: {bounds.MaxLongitude}");
+        public string Name{ get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
+
+    public void GetMinMaxLatitudeLongitude()
+    {
+        MapBoundCoordinates = MapsRef?.GetMinMaxLatitudeLongitude();
+    }
+
+    public ObservableCollection<MarkerData> MarkerDataSource = new ObservableCollection<MarkerData> {
+        new MarkerData {Latitude=22.572646,Longitude=88.363895},
+        new MarkerData {Latitude=25.0700428,Longitude=67.2847875}
+    };
 }
 ```
 
@@ -602,31 +654,30 @@ Get the minimum and maximum coordinates of the visible map area:
 Programmatically select or unselect shapes in the map:
 
 ```csharp
-<button @onclick="() => SelectShape()">Select California</button>
-<button @onclick="() => DeselectShape()">Deselect California</button>
+@using Syncfusion.Blazor.Maps
+
+<button @onclick="ShapeSelectAsync">Select Shape</button>
+<button @onclick="DeselectShape">Deselect Shape</button>
+<SfMaps @ref="maps">
+    <MapsZoomSettings Enable="true" EnablePanning="true">
+    </MapsZoomSettings>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsLayerSelectionSettings Enable="true" Fill="Green"></MapsLayerSelectionSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private SfMaps mapInstance;
+    SfMaps maps;
 
-    private async Task SelectShape()
+    public async Task ShapeSelectAsync()
     {
-        // Parameters: layerIndex, propertyName, name, enable
-        await mapInstance.ShapeSelectionAsync(
-            layerIndex: 0,
-            propertyName: "name",
-            name: "California",
-            enable: true  // Select
-        );
+         await maps.ShapeSelectionAsync(0, "name", "Argentina");
     }
-
-    private async Task DeselectShape()
+    public async Task DeselectShape()
     {
-        await mapInstance.ShapeSelectionAsync(
-            layerIndex: 0,
-            propertyName: "name",
-            name: "California",
-            enable: false  // Deselect
-        );
+         await maps.ShapeSelectionAsync(0, "name", "Argentina");
     }
 }
 ```
@@ -646,14 +697,14 @@ Access full event data in handlers:
     <p>Event details: @EventDetails</p>
 </div>
 
-<SfMaps @ref="mapInstance" 
-    OnMouseMove="MouseMoveHandler"
+<SfMaps @ref="mapInstance">
+    <MapsEvents MouseMove="MouseMoveHandler"
     OnMarkerClick="MarkerClickHandler"
-    OnShapeSelected="ShapeSelectHandler">
+    ShapeSelected="ShapeSelectHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095">
+                <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -662,21 +713,27 @@ Access full event data in handlers:
 
 @code {
     private SfMaps mapInstance;
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+    public List<City> MarkerData = new List<City> {
+        new City {Latitude = 35.145083,Longitude = -117.960260}
+    };
     private string LastEventType = "None";
     private string EventDetails = "";
-
-    private void MouseMoveHandler(MapClickEventArgs args)
+    private void MouseMoveHandler(MouseMoveEventArgs args)
     {
         LastEventType = "MouseMove";
         EventDetails = $"Position: ({args.Latitude:F2}, {args.Longitude:F2})";
     }
-
     private void MarkerClickHandler(MarkerClickEventArgs args)
     {
         LastEventType = "MarkerClick";
         EventDetails = $"Marker at ({args.Latitude}, {args.Longitude})";
     }
-
     private void ShapeSelectHandler(ShapeSelectedEventArgs args)
     {
         LastEventType = "ShapeSelected";
@@ -693,12 +750,12 @@ Only process specific events:
 @page "/filtered-events"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
+<SfMaps>
+    <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                    Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -706,8 +763,16 @@ Only process specific events:
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
 
+    public List<City> MarkerData = new List<City> {
+        new City {Latitude=37.368, Longitude=-122.095},
+        new City { Latitude = 40.724546, Longitude = -73.850344 }
+    };
     private void MarkerClickHandler(MarkerClickEventArgs args)
     {
         // Only process markers within certain bounds
@@ -725,174 +790,6 @@ Only process specific events:
 }
 ```
 
-## Common Event Patterns
-
-### Update Display on Selection
-
-```csharp
-@page "/selection-display"
-@using Syncfusion.Blazor.Maps
-
-<div>
-    @if (SelectedMarker != null)
-    {
-        <div style="background: lightblue; padding: 10px; margin: 10px;">
-            <h3>Selected Location</h3>
-            <p>Latitude: @SelectedMarker.Latitude</p>
-            <p>Longitude: @SelectedMarker.Longitude</p>
-            <button @onclick="ClearSelection">Deselect</button>
-        </div>
-    }
-</div>
-
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095"
-                    Fill="@(SelectedMarker?.Latitude == 37.368 ? "red" : "blue")"
-                    Shape="MarkerType.Circle" Width="15" Height="15">
-                </MapsMarker>
-            </MapsMarkerSettings>
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-@code {
-    private SfMaps mapInstance;
-
-    public class SelectedLocation
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-    }
-
-    private SelectedLocation SelectedMarker = null;
-
-    private void MarkerClickHandler(MarkerClickEventArgs args)
-    {
-        SelectedMarker = new SelectedLocation 
-        { 
-            Latitude = args.Latitude, 
-            Longitude = args.Longitude 
-        };
-    }
-
-    private void ClearSelection()
-    {
-        SelectedMarker = null;
-    }
-}
-```
-
-### Async Event Handling
-
-Perform async operations in event handlers:
-
-```csharp
-@page "/async-events"
-@using Syncfusion.Blazor.Maps
-
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickAsync">
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095">
-                </MapsMarker>
-            </MapsMarkerSettings>
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-@if (IsLoading)
-{
-    <p>Loading details...</p>
-}
-else if (LocationDetails != null)
-{
-    <p>@LocationDetails</p>
-}
-
-@code {
-    private SfMaps mapInstance;
-    private bool IsLoading = false;
-    private string LocationDetails = null;
-
-    private async Task MarkerClickAsync(MarkerClickEventArgs args)
-    {
-        IsLoading = true;
-
-        // Fetch location details from API
-        var details = await FetchLocationDetails(args.Latitude, args.Longitude);
-        LocationDetails = details;
-
-        IsLoading = false;
-    }
-
-    private async Task<string> FetchLocationDetails(double lat, double lng)
-    {
-        // Simulate API call
-        await Task.Delay(500);
-        return $"Location: {lat}, {lng}";
-    }
-}
-```
-
-### Event Debouncing
-
-Limit event processing frequency:
-
-```csharp
-@page "/debounced-events"
-@using Syncfusion.Blazor.Maps
-@implements IAsyncDisposable
-
-<SfMaps @ref="mapInstance" OnMouseMove="MouseMoveHandler">
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-<p>Updates per second: @UpdatesPerSecond</p>
-
-@code {
-    private SfMaps mapInstance;
-    private DateTime LastUpdate = DateTime.Now;
-    private int UpdateCount = 0;
-    private int UpdatesPerSecond = 0;
-    private Timer updateTimer;
-
-    protected override void OnInitialized()
-    {
-        updateTimer = new Timer(_ =>
-        {
-            UpdatesPerSecond = UpdateCount;
-            UpdateCount = 0;
-        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
-    }
-
-    private void MouseMoveHandler(MapClickEventArgs args)
-    {
-        var now = DateTime.Now;
-        var timeSinceLastUpdate = (now - LastUpdate).TotalMilliseconds;
-
-        // Only process if 100ms has passed since last update
-        if (timeSinceLastUpdate >= 100)
-        {
-            LastUpdate = now;
-            UpdateCount++;
-            // Process event
-        }
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        updateTimer?.Dispose();
-    }
-}
-```
-
 ## SfMaps Methods API Reference
 
 ### Pan Methods
@@ -900,7 +797,9 @@ Limit event processing frequency:
 ```csharp
 // Pan in specific direction
 // Direction values: Bottom, Left, Right, Top
-var position = new Syncfusion.Blazor.Maps.Internal.Point { X = 120, Y = 200 };
+Syncfusion.Blazor.Maps.Internal.Point position = new Syncfusion.Blazor.Maps.Internal.Point();
+position.X = 120;
+position.Y = 200;
 mapInstance.PanByDirectionAsync(PanDirection.Bottom, position);
 ```
 
@@ -908,7 +807,7 @@ mapInstance.PanByDirectionAsync(PanDirection.Bottom, position);
 
 ```csharp
 // Refresh map rendering (updates all layers, markers, data bindings)
-await mapInstance.RefreshAsync();
+mapInstance.Refresh();
 
 ```
 
@@ -932,7 +831,7 @@ await mapInstance.PrintAsync();
 
 ```csharp
 // Get current map bounds
-var bounds = mapInstance.GetMinMaxLatitudeLongitude();
+MinMaxLatitudeLongitude bounds = mapInstance.GetMinMaxLatitudeLongitude();
 // Returns: MinLatitude, MaxLatitude, MinLongitude, MaxLongitude
 ```
 
@@ -944,15 +843,15 @@ var bounds = mapInstance.GetMinMaxLatitudeLongitude();
 <MapsEvents OnMarkerClick="MarkerClickHandler"
             OnMarkerDragStart="DragStartHandler"
             OnMarkerDragEnd="DragEndHandler"
-            OnShapeSelected="ShapeSelectHandler"
-            OnZoomChange="ZoomChangeHandler"
+            ShapeSelected="ShapeSelectHandler"
+            OnZoom="ZoomChangeHandler"
             OnPan="PanHandler"
             OnLoad="LoadHandler"
-            OnLoaded="LoadedHandler"
-            OnMouseMove="MouseMoveHandler"
+            Loaded="LoadedHandler"
+            MouseMove="MouseMoveHandler"
             OnDoubleClick="DoubleClickHandler"
             OnPrint="PrintHandler"
-            OnResize="ResizeHandler">
+            Resizing="ResizeHandler">
 </MapsEvents>
 ```
 
@@ -963,26 +862,26 @@ var bounds = mapInstance.GetMinMaxLatitudeLongitude();
 | `OnMarkerClick` | `MarkerClickEventArgs` | Marker clicked |
 | `OnMarkerDragStart` | `MarkerDragStartEventArgs` | Marker drag begins |
 | `OnMarkerDragEnd` | `MarkerDragEndEventArgs` | Marker drag ends |
-| `OnMarkerMove` | `MarkerMoveEventArgs` | Marker moving (dragging) |
+| `MarkerMove` | `MarkerMoveEventArgs` | Marker moving (dragging) |
 | `OnMarkerMouseLeave` | `MarkerMouseLeaveEventArgs` | Mouse leaves marker |
 | `OnBubbleClick` | `BubbleClickEventArgs` | Bubble clicked |
-| `OnBubbleMove` | `BubbleMoveEventArgs` | Mouse moves over bubble |
-| `OnShapeSelected` | `ShapeSelectedEventArgs` | Shape/polygon selected |
-| `OnZoomChange` | `MapZoomEventArgs` | Zoom level changed |
+| `OnBubbleMouseMove` | `BubbleMoveEventArgs` | Mouse moves over bubble |
+| `ShapeSelected` | `ShapeSelectedEventArgs` | Shape/polygon selected |
+| `OnZoom` | `MapZoomEventArgs` | Zoom level changed |
 | `OnPan` | `MapPanEventArgs` | Map panned |
-| `OnMouseMove` | `MouseMoveEventArgs` | Mouse moves on map |
-| `OnDoubleClick` | `MapClickEventArgs` | Double-click on map |
+| `MouseMove` | `MouseMoveEventArgs` | Mouse moves on map |
+| `OnDoubleClick` | `MouseEventArgs` | Double-click on map |
 | `OnLoad` | `LoadEventArgs` | Before map loads |
-| `OnLoaded` | `LoadedEventArgs` | After map loads |
-| `OnShapeRendering` | `ShapeRenderingEventArgs` | Before shape renders |
-| `OnMarkerRendering` | `MarkerRenderingEventArgs` | Before marker renders |
-| `OnBubbleRendering` | `BubbleRenderingEventArgs` | Before bubble renders |
-| `OnLabelRendering` | `LabelRenderingEventArgs` | Before label renders |
-| `OnLayerRendering` | `LayerRenderingEventArgs` | Before layer renders |
-| `OnLegendRendering` | `LegendRenderingEventArgs` | Before legend renders |
+| `Loaded` | `LoadedEventArgs` | After map loads |
+| `ShapeRendering` | `ShapeRenderingEventArgs` | Before shape renders |
+| `MarkerRendering` | `MarkerRenderingEventArgs` | Before marker renders |
+| `BubbleRendering` | `BubbleRenderingEventArgs` | Before bubble renders |
+| `LabelRendering` | `LabelRenderingEventArgs` | Before label renders |
+| `LayerRendering` | `LayerRenderingEventArgs` | Before layer renders |
+| `LegendRendering` | `LegendRenderingEventArgs` | Before legend renders |
 | `OnPrint` | `PrintEventArgs` | Before printing |
-| `OnResize` | `ResizeEventArgs` | Map resized |
-| `OnAnimationComplete` | `AnimationCompleteEventArgs` | Animation finished |
+| `Resizing` | `ResizeEventArgs` | Map resized |
+| `AnimationCompleted` | `AnimationCompleteEventArgs` | Animation finished |
 
 ### Event Arguments Details
 
@@ -992,9 +891,12 @@ public class MarkerClickEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public MarkerType MarkerType { get; set; }
-    public string Color { get; set; }
-    public object Data { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Target { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public bool IsTouch { get; set; }
+    public string Value { get; set; }
 }
 
 // MapZoomEventArgs
@@ -1006,17 +908,24 @@ public class MapZoomEventArgs
 }
 
 // MapPanEventArgs
-public class MapPanEventArgs
+public class MapZoomEventArgs
 {
-    public MapsCenterPosition CurrentCenterPosition { get; set; }
-    public MapsCenterPosition NewCenterPosition { get; set; }
+    public double Scale { get; set; }
+    public string Type { get; set; }  // "ZoomIn", "ZoomOut", or programmatic
+    public PointF TileTranslatePoint { get; set; }
+    public double TileZoomLevel { get; set; }
+    public PointF TranslatePoint { get; set; }
 }
 
 // ShapeSelectedEventArgs
 public class ShapeSelectedEventArgs
 {
-    public object ShapeData { get; set; }
-    public GeometryType GeometryType { get; set; }
+    public MapsBorderSettings Border { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Fill { get; set; }
+    public double Opacity { get; set; }
+    public Dictionary<string, string> ShapeData { get; set; }
+    public string Target { get; set; }
 }
 ```
 

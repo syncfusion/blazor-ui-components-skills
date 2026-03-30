@@ -37,20 +37,23 @@
 
 Color mapping visualizes data values across geographic regions by applying colors based on data ranges. This technique (called choropleth) is perfect for displaying statistics like population density, income levels, or disease prevalence by region.
 
+> **Security Note:** GeoJSON and map tile data are typically fetched from external sources (CDNs, tile servers). This skill uses legitimate services:
+> - **Syncfusion CDN** (`cdn.syncfusion.com`) - Official vendor resource for geographic datasets
+> - **OpenStreetMap** (`tile.openstreetmap.org`) - Well-known public tile service
+> 
+> When loading data from other sources, validate URLs against trusted domain allow-lists. See [Map Providers - Security Best Practices](map-providers.md#security-best-practices).
+
 ### Basic Color Mapping
 
 ```csharp
 @page "/choropleth-map"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
         <MapsLayer TValue="StateData"
-            ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
-            DataSource="@StateData"
+            ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'
+            DataSource="@StateDataSource"
             ShapeDataPath="Name"
             ShapePropertyPath='new string[] { "name" }'>
             <MapsShapeSettings Fill="#E5E5E5" ColorValuePath="Population">
@@ -72,7 +75,7 @@ Color mapping visualizes data values across geographic regions by applying color
 @code {
 
     private object StateGeoJson;
-    private List<StateData> StateData = new()
+    private List<StateData> StateDataSource = new()
     {
         new StateData { Name = "California", Population = 39000000 },
         new StateData { Name = "Texas", Population = 29000000 },
@@ -84,17 +87,6 @@ Color mapping visualizes data values across geographic regions by applying color
     {
         public string Name { get; set; }
         public int Population { get; set; }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        StateGeoJson = await LoadStateGeoJson();
-    }
-
-    private async Task<object> LoadStateGeoJson()
-    {
-        // Load GeoJSON with state boundaries
-        return new { };
     }
 }
 ```
@@ -142,7 +134,7 @@ Use data quartiles for better distribution:
 Map different fields to different color ranges:
 
 ```csharp
-<MapsLayer TValue="ShapeData">
+<MapsLayer TValue="string">
     <!-- First visualization: Population density -->
     <MapsShapeSettings ColorValuePath="PopulationDensity">
         <MapsShapeColorMappings>
@@ -192,7 +184,7 @@ Legends explain the color mapping and help users interpret the visualization. Th
             </MapsShapeSettings>
         </MapsLayer>
     </MapsLayers>
-    <MapsLegendSettings Visible="true" Position="LegendPosition.BottomRight">
+    <MapsLegendSettings Visible="true" Position="LegendPosition.Bottom">
     </MapsLegendSettings>
 </SfMaps>
 ```
@@ -200,38 +192,29 @@ Legends explain the color mapping and help users interpret the visualization. Th
 ### Legend with Custom Title and Labels
 
 ```csharp
-<MapsLegendSettings Visible="true" Position="LegendPosition.BottomLeft"
-    Title="Population by State"
-    TitleStyle="@TitleStyle"
-    LabelDisplayMode="LabelIntersectAction.Hide">
+<MapsLegendSettings Visible="true" Position="Syncfusion.Blazor.Maps.LegendPosition.Bottom"              LabelDisplayMode="Syncfusion.Blazor.Maps.LabelIntersectAction.Hide">
+        <MapsLegendTitle Text="Population by State">
+            <MapsLegendTitleStyle Size = "16px" Color = "black" FontWeight = "bold" />
+        </MapsLegendTitle>
 </MapsLegendSettings>
-
-@code {
-    private TitleStyle TitleStyle = new TitleStyle
-    {
-        FontWeight = "bold",
-        Size = "16px",
-        Color = "black"
-    };
-}
 ```
 
 ### Legend Positioning Options
 
 ```csharp
-<!-- Top-Left -->
-<MapsLegendSettings Visible="true" Position="LegendPosition.TopLeft">
+<!-- Left -->
+<MapsLegendSettings Visible="true" Position="LegendPosition.Left">
 </MapsLegendSettings>
 
-<!-- Top-Center -->
-<MapsLegendSettings Visible="true" Position="LegendPosition.TopCenter">
+<!-- Top -->
+<MapsLegendSettings Visible="true" Position="LegendPosition.Top">
 </MapsLegendSettings>
 
-<!-- Top-Right -->
-<MapsLegendSettings Visible="true" Position="LegendPosition.TopRight">
+<!-- Right -->
+<MapsLegendSettings Visible="true" Position="LegendPosition.Right">
 </MapsLegendSettings>
 
-<!-- Bottom-Left, Bottom-Center, Bottom-Right, etc. -->
+<!-- Left, Bottom, Right, Top, Float -->
 ```
 
 ### Toggle Legend Visibility
@@ -240,25 +223,19 @@ Legends explain the color mapping and help users interpret the visualization. Th
 @page "/legend-toggle"
 @using Syncfusion.Blazor.Maps
 
-<button @onclick="() => ShowLegend = !ShowLegend">
-    @(ShowLegend ? "Hide" : "Show") Legend
-</button>
+<button @onclick="() => ShowLegend = !ShowLegend"> Legend </button>
 
-<SfMaps @ref="mapInstance">
+<SfMaps>
     <MapsLayers>
         <MapsLayer TValue="string">
             <!-- Layer configuration -->
         </MapsLayer>
     </MapsLayers>
-    @if (ShowLegend)
-    {
-        <MapsLegendSettings Visible="true" Position="LegendPosition.BottomRight">
-        </MapsLegendSettings>
-    }
+    <MapsLegendSettings Visible="@ShowLegend" Position="Syncfusion.Blazor.Maps.LegendPosition.Bottom"               LabelDisplayMode="Syncfusion.Blazor.Maps.LabelIntersectAction.Hide">
+    </MapsLegendSettings>
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
     private bool ShowLegend = true;
 }
 ```
@@ -270,11 +247,8 @@ Data labels display text directly on map elements (regions, bubbles, markers) to
 ### Labels on Shapes (Regions)
 
 ```csharp
-<MapsLayer TValue="StateData" DataSource="@StateData">
-    <MapsShapeSettings ColorValuePath="Population">
-    </MapsShapeSettings>
-    <MapsDataLabelSettings Visible="true" LabelPath="Name">
-    </MapsDataLabelSettings>
+<MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+    <MapsDataLabelSettings Visible="true" LabelPath="name" />
 </MapsLayer>
 ```
 
@@ -283,37 +257,14 @@ This displays the state name on each state polygon.
 ### Custom Label Formatting
 
 ```csharp
-<MapsDataLabelSettings Visible="true" LabelPath="Name"
-    TextStyle="@LabelStyle"
-    Border="@LabelBorder">
-</MapsDataLabelSettings>
-
-@code {
-    private TextStyle LabelStyle = new TextStyle
-    {
-        FontSize = "12px",
-        FontWeight = "bold",
-        Color = "white"
-    };
-
-    private Border LabelBorder = new Border
-    {
-        Color = "black",
-        Width = "1px"
-    };
-}
+<MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+    <MapsDataLabelSettings Visible="true" LabelPath="name">
+        <MapsLayerDataLabelBorder Color="green" Width="2"></MapsLayerDataLabelBorder>
+        <MapsLayerDataLabelTextStyle Color="blue" Size="12px" FontStyle="Sans-serif" FontWeight="normal">
+        </MapsLayerDataLabelTextStyle>
+    </MapsDataLabelSettings>
+</MapsLayer>
 ```
-
-### Labels on Bubbles
-
-```csharp
-<MapsBubbleSettings Visible="true" ValuePath="Population">
-    <MapsBubbleDataLabels Visible="true" LabelPath="CityName">
-    </MapsBubbleDataLabels>
-</MapsBubbleSettings>
-```
-
-Displays city names inside or near data bubbles.
 
 ### Conditional Labels
 
@@ -322,28 +273,18 @@ Show labels only for selected features:
 ```csharp
 @page "/conditional-labels"
 @using Syncfusion.Blazor.Maps
-
-<SfMaps @ref="mapInstance" OnShapeSelected="ShapeSelected">
+<SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="StateData" DataSource="@StateData">
-            <MapsDataLabelSettings Visible="@ShowAllLabels" LabelPath="Name">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+            <MapsDataLabelSettings Visible="@ShowAllLabels" LabelPath="name">
             </MapsDataLabelSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
-<button @onclick="() => ShowAllLabels = !ShowAllLabels">
-    @(ShowAllLabels ? "Hide" : "Show") Labels
-</button>
+<button @onclick="() => ShowAllLabels = !ShowAllLabels"> Labels </button>
 
 @code {
-    private SfMaps mapInstance;
     private bool ShowAllLabels = false;
-
-    private void ShapeSelected(ShapeSelectedEventArgs args)
-    {
-        // Handle selection
-    }
 }
 ```
 
@@ -354,23 +295,35 @@ Show labels only for selected features:
 Match geographic boundaries with your data:
 
 ```csharp
-<MapsLayer TValue="YourDataType"
-    ShapeDataSource="@GeoJsonShapes"
-    DataSource="@YourDataList"
-    ShapePropertyPath="@new string[] { "properties.state_id" }">
-    <MapsShapeSettings ColorValuePath="Value">
-        <MapsShapeColorMappings>
-            <!-- Color mappings -->
-        </MapsShapeColorMappings>
-    </MapsShapeSettings>
-</MapsLayer>
+@using Syncfusion.Blazor.Maps
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' DataSource="PopulationDetails"
+		    ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="PopulationDetail">
+            <MapsShapeSettings Fill="#E5E5E5" ColorValuePath="Density">
+                <MapsShapeColorMappings>
+                    <MapsShapeColorMapping StartRange="0.00001" EndRange="100" Color='new string[] {"yellow"}' />
+                    <MapsShapeColorMapping StartRange="100" EndRange="400" Color='new string[] {"green"}' />
+                </MapsShapeColorMappings>
+            </MapsShapeSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private List<YourDataType> YourDataList = new()
+    public class PopulationDetail
     {
-        new YourDataType { StateId = "CA", Value = 100 },
-        new YourDataType { StateId = "TX", Value = 85 },
-        // Match property names to GeoJSON
+        public string Code { get; set; }
+        public double Value { get; set; }
+        public string Name { get; set; }
+        public double Population { get; set; }
+        public double Density { get; set; }
+    };
+    public List<PopulationDetail> PopulationDetails = new List<PopulationDetail> {
+       new PopulationDetail { Code = "US", Value = 34, Name ="United States", Population = 325020000, Density = 33 },
+       new PopulationDetail { Code ="RU", Value = 9, Name = "Russia", Population = 142905208, Density = 8.3 },
+       new PopulationDetail { Code = "In", Value = 384, Name = "India", Population = 1198003000, Density = 364 },
+       new PopulationDetail { Code = "CN", Value = 143, Name = "China", Population = 1389750000,Density = 144 }
     };
 }
 ```
@@ -382,18 +335,15 @@ Match geographic boundaries with your data:
 ```csharp
 @page "/live-data-map"
 @using Syncfusion.Blazor.Maps
+@using System.Threading
 
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps @ref="mapInstance">
     <MapsLayers>
-        <MapsLayer TValue="RegionData"
-            DataSource="@LiveData">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="RegionData" DataSource="@LiveData">
             <MapsShapeSettings ColorValuePath="CurrentValue">
                 <MapsShapeColorMappings>
-                    <MapsShapeColorMapping StartRange="0" EndRange="50" Color='new string[] { "green" }'>
-                    </MapsShapeColorMapping>
-                    <MapsShapeColorMapping StartRange="50" EndRange="100" Color='new string[] { "red" }'>
-                    </MapsShapeColorMapping>
+                    <MapsShapeColorMapping StartRange="0" EndRange="50" Color='new string[] { "green" }' />
+                    <MapsShapeColorMapping StartRange="50" EndRange="100" Color='new string[] { "red" }' />
                 </MapsShapeColorMappings>
             </MapsShapeSettings>
         </MapsLayer>
@@ -403,7 +353,8 @@ Match geographic boundaries with your data:
 @code {
     private SfMaps mapInstance;
     private List<RegionData> LiveData = new();
-    private Timer updateTimer;
+    private PeriodicTimer updateTimer;
+    private CancellationTokenSource cts = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -411,24 +362,41 @@ Match geographic boundaries with your data:
         StartLiveUpdates();
     }
 
-    private void StartLiveUpdates()
+    private async void StartLiveUpdates()
     {
-        updateTimer = new Timer(async _ =>
+        updateTimer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
+        try
         {
-            // Update data from API
-            LiveData = await FetchLatestData();
-            await mapInstance.RefreshAsync();
-        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            while (await updateTimer.WaitForNextTickAsync(cts.Token))
+            {
+                await InvokeAsync(async () =>
+                {
+                    LiveData = await FetchLatestData();
+                    mapInstance.Refresh();
+                });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected on dispose
+        }
     }
 
-    private async Task<List<RegionData>> LoadInitialData()
+    public void Dispose()
     {
-        return new List<RegionData>();
+        cts.Cancel();
+        updateTimer?.Dispose();
     }
 
-    private async Task<List<RegionData>> FetchLatestData()
+    private Task<List<RegionData>> LoadInitialData()
     {
-        return new List<RegionData>();
+        return Task.FromResult(new List<RegionData>());
+    }
+
+    private Task<List<RegionData>> FetchLatestData()
+    {
+        return Task.FromResult(new List<RegionData>());
     }
 
     public class RegionData
@@ -474,7 +442,7 @@ Maps data ranges to colors.
 ```csharp
 <MapsShapeColorMapping StartRange="0" 
                        EndRange="50000" 
-                       Color="#B3E5FC"
+                       Color='new string[] {"#B3E5FC"}'
                        Label="Low">
 </MapsShapeColorMapping>
 ```
@@ -492,12 +460,11 @@ Configure data labels on shapes.
 
 ```csharp
 <MapsDataLabelSettings Visible="true"
-                       LabelPath="name"
-                       SmartLabelMode="SmartLabelMode.Hide"
-                       IntersectAction="IntersectAction.Wrap">
-    <MapsLayerDataLabelTextStyle FontSize="12"
-                                  FontFamily="Arial"
-                                  FontColor="black">
+            LabelPath="name"
+            SmartLabelMode="Syncfusion.Blazor.Maps.SmartLabelMode.Hide"
+            IntersectionAction="Syncfusion.Blazor.Maps.IntersectAction.Trim">
+    <MapsLayerDataLabelBorder Color="green" Width="2"></MapsLayerDataLabelBorder>
+    <MapsLayerDataLabelTextStyle Color="blue" Size="12px" FontFamily="Arial">
     </MapsLayerDataLabelTextStyle>
 </MapsDataLabelSettings>
 ```
@@ -515,17 +482,16 @@ Configure legend appearance.
 
 ```csharp
 <MapsLegendSettings Visible="true"
-                    Position="LegendPosition.BottomRight"
-                    Mode="LegendMode.Default"
-                    Type="LegendType.Shapes"
-                    Arrangement="LegendArrangement.Vertical"
+                    Position="Syncfusion.Blazor.Maps.LegendPosition.Bottom"
+                    Mode="Syncfusion.Blazor.Maps.LegendMode.Default"
+                    Type="Syncfusion.Blazor.Maps.LegendType.Layers"
                     Width="200"
                     Height="100">
     <MapsLegendTitle Text="Population">
-        <MapsLegendTitleStyle FontSize="14" FontWeight="bold">
+        <MapsLegendTitleStyle Size="14px" FontWeight="bold">
         </MapsLegendTitleStyle>
     </MapsLegendTitle>
-    <MapsLegendTextStyle FontSize="12">
+    <MapsLegendTextStyle Size="12px">
     </MapsLegendTextStyle>
 </MapsLegendSettings>
 ```
@@ -536,29 +502,44 @@ Configure legend appearance.
 | `Position` | `LegendPosition` | Placement: Top, Bottom, Left, Right, etc. |
 | `Mode` | `LegendMode` | Default (static) or Interactive (clickable) |
 | `Type` | `LegendType` | Items shown: Layers, Markers, Bubbles, Shapes |
-| `Arrangement` | `LegendArrangement` | Layout: Vertical or Horizontal |
+| `Orientation` | `LegendArrangement` | Layout: Vertical or Horizontal |
 | `Width` | double | Legend width |
 | `Height` | double | Legend height |
-| `ToggleLegendVisibility` | bool | Allow clicking items to toggle visibility |
+| `ToggleVisibility` | bool | Allow clicking items to toggle visibility |
 
 ### MapsBubbleSettings
 
 Configure bubble visualization.
 
 ```csharp
-<MapsBubbleSettings MinRadius="5"
-                    MaxRadius="25"
-                    ColorValuePath="revenue"
-                    ValuePath="sales"
-                    Opacity="0.8"
-                    Fill="blue">
-    <MapsBubbleColorMappings>
-        <MapsBubbleColorMapping StartRange="0" EndRange="100000" Color='new string[] { "#B3E5FC" }'>
-        </MapsBubbleColorMapping>
-        <MapsBubbleColorMapping StartRange="100000" EndRange="500000" Color='new string[] { "#4FC3F7" }'>
-        </MapsBubbleColorMapping>
-    </MapsBubbleColorMappings>
-</MapsBubbleSettings>
+@using Syncfusion.Blazor.Maps
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+                   ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
+            @* To add bubbles based on population count *@
+            <MapsBubbleSettings>
+                <MapsBubble Visible="true" ValuePath="Population" ColorValuePath="Color" MinRadius=20 MaxRadius=40 
+                            DataSource="PopulationDetails" TValue="Country">
+                </MapsBubble>
+            </MapsBubbleSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+
+@code {
+    public class Country
+    {
+        public string Name { get; set; }
+        public double Population { get; set; }
+        public string Color { get; set; }
+    };
+    public List<Country> PopulationDetails = new List<Country> {
+       new Country { Name = "Australia", Population = 325020000, Color = "#0000FF" },
+       new Country { Name = "Russia", Population = 142905208, Color = "#09156D" },
+       new Country { Name = "India", Population = 1198003000, Color = "#C2D2D6" }
+    };
+}
 ```
 
 | Property | Type | Description |
@@ -577,8 +558,8 @@ Maps values to colors.
 ```csharp
 public class MapsColorMapping
 {
-    public object From { get; set; }
-    public object To { get; set; }
+    public double From { get; set; }
+    public double To { get; set; }
     public string Color { get; set; }
     public string Label { get; set; }
 }
@@ -609,11 +590,10 @@ Layer multiple datasets on the same map:
     <!-- Markers for cities -->
     <MapsLayer>
         <MapsMarkerSettings DataSource="@CityMarkers">
-            @foreach (var city in CityMarkers)
-            {
-                <MapsMarker Latitude="@city.Latitude" Longitude="@city.Longitude">
-                </MapsMarker>
-            }
+            <MapsMarker Visible="true" DataSource="MarkerDataSourceOne" />
+            </MapsMarker>
+            <MapsMarker Visible="true" DataSource="MarkerDataSourceTwo" />
+            </MapsMarker>
         </MapsMarkerSettings>
     </MapsLayer>
 </MapsLayers>
@@ -627,10 +607,9 @@ Combine multiple data points into regional summaries:
 @page "/aggregated-data-map"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps >
-<MapsZoomSettings ZoomFactor="3"></MapsZoomSettings>
+<SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="RegionalSales"
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="RegionalSales"
             DataSource="@AggregatedData">
             <MapsShapeSettings ColorValuePath="TotalSales">
                 <MapsShapeColorMappings>
@@ -646,19 +625,17 @@ Combine multiple data points into regional summaries:
             </MapsDataLabelSettings>
         </MapsLayer>
     </MapsLayers>
-    <MapsLegendSettings Visible="true" Position="LegendPosition.BottomRight">
+    <MapsLegendSettings Visible="true" Position="Syncfusion.Blazor.Maps.LegendPosition.Bottom">
     </MapsLegendSettings>
 </SfMaps>
 
 @code {
-
     private List<RegionalSales> AggregatedData = new()
     {
         new RegionalSales { RegionName = "West", TotalSales = 250000 },
         new RegionalSales { RegionName = "Central", TotalSales = 180000 },
         new RegionalSales { RegionName = "East", TotalSales = 420000 }
     };
-
     public class RegionalSales
     {
         public string RegionName { get; set; }
@@ -672,13 +649,12 @@ Combine multiple data points into regional summaries:
 Filter and visualize specific data subsets:
 
 ```csharp
-<button @onclick="() => FilterData('high')">High Values</button>
-<button @onclick="() => FilterData('all')">All Values</button>
+<button @onclick='() => FilterData("high")'>High Values</button>
+<button @onclick='() => FilterData("all")'>All Values</button>
 
 <SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer TValue="DataPoint"
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="DataPoint"
             DataSource="@FilteredData">
             <MapsShapeSettings ColorValuePath="Value">
             </MapsShapeSettings>
@@ -700,7 +676,7 @@ Filter and visualize specific data subsets:
             _ => FullData
         };
 
-        await mapInstance.RefreshAsync();
+        mapInstance.Refresh();
     }
 
     public class DataPoint

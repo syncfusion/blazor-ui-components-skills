@@ -8,18 +8,18 @@
 
 ---
 
-## Parts
+## Quick Reference Navigation
 
-1. [Generating License Keys](#part-1-generating-license-keys)
-2. [Registering License Keys in Applications](#part-2-registering-license-keys-in-applications)
-3. [Registering When Consuming a Razor Class Library (RCL)](#part-3-registering-when-consuming-a-razor-class-library-rcl)
-4. [Secure Registration in Blazor WASM Apps](#part-4-secure-registration-in-blazor-wasm-apps)
-5. [Troubleshooting Licensing Errors](#part-5-troubleshooting-licensing-errors)
-6. [Licensing FAQ](#part-6-licensing-faq)
+1. [Generating License Keys](#generating-license-keys)
+2. [Registering License Keys in Applications](#registering-license-keys-in-applications)
+3. [Registering When Consuming a Razor Class Library (RCL)](#registering-when-consuming-a-razor-class-library-rcl)
+4. [Secure Registration in Blazor WASM Apps](#secure-registration-in-blazor-wasm-apps)
+5. [Troubleshooting Licensing Errors](#troubleshooting-licensing-errors)
+6. [Licensing FAQ](#licensing-faq)
 
 ---
 
-## Part 1: Generating License Keys
+## Generating License Keys
 
 ### License Portal Locations
 
@@ -61,7 +61,7 @@ Depending on your account status, different keys are generated:
 
 ---
 
-## Part 2: Registering License Keys in Applications
+## Registering License Keys in Applications
 
 ### Registration Basics
 
@@ -73,6 +73,8 @@ Depending on your account status, different keys are generated:
 - License validation is offline - no internet required for running
 
 ### Registration Code Template
+
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
 
 ```csharp
 using Syncfusion.Licensing;
@@ -86,6 +88,8 @@ Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY
 #### 1. Blazor Web App (Interactive Auto)
 
 **Location**: Register in BOTH server and client projects
+
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
 
 **Server/Program.cs:**
 ```csharp
@@ -119,6 +123,8 @@ if (!app.Environment.IsDevelopment())
 
 #### 3. Blazor Web App (Interactive WebAssembly)
 
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
+
 **Location**: Register in BOTH server and client projects
 
 **Server/Program.cs:**
@@ -134,6 +140,8 @@ Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY
 ```
 
 #### 4. Blazor Standalone WebAssembly App
+
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
 
 **Location**: Client project only
 
@@ -157,7 +165,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 ---
 
-## Part 3: Registering When Consuming a Razor Class Library (RCL)
+## Registering When Consuming a Razor Class Library (RCL)
 
 ### RCL Registration Strategy
 
@@ -201,7 +209,9 @@ Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY
 
 ---
 
-## Part 4: Secure Registration in Blazor WASM Apps
+## Secure Registration in Blazor WASM Apps
+
+> **Security Warning (WASM):** Do NOT register license keys in client-side Blazor WebAssembly `Program.cs` or commit keys into source. Client-side assemblies are downloadable and can expose license keys to end users. Treat license keys like secrets.
 
 ### Security Concerns
 
@@ -280,7 +290,7 @@ For enhanced security in cloud environments, store license keys in Azure Key Vau
 
 ---
 
-## Part 5: Troubleshooting Licensing Errors
+## Troubleshooting Licensing Errors
 
 ### Error: License Key Not Registered or Trial Expired
 
@@ -365,7 +375,7 @@ For enhanced security in cloud environments, store license keys in Azure Key Vau
 
 ---
 
-## Part 6: Licensing FAQ
+## Licensing FAQ
 
 ### Is Internet Connection Required?
 

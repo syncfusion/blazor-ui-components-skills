@@ -17,11 +17,18 @@ The `GraphQLAdaptor` enables `SfDataManager` to interact with GraphQL services. 
 To use `GraphQLAdaptor`:
 
 1. Set `Adaptor="Adaptors.GraphQLAdaptor"` on `SfDataManager`
-2. Set `Url` to your GraphQL endpoint
+2. Set `Url` to your **trusted, authenticated** GraphQL endpoint
 3. Configure `GraphQLAdaptorOptions` with:
    - `Query` — the GraphQL query string
    - `ResolverName` — maps the response to `data.{ResolverName}`
    - `Mutation` (optional) — for CRUD operations
+
+⚠️ **SECURITY CRITICAL**: 
+- Only connect to GraphQL services you **control or explicitly trust**
+- Use **HTTPS only** and **authenticate all requests**
+- Validate the GraphQL endpoint URL against a whitelist
+- Sanitize all response data before rendering to UI
+- Implement rate limiting and request monitoring
 
 The GraphQL server resolver receives a `DataManagerRequest` input variable and must return a JSON response with `count`, `result`, and optionally `aggregates`.
 
@@ -34,8 +41,9 @@ The GraphQL server resolver receives a `DataManagerRequest` input variable and m
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variable for GraphQL endpoint URL with whitelist validation -->
 <SfGrid TValue="Order" AllowPaging="true" PageSettings="new PageSettings { PageSize = 10 }">
-    <SfDataManager Url="https://api.example.com/graphql"
+    <SfDataManager Url="@GraphQLEndpointUrl"
                    GraphQLAdaptorOptions="@adaptorOptions"
                    Adaptor="Adaptors.GraphQLAdaptor">
     </SfDataManager>
@@ -51,6 +59,26 @@ The GraphQL server resolver receives a `DataManagerRequest` input variable and m
 </SfGrid>
 
 @code {
+    // Whitelist of trusted GraphQL endpoints
+    private static readonly HashSet<string> TrustedGraphQLEndpoints = new()
+    {
+        "https://api.yourtrusted-domain.com/graphql"
+    };
+
+    // String variable for GraphQL endpoint URL
+    private string GraphQLEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://api.yourtrusted-domain.com/graphql";
+        
+        if (!TrustedGraphQLEndpoints.Contains(endpoint))
+            throw new InvalidOperationException($"Security validation failed: GraphQL endpoint '{endpoint}' is not in the trusted list");
+        
+        GraphQLEndpointUrl = endpoint;
+    }
+
     private GraphQLAdaptorOptions adaptorOptions = new GraphQLAdaptorOptions
     {
         Query = @"
@@ -88,12 +116,33 @@ Define mutations for Insert, Update, and Delete in `GraphQLAdaptorOptions.Mutati
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Data
 
-<SfDataManager Url="https://api.example.com/graphql"
+<!-- SECURITY: Use string variable for GraphQL endpoint URL with whitelist validation -->
+<SfDataManager Url="@GraphQLCrudEndpointUrl"
                GraphQLAdaptorOptions="@_adaptorOptions"
                Adaptor="Adaptors.GraphQLAdaptor">
 </SfDataManager>
 
 @code {
+    // Whitelist of trusted GraphQL endpoints
+    private static readonly HashSet<string> TrustedGraphQLEndpoints = new()
+    {
+        "https://api.yourtrusted-domain.com/graphql"
+    };
+
+    // String variable for GraphQL endpoint URL
+    private string GraphQLCrudEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://api.yourtrusted-domain.com/graphql";
+        
+        if (!TrustedGraphQLEndpoints.Contains(endpoint))
+            throw new InvalidOperationException($"Security validation failed: GraphQL endpoint '{endpoint}' is not in the trusted list");
+        
+        GraphQLCrudEndpointUrl = endpoint;
+    }
+
     private GraphQLAdaptorOptions _adaptorOptions = new GraphQLAdaptorOptions
     {
         Query = @"
@@ -521,11 +570,13 @@ builder.Services
     .AddQueryType<GraphQLQuery>()
     .AddMutationType<GraphQLMutation>();
 
+// SECURITY: Restrict CORS to only the specific Blazor app origin
+// Never use wildcard (*) in production
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", cors =>
     {
-        cors.WithOrigins("https://your-blazor-app-url")
+        cors.WithOrigins("https://your-blazor-app-url")  // Use HTTPS only
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

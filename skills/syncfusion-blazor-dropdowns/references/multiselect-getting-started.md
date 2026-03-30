@@ -66,7 +66,9 @@ await builder.Build().RunAsync();
 ### Minimal Component Usage
 
 ```csharp
-<SfMultiSelect DataSource="@Items" TValue="List<string>" TItem="ItemData">
+<SfMultiSelect TValue="string[]" 
+               TItem="ItemData"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -92,10 +94,10 @@ await builder.Build().RunAsync();
 ```
 
 **What's happening:**
-- `SfMultiSelect` - The main component
+- `SfMultiSelect` - The main component with generic type parameters
+- `TValue="string[]"` - Type of selected values (array of strings)
+- `TItem="ItemData"` - Type of each item in the data source
 - `DataSource` - Collection of items to display
-- `TValue="List<string>"` - Selected items are returned as a list of strings
-- `TItem="ItemData"` - Type of items in the data source
 - `MultiSelectFieldSettings` - Maps data properties to dropdown fields
 
 ### Understanding Generic Parameters
@@ -106,11 +108,12 @@ public class Employee { public string Name { get; set; } }
 // Then: TItem="Employee"
 ```
 
-**`TValue`** - The type of selected values
+**`TValue`** - The type of selected values (array or collection)
 ```csharp
-// Single selection: TValue="string"
-// Multiple selection: TValue="List<string>"
-// Complex type: TValue="List<Employee>"
+// String array: TValue="string[]"
+// List of strings: TValue="List<string>"
+// Complex type array: TValue="Employee[]"
+// Note: MultiSelect always returns a collection of values
 ```
 
 ## Theme Application
@@ -162,22 +165,22 @@ Complete, copy-paste-ready example:
 <div style="margin: 20px;">
     <h3>MultiSelect Dropdown Demo</h3>
     
-    <SfMultiSelect DataSource="@FruitList" 
-                   TValue="List<string>"
+    <SfMultiSelect TValue="string[]"
                    TItem="Fruit"
+                   DataSource="@FruitList"
                    Placeholder="Select fruits"
                    AllowFiltering="true">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     </SfMultiSelect>
     
     <div style="margin-top: 20px;">
-        <p><strong>Selected:</strong> @string.Join(", ", SelectedFruits)</p>
+        <p><strong>Selected:</strong> @string.Join(", ", SelectedFruits ?? Array.Empty<string>())</p>
     </div>
 </div>
 
 @code {
     private List<Fruit> FruitList { get; set; } = new();
-    private List<string> SelectedFruits { get; set; } = new();
+    private string[] SelectedFruits { get; set; } = Array.Empty<string>();
 
     protected override void OnInitialized()
     {
@@ -244,10 +247,10 @@ Complete, copy-paste-ready example:
 **Cause:** Incorrect `TValue` or `TItem` generic types
 
 **Solution:**
-1. `TValue` must be `List<T>` for multiple selection
+1. `TValue` must be an array or collection type (e.g., `string[]`, `List<string>`)
 2. `TItem` must match your data source object type
-3. Ensure field mappings exist: `Text` and `Value` properties
-4. Example: If `TItem="Employee"`, ensure `Employee` has properties for `Text` and `Value` fields
+3. Ensure field mappings exist: `Text` and `Value` properties in `MultiSelectFieldSettings`
+4. Example: `TValue="string[]"` and `TItem="Employee"` where `Employee` has `ID` and `Name` properties
 
 ### Issue: DataSource is null or empty
 

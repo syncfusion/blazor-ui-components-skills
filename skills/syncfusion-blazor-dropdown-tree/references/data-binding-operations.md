@@ -337,7 +337,7 @@ Connect to OData services:
         Text="FirstName" 
         ParentID="ReportsTo" 
         HasChildren="HasChildren">
-        <SfDataManager Url="https://blazor.syncfusion.com/services/production/odata/DropDownTreeOData" 
+        <SfDataManager Url="url" 
             Adaptor="@Syncfusion.Blazor.Adaptors.ODataAdaptor" 
             CrossDomain="true">
         </SfDataManager>
@@ -374,7 +374,7 @@ Connect to OData V4 services:
         Text="FirstName" 
         ParentID="ReportsTo" 
         HasChildren="HasChildren">
-        <SfDataManager Url="https://blazor.syncfusion.com/services/production/odata/DropDownTreeODataV4" 
+        <SfDataManager Url="url" 
             Adaptor="@Syncfusion.Blazor.Adaptors.ODataV4Adaptor" 
             CrossDomain="true">
         </SfDataManager>

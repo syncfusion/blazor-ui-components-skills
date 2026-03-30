@@ -13,6 +13,38 @@ The Syncfusion Blazor Pivot Table (`SfPivotView`) is a powerful multi-dimensiona
 
 > ⚠️ **Important:** Always verify API class names, properties, and method signatures by consulting the **reference files in this skill** (`references/*.md`). These are maintained with verified, working examples. Do not assume API details from other sources.
 
+## ⚠️ Security Warning: Data Source Validation
+
+**CRITICAL SECURITY NOTICE:** When implementing pivot tables, always use trusted data sources. **Never** fetch or bind data from untrusted or user-provided URLs without proper validation and sanitization.
+
+### Security Best Practices:
+
+1. **Use Local Data**: Prefer local, in-memory data sources for maximum security
+2. **Validate Remote Sources**: Only connect to authenticated and authorized API endpoints under your control
+3. **Sanitize User Input**: Never allow users to specify arbitrary URLs or data sources
+4. **Implement Authentication**: Always use authentication headers and secure API endpoints
+5. **Content Validation**: Validate and sanitize all data received from external sources before binding
+6. **Use HTTPS**: Always use HTTPS for remote data connections
+7. **Rate Limiting**: Implement rate limiting on API endpoints to prevent abuse
+
+### Security Risks:
+
+- **Indirect Prompt Injection**: Untrusted third-party data can contain malicious content that manipulates AI agent behavior
+- **Data Exfiltration**: Malicious data sources could attempt to extract sensitive information
+- **Code Injection**: Untrusted data may contain scripts or harmful content
+
+### Recommended Approach:
+
+✅ **DO**: Use controlled, authenticated backend APIs
+✅ **DO**: Implement server-side data validation
+✅ **DO**: Use configuration files for API endpoints
+✅ **DO**: Whitelist allowed data sources
+
+❌ **DON'T**: Accept user-provided URLs
+❌ **DON'T**: Bind to public, untrusted endpoints
+❌ **DON'T**: Skip data validation and sanitization
+❌ **DON'T**: Use HTTP for sensitive data
+
 ## When to Use This Skill
 
 - Implementing `SfPivotView` in a Blazor WASM, Server, or MAUI app
@@ -97,10 +129,14 @@ The Syncfusion Blazor Pivot Table (`SfPivotView`) is a powerful multi-dimensiona
 - Enable `AllowGrouping` and right-click UI
 - Programmatic grouping configuration
 
-### Drill Down & Drill Through
-📄 **Read:** [references/drill-down-and-through.md](references/drill-down-and-through.md)
+### Drill Down
+📄 **Read:** [references/drill-down.md](references/drill-down.md)
 - Expand/collapse member hierarchies
 - `ExpandAll` to show all levels on load
+- Programmatic drill operations
+
+### Drill Through
+📄 **Read:** [references/drill-through.md](references/drill-through.md)
 - Drill-through popup for viewing raw data behind a value cell
 
 ### Editing
@@ -123,19 +159,24 @@ The Syncfusion Blazor Pivot Table (`SfPivotView`) is a powerful multi-dimensiona
 - Hyper-links in cells, tooltips
 
 ### Toolbar
-📄 **Read:** [references/toolbar.md](references/toolbar.md)
+📄 **Read:** [references/tool-bar.md](references/tool-bar.md)
 - Enable `ShowToolbar` with built-in items (Grid, Chart, Export, Formatting, Field List)
 - Custom toolbar items and event handling
 - Report management (save, load, rename, delete)
 
-### Export (Excel & PDF)
-📄 **Read:** [references/export.md](references/export.md)
+### Excel Export
+📄 **Read:** [references/excel-export.md](references/excel-export.md)
 - Excel export: `ExportToExcelAsync`, styling, custom file name
-- PDF export: `ExportToPdfAsync`, page settings, themes
+- CSV export, export as memory stream
 - Export via toolbar or programmatically
 
+### PDF Export
+📄 **Read:** [references/pdf-export.md](references/pdf-export.md)
+- PDF export: `ExportToPdfAsync`, page settings, themes
+- Export chart with table
+
 ### Performance Optimization
-📄 **Read:** [references/performance.md](references/performance.md)
+📄 **Read:** [references/performance-best-practices.md](references/performance-best-practices.md)
 - Virtual scrolling (`EnableVirtualization`) for large datasets
 - Paging (`PivotViewPageSettings`) as an alternative to virtualization
 - Data compression, defer layout update

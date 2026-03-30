@@ -499,8 +499,7 @@ Execute logic when user selects an item:
 <SfAutoComplete TValue="string" TItem="Country" 
                 DataSource="@Countries"
                 @bind-Value="SelectedCountry">
-    <AutoCompleteFieldSettings Value="CountryName" >
-    </AutoCompleteFieldSettings>
+    <AutoCompleteFieldSettings Value="CountryName" ></AutoCompleteFieldSettings>
     <AutoCompleteEvents TValue="string" TItem="Country"
                         ValueChange="@OnCountryChange">
     </AutoCompleteEvents>
@@ -509,8 +508,7 @@ Execute logic when user selects an item:
 <SfAutoComplete TValue="string" TItem="City" 
                 DataSource="@Cities"
                 @bind-Value="SelectedCity">
-    <AutoCompleteFieldSettings Value="CityName" >
-    </AutoCompleteFieldSettings>
+    <AutoCompleteFieldSettings Value="CityName" ></AutoCompleteFieldSettings>
 </SfAutoComplete>
 
 @code {

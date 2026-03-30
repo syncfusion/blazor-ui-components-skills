@@ -1,4 +1,4 @@
-﻿# Markers and Layers
+# Markers and Layers
 
 ## Table of Contents
 
@@ -58,11 +58,10 @@ Markers are point-based annotations placed on the map at specific coordinates. T
         <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
                    TValue="CityData">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@MarkerData" 
+                <MapsMarker Visible="true" DataSource="@MarkerData" 
                             TValue="CityData"
                             LatitudeValuePath="Latitude"
-                            LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Circle" Width="20" Height="20"
+                            LongitudeValuePath="Longitude" Width="20" Height="20"
                             Fill="red">
                     <MapsMarkerTooltipSettings Visible="true" ValuePath="Name"></MapsMarkerTooltipSettings>
                 </MapsMarker>
@@ -78,7 +77,6 @@ Markers are point-based annotations placed on the map at specific coordinates. T
         public double Longitude { get; set; }
         public string Name { get; set; }
     }
-
     private List<CityData> MarkerData = new()
     {
         new CityData { Latitude = 37.368, Longitude = -122.095, Name = "San Francisco" }
@@ -103,8 +101,7 @@ Bind multiple markers to a data source. The recommended approach is to use **`Ma
                             TValue="LocationData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            ColorValuePath="Color"
-                            Shape="MarkerType.Circle" Width="15" Height="15">
+                            ColorValuePath="Color" Visible="true" Width="15" Height="15">
                     <MapsMarkerTooltipSettings Visible="true" ValuePath="Name"></MapsMarkerTooltipSettings>
                 </MapsMarker>
             </MapsMarkerSettings>
@@ -131,12 +128,12 @@ Bind multiple markers to a data source. The recommended approach is to use **`Ma
 ```
 
 **Key Points:**
-- ✅ Use `<MapsMarkerSettings>` container
-- ✅ Use `<MapsMarker TValue="LocationData">` component with TValue
-- ❌ Do NOT use `<MapsMarkers>` (this component doesn't exist)
-- ✅ Always specify `LatitudeValuePath` and `LongitudeValuePath` 
-- ✅ Bind data with `DataSource="@YourDataList"`
-- ✅ Data class **MUST** have `Latitude` and `Longitude` properties
+✅ Use `<MapsMarkerSettings>` container
+✅ Use `<MapsMarker TValue="LocationData">` component with TValue
+❌ Do NOT use `<MapsMarkers>` (this component doesn't exist)
+✅ Always specify `LatitudeValuePath` and `LongitudeValuePath` 
+✅ Bind data with `DataSource="@YourDataList"`
+✅ Data class **MUST** have `Latitude` and `Longitude` properties
 
 ## Marker Types and Styling
 
@@ -152,32 +149,32 @@ The `Shape` property determines the marker appearance. Use multiple `<MapsMarker
         <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="MarkerData">
             <MapsMarkerSettings>
                 <!-- Circle marker -->
-                <MapsMarker DataSource="@CircleMarkers" 
+                <MapsMarker Visible="true" DataSource="@CircleMarkers" 
                             TValue="MarkerData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Circle" Width="15" Height="15"></MapsMarker>
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15"></MapsMarker>
                 
                 <!-- Rectangle marker -->
-                <MapsMarker DataSource="@RectMarkers" 
+                <MapsMarker Visible="true" DataSource="@RectMarkers" 
                             TValue="MarkerData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Rectangle" Width="20" Height="20"></MapsMarker>
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Rectangle" Width="20" Height="20"></MapsMarker>
                 
                 <!-- Triangle marker -->
-                <MapsMarker DataSource="@TriangleMarkers" 
+                <MapsMarker Visible="true" DataSource="@TriangleMarkers" 
                             TValue="MarkerData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Triangle" Width="20" Height="20"></MapsMarker>
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Triangle" Width="20" Height="20"></MapsMarker>
                 
                 <!-- Cross marker -->
-                <MapsMarker DataSource="@CrossMarkers" 
+                <MapsMarker Visible="true" DataSource="@CrossMarkers" 
                             TValue="MarkerData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Cross" Width="20" Height="20"></MapsMarker>
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Cross" Width="20" Height="20"></MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
@@ -216,13 +213,12 @@ The `Shape` property determines the marker appearance. Use multiple `<MapsMarker
     <MapsLayers>
         <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="MarkerData">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@StyledMarkers" 
+                <MapsMarker Visible="true" DataSource="@StyledMarkers" 
                             TValue="MarkerData"
                             LatitudeValuePath="Latitude"
                             LongitudeValuePath="Longitude"
-                            Shape="MarkerType.Circle" 
                             Width="20" Height="20"
-                            Fill="red"
+                            Fill="blue"
                             Opacity="0.8">
                     <MapsMarkerBorder Color="darkred" Width="2"></MapsMarkerBorder>
                 </MapsMarker>
@@ -265,8 +261,8 @@ Use custom images for markers by setting `Shape="MarkerType.Image"`:
     <MapsLayers>
         <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@ImageMarkers" TValue="MarkerData"
-                            Shape="MarkerType.Image"
+                <MapsMarker Visible="true" DataSource="@ImageMarkers" TValue="MarkerData"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Image"
                             ImageUrl="https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/ballon.png"
                             Width="32" Height="32">
                 </MapsMarker>
@@ -306,73 +302,38 @@ Automatically group nearby markers for cleaner visualization at low zoom levels.
 <SfMaps>
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker DataSource="@LargeMarkerSet" TValue="CityData"
-                            Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="LargestCities" Height="25" Width="15" TValue="City">
                 </MapsMarker>
             </MapsMarkerSettings>
-            
-            <!-- Enable Marker Clustering -->
-            <MapsMarkerClusterSettings AllowClustering="true" 
-                                       Shape="MarkerType.Circle" 
-                                       Fill="#008CFF" 
-                                       Height="25" Width="25">
+            <MapsMarkerClusterSettings AllowClustering="true" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Fill="#008CFF" Height="25" Width="25">
                 <MapsLayerMarkerClusterLabelStyle Color="white"></MapsLayerMarkerClusterLabelStyle>
             </MapsMarkerClusterSettings>
+            <MapsShapeSettings Fill="lightgray">
+            </MapsShapeSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    public class CityData
+    public class City
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Name { get; set; }
+        public double Area { get; set; }
     }
 
-    private List<CityData> LargeMarkerSet = new()
-    {
-        new CityData { Latitude = 40.6971494, Longitude = -74.2598747, Name = "New York" },
-        new CityData { Latitude = 40.0024137, Longitude = -75.2581194, Name = "Philadelphia" },
-        new CityData { Latitude = 42.3142647, Longitude = -71.11037, Name = "Boston" },
-        new CityData { Latitude = 25.7823907, Longitude = -80.2994995, Name = "Miami" }
-        // Add more cities as needed
+    private List<City> LargestCities = new List<City> {
+        new City { Latitude = 40.6971494, Longitude = -74.2598747, Name = "New York", Area = 8683 },
+        new City { Latitude = 40.0024137, Longitude = -75.2581194, Name = "Philadelphia", Area = 4661 },
+        new City { Latitude = 42.3142647, Longitude = -71.11037, Name = "Boston", Area = 4497 },
+        new City { Latitude = 42.3526257, Longitude = -83.239291, Name = "Detroit", Area = 3267 },
+        new City { Latitude = 47.2510905, Longitude = -123.1255834, Name = "Washington", Area = 2996 },
+        new City { Latitude = 25.7823907, Longitude = -80.2994995, Name = "Miami", Area = 2891 },
+        new City { Latitude = 19.3892246, Longitude = -70.1305136, Name = "San Juan", Area = 2309 }
     };
-}
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-@code {
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    
-    private MapsMarkerClusterSettings ClusterSettings = new MapsMarkerClusterSettings
-    {
-        AllowClustering = true,
-        Shape = MarkerType.Circle,
-        Width = 40,
-        Height = 40,
-        BorderColor = "white",
-        BorderWidth = 2,
-        Fill = "orange"
-    };
-
-    private List<LocationData> Locations = new()
-    {
-        // Populate with many markers - will auto-cluster
-        new LocationData { Latitude = 37.368, Longitude = -122.095 },
-        new LocationData { Latitude = 37.380, Longitude = -122.100 },
-        new LocationData { Latitude = 37.370, Longitude = -122.090 },
-        // ... more locations ...
-    };
-
-    public class LocationData
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-    }
 }
 ```
 
@@ -381,12 +342,9 @@ Automatically group nearby markers for cleaner visualization at low zoom levels.
 - `AllowClusterExpand`: Allow cluster to expand on click (bool, default: true) ⭐ NEW
 - `Shape`: Marker shape for clusters (MarkerType)
 - `Width`/`Height`: Cluster circle size (double)
-- `BorderColor`/`BorderWidth`: Outline styling
 - `Fill`: Cluster circle color
 - `ImageUrl`: Custom image for cluster shapes instead of geometric shapes ⭐ NEW
-- `DashArray`: Dash pattern for cluster outline ⭐ NEW
-- `ClusterDistance`: Distance in pixels for grouping nearby markers (int, default: 50)
-- `LabelFill`: Text color for cluster count label
+- `DashArray`: Dash pattern for cluster outline
 
 **Clustering benefits:**
 - Reduces visual clutter at zoom level 1-6
@@ -396,16 +354,12 @@ Automatically group nearby markers for cleaner visualization at low zoom levels.
 **Advanced Cluster Configuration Example:**
 ```csharp
 <MapsMarkerClusterSettings AllowClustering="true" 
-                            AllowClusterExpand="true"  // ← NEW
+                            AllowClusterExpand="true"  //  NEW
                             Shape="MarkerType.Circle" 
                             Width="40" Height="40"
                             Fill="orange"
-                            BorderColor="white"
-                            BorderWidth="2"
-                            DashArray="5"              // ← NEW - Dashed outline
-                            LabelFill="white"
-                            ClusterDistance="50"
-                            ImageUrl="">               // ← NEW - Leave empty for shape, or set to image URL
+                            DashArray="5"
+                            ImageUrl="">               //  NEW - Leave empty for shape, or set to image URL
     <MapsLayerMarkerClusterLabelStyle Color="white"></MapsLayerMarkerClusterLabelStyle>
     <MapsLayerMarkerClusterConnectorLineSettings Color="blue" Opacity="0.5">
     </MapsLayerMarkerClusterConnectorLineSettings>
@@ -414,8 +368,8 @@ Automatically group nearby markers for cleaner visualization at low zoom levels.
 
 **Cluster Events (NEW):**
 ```csharp
-<SfMaps OnMarkerClusterClick="OnClusterClick" OnMarkerClusterMove="OnClusterMove">
-    <MapsEvents></MapsEvents>
+<SfMaps>
+    <MapsEvents MarkerClusterClick="OnClusterClick" MarkerClusterMouseMove="OnClusterMove"></MapsEvents>
     <!-- Map configuration -->
 </SfMaps>
 
@@ -447,27 +401,26 @@ A layer is an ordered collection of visual elements rendered at a specific depth
 ### Stacking Layers
 
 ```csharp
-<SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
     <MapsLayers>
         <!-- Base tile layer (renders first, appears underneath) -->
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
 
         <!-- Shape layer (renders second, on top of tiles) -->
-        <MapsLayer TValue="CountryData"
+        <MapsLayer TValue="CountryData" Type="Syncfusion.Blazor.Maps.Type.SubLayer"
                    ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
-                   DataSource="@CountryData"
+                   DataSource="@CountryDataSource"
                    ShapePropertyPath='new string[] { "name" }'>
             <MapsShapeSettings Fill="lightblue">
             </MapsShapeSettings>
         </MapsLayer>
 
         <!-- Marker layer (renders third, on top) -->
-        <MapsLayer TValue="MarkerData">
+        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }' TValue="MarkerData" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
             <MapsMarkerSettings>
-                <MapsMarker TValue="MarkerData" Latitude="37.368" Longitude="-122.095" 
-                    Shape="MarkerType.Circle" Width="15" Height="15" Visible="true">
+                <MapsMarker Visible="true" Datasource="@MarkerDataSource" TValue="MarkerData"
+                    Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -475,8 +428,21 @@ A layer is an ordered collection of visual elements rendered at a specific depth
 </SfMaps>
 
 @code {
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    private List<object> CountryData = new();
+    private List<CountryData> CountryDataSource = new();
+    public class CountryData
+    {
+        public string Name { get; set; }
+        public double Population { get; set; }
+    };
+    public class MarkerData
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    };
+    public List<MarkerData> MarkerDataSource = new List<MarkerData>
+    {
+        new MarkerData { Latitude = 47.60621, Longitude = -122.332071 }
+    };
 }
 ```
 
@@ -486,12 +452,12 @@ Each layer can have independent styling:
 
 ```csharp
 <MapsLayers>
-    <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+    <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         <MapsLayerOpacity>0.8</MapsLayerOpacity>
     </MapsLayer>
 
-    <MapsLayer TValue="string">
-        <MapsLayerOpacity>0.6</MapsLayerOpacity>
+    <MapsLayer TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+        <MapsShapeSettings Fill="lightblue" Opacity="0.5">
         <!-- Different opacity for this layer -->
     </MapsLayer>
 </MapsLayers>
@@ -507,47 +473,58 @@ Control which layers are visible:
 @page "/layer-toggle"
 @using Syncfusion.Blazor.Maps
 
-<button @onclick="() => ToggleLayer(0)">Toggle Base Map</button>
-<button @onclick="() => ToggleLayer(1)">Toggle Markers</button>
+<button @onclick="() => ToggleLayer(0)">Toggle World Map</button>
+<button @onclick="() => ToggleLayer(1)">Toggle USA Map</button>
 
-<div style="width: 100%; height: 500px;">
-    <SfMaps @ref="mapInstance" CenterPosition="@CenterLatLng" >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-        <MapsLayers>
-            @for (int i = 0; i < Layers.Count; i++)
-            {
-                if (VisibleLayers.Contains(i))
-                {
-                    <MapsLayer @key="i" UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-                        @if (i == 1)
-                        {
-                            <MapsMarkerSettings>
-                                <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                                    Shape="MarkerType.Circle" Width="15" Height="15">
-                                </MapsMarker>
-                            </MapsMarkerSettings>
-                        }
-                    </MapsLayer>
-                }
-            }
-        </MapsLayers>
-    </SfMaps>
-</div>
+<SfMaps BaseLayerIndex="@BaseLayerIndex">
+    <MapsLayers>
+        <MapsLayer TValue="CountryData"
+                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   DataSource="@CountryDataSource"
+                   ShapePropertyPath='new string[] { "name" }'>
+            <MapsShapeSettings Fill="lightblue" />
+        </MapsLayer>
+
+        <MapsLayer TValue="MarkerData"
+                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'>
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true"
+                            Datasource="@MarkerDataSource"
+                            TValue="MarkerData"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
+                            Width="15"
+                            Height="15">
+                </MapsMarker>
+            </MapsMarkerSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 37.368, Longitude = -122.095 };
-    private List<string> Layers = new() { "Base Map", "Markers" };
-    private List<int> VisibleLayers = new() { 0, 1 };
+    private int BaseLayerIndex = 1;
 
-    private async Task ToggleLayer(int index)
+    private List<CountryData> CountryDataSource = new();
+
+    public class CountryData
     {
-        if (VisibleLayers.Contains(index))
-            VisibleLayers.Remove(index);
-        else
-            VisibleLayers.Add(index);
+        public string Name { get; set; }
+        public double Population { get; set; }
+    }
 
-        await mapInstance.RefreshAsync();
+    public class MarkerData
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+    private List<MarkerData> MarkerDataSource = new()
+    {
+        new MarkerData { Latitude = 47.60621, Longitude = -122.332071 }
+    };
+
+    private void ToggleLayer(int index)
+    {
+        BaseLayerIndex = index;
     }
 }
 ```
@@ -559,77 +536,54 @@ Control which layers are visible:
 ```csharp
 @page "/dynamic-markers"
 @using Syncfusion.Blazor.Maps
+@using System.Collections.ObjectModel
 
-<button @onclick="AddMarker">Add Marker</button>
-<button @onclick="ClearMarkers">Clear All</button>
-
-<div style="width: 100%; height: 500px;">
-    <SfMaps @ref="mapInstance" CenterPosition="@CenterLatLng" >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-        <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-                <MapsMarkerSettings>
-                    @foreach (var marker in DynamicMarkers)
-                    {
-                        <MapsMarker Latitude="@marker.Latitude" 
-                            Longitude="@marker.Longitude"
-                            Shape="MarkerType.Circle" 
-                            Width="15" Height="15"
-                            Fill="@marker.Color">
-                        </MapsMarker>
-                    }
-                </MapsMarkerSettings>
-            </MapsLayer>
-        </MapsLayers>
-    </SfMaps>
+<div style="margin-bottom:10px;">
+    <button @onclick="AddMarker">Add Marker</button>
+    <button @onclick="ClearMarkers">Clear Markers</button>
 </div>
 
+<SfMaps @ref="mapInstance">
+    <MapsLayers>
+        <MapsLayer TValue="MarkerData"
+                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'>
+            <MapsMarkerSettings>
+                <MapsMarker TValue="MarkerData"
+                            Visible="true"
+                            Datasource="@Markers"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
+                            Width="12"
+                            Height="12"
+                            Fill="red">
+                </MapsMarker>
+            </MapsMarkerSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 @code {
     private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    private List<MarkerData> DynamicMarkers = new();
-    private Random random = new();
 
-    private async Task AddMarker()
+    // ✅ ObservableCollection instead of List
+    private ObservableCollection<MarkerData> Markers = new();
+
+    private void AddMarker()
     {
-        var lat = 25 + (random.NextDouble() * 50); // Random US latitude
-        var lon = -125 + (random.NextDouble() * 50); // Random US longitude
-        var colors = new[] { "red", "blue", "green", "orange", "purple" };
-
-        DynamicMarkers.Add(new MarkerData 
-        { 
-            Latitude = lat, 
-            Longitude = lon, 
-            Color = colors[random.Next(colors.Length)] 
+        Markers.Add(new MarkerData
+        {
+            Latitude = 28.6139,   // New Delhi
+            Longitude = 77.2090
         });
-
-        await mapInstance.RefreshAsync();
     }
 
-    private async Task ClearMarkers()
+    private void ClearMarkers()
     {
-        DynamicMarkers.Clear();
-        await mapInstance.RefreshAsync();
+        Markers.Clear();
     }
 
     public class MarkerData
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public string Color { get; set; }
-    }
-}
-```
-
-### Updating Existing Markers
-
-```csharp
-private async Task UpdateMarkerColor(int index, string newColor)
-{
-    if (index >= 0 && index < DynamicMarkers.Count)
-    {
-        DynamicMarkers[index].Color = newColor;
-        await mapInstance.RefreshAsync();
     }
 }
 ```
@@ -694,8 +648,7 @@ Generic marker component with data binding support.
 ### Key Properties
 
 ```csharp
-<MapsMarker Latitude="37.368" 
-            Longitude="-122.095"
+<MapsMarker DataSource="@markerdataSource" Tvalue="MarkerData" Visible="true"
             Shape="MarkerType.Circle"
             Width="15"
             Height="15"
@@ -713,8 +666,6 @@ Generic marker component with data binding support.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Latitude` | double | Y-coordinate (-90 to 90) - Set via component attribute or data binding |
-| `Longitude` | double | X-coordinate (-180 to 180) - Set via component attribute or data binding |
 | `Shape` | `MarkerType` | Marker shape: Circle, Rectangle, Triangle, Cross, Diamond, Image, Balloon. Default: Balloon |
 | `Width` | double | Marker width in pixels. Default: 10 |
 | `Height` | double | Marker height in pixels. Default: 10 |
@@ -728,7 +679,7 @@ Generic marker component with data binding support.
 | `ImageUrlValuePath` | string | Data field for dynamic image URL |
 | `LatitudeValuePath` | string | Data field for latitude values |
 | `LongitudeValuePath` | string | Data field for longitude values |
-| `Visible` | bool | Show/hide marker. Default: true |
+| `Visible` | bool | Show/hide marker. Default: false |
 | `EnableDrag` | bool | Allow marker dragging. Default: false |
 | `AnimationDuration` | double | Animation duration in milliseconds. Default: 1000 |
 | `AnimationDelay` | double | Animation delay in milliseconds. Default: 0 |
@@ -736,6 +687,7 @@ Generic marker component with data binding support.
 | `OffsetY` | double | Vertical offset from latitude |
 | `DashArray` | string | Dash pattern for marker outline |
 | `LegendText` | string | Legend label for marker |
+| `DataSource` | IEnumerable<object> | To bind external data to markers, enabling dynamic data display on maps |
 
 ## MapsLayer<TValue> API Reference
 
@@ -744,12 +696,20 @@ Generic layer component for rendering geographic data.
 ### Key Properties
 
 ```csharp
-<MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string"
+<MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="dataSourceType"
            ShapeDataSource="@shapeData"
            DataSource="@dataSource"
-           ShapePropertyPath="name"
-           ShapeSettings="@shapeSettings"
-           MarkerSettings="@markerSettings">
+           ShapePropertyPath="name">
+           <MapsMarkerSettings>
+                <MapsMarker TValue="MarkerData"
+                            Visible="true"
+                            Datasource="@Markers"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
+                            Width="12"
+                            Height="12"
+                            Fill="red">
+                </MapsMarker>
+            </MapsMarkerSettings>
 </MapsLayer>
 ```
 
@@ -774,9 +734,7 @@ Configure marker clustering behavior.
                             Height="40"
                             Fill="orange"
                             BorderColor="white"
-                            BorderWidth="2"
-                            LabelFill="white"
-                            ClusterDistance="50">
+                            BorderWidth="2">
 </MapsMarkerClusterSettings>
 ```
 
@@ -789,8 +747,6 @@ Configure marker clustering behavior.
 | `Fill` | string | Cluster color |
 | `BorderColor` | string | Cluster border color |
 | `BorderWidth` | double | Cluster border width |
-| `LabelFill` | string | Text color in cluster |
-| `ClusterDistance` | int | Distance in pixels for grouping |
 
 ## MapsMarkerSettings API
 
@@ -801,8 +757,8 @@ Set default marker appearance for all markers.
                     Opacity="0.8"
                     Width="15"
                     Height="15"
-                    Border="@markerBorder"
                     Shape="MarkerType.Circle">
+    <MapsMarkerBorder Color="green" Width="2"></MapsMarkerBorder>
 </MapsMarkerSettings>
 ```
 
@@ -826,5 +782,6 @@ Configure shape/polygon appearance.
 | `StrokeWidth` | double | Border width |
 | `Opacity` | double | Transparency (0-1) |
 | `ColorValuePath` | string | Data field for color mapping |
+| `Autofill` | bool | Shapes in the map will automatically be filled with color |
 
 

@@ -96,6 +96,7 @@ builder.Services.AddSyncfusionBlazor();
 
 ### Toolbar Configuration
 📄 **Read:** [references/toolbar.md](references/toolbar.md)
+- Enabling or disabling the toolbar with `RichTextEditorToolbarSettings.Enable`
 - Toolbar types: Expand, MultiRow, Scrollable, Popup
 - Floating toolbar and offset configuration
 - Toolbar position (top or bottom)
@@ -242,7 +243,7 @@ builder.Services.AddSyncfusionBlazor();
 ### Read-only display
 ```razor
 <SfRichTextEditor Value="@HtmlContent" Readonly="true">
-    <RichTextEditorToolbarSettings Visible="false" />
+    <RichTextEditorToolbarSettings Enable="false" />
 </SfRichTextEditor>
 ```
 

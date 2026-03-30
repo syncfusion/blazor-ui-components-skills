@@ -17,9 +17,9 @@
 @page "/filtering-basic"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                AllowFiltering="true"
                Placeholder="Type to search">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -50,12 +50,13 @@
 ### Placeholder and Debounce
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                AllowFiltering="true"
                FilterBarPlaceholder="Search employees"
                FilterType="FilterType.Contains"
+               DebounceDelay="300"
                Placeholder="Select employees">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -67,14 +68,18 @@
 
 ### Filter Types
 
+The `FilterType` enum determines how search text matches against items:
+
 | FilterType | Behavior | Example |
 |-----------|----------|---------|
-| `StartsWith` | Match from beginning | "app" matches "Apple" |
-| `EndsWith` | Match at end | "ple" matches "Apple" |
-| `Contains` | Match anywhere (default) | "pp" matches "Apple" |
+| `FilterType.StartsWith` | Match from beginning | "app" matches "Apple" |
+| `FilterType.EndsWith` | Match at end | "ple" matches "Apple" |
+| `FilterType.Contains` | Match anywhere (default) | "pp" matches "Apple" |
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
                AllowFiltering="true"
                FilterType="FilterType.StartsWith">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -84,9 +89,9 @@
 ### Case-Sensitive Filtering
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                AllowFiltering="true"
                IgnoreCase="false">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
@@ -101,13 +106,13 @@
 @page "/custom-filtering"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@FilteredItems" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Employee"
+               DataSource="@FilteredItems"
                AllowFiltering="true"
                Placeholder="Search by name or department">
     <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Employee" 
+    <MultiSelectEvents TValue="string[]" TItem="Employee" 
                        Filtering="OnFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -180,13 +185,13 @@ private void OnFiltering(FilteringEventArgs args)
 @using Syncfusion.Blazor.DropDowns
 @inject HttpClient Http
 
-<SfMultiSelect DataSource="@RemoteData" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="ApiItem"
+               DataSource="@RemoteData"
                AllowFiltering="true"
                Placeholder="Search products">
     <MultiSelectFieldSettings Text="ProductName" Value="ProductID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="ApiItem" 
+    <MultiSelectEvents TValue="string[]" TItem="ApiItem" 
                        Filtering="OnRemoteFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -200,8 +205,7 @@ private void OnFiltering(FilteringEventArgs args)
 
         try
         {
-            // Call API with search term
-            string url = $"https://api.example.com/products/search?term={Uri.EscapeDataString(args.Text)}";
+            string url = $"YOUR_API_ENDPOINT?term={Uri.EscapeDataString(args.Text)}";
             RemoteData = await Http.GetFromJsonAsync<List<ApiItem>>(url);
         }
         catch (Exception ex)
@@ -225,13 +229,14 @@ private void OnFiltering(FilteringEventArgs args)
 @using Syncfusion.Blazor.DropDowns
 @inject HttpClient Http
 
-<SfMultiSelect DataSource="@RemoteData" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="ApiItem"
+               DataSource="@RemoteData"
                AllowFiltering="true"
+               DebounceDelay="300"
                Placeholder="Search (with delay)">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="ApiItem" 
+    <MultiSelectEvents TValue="string[]" TItem="ApiItem" 
                        Filtering="OnFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -267,7 +272,7 @@ private void OnFiltering(FilteringEventArgs args)
         try
         {
             RemoteData = await Http.GetFromJsonAsync<List<ApiItem>>(
-                $"https://api.example.com/items?search={Uri.EscapeDataString(searchTerm)}"
+                $"YOUR_API_ENDPOINT={Uri.EscapeDataString(searchTerm)}"
             );
         }
         catch (Exception ex)
@@ -288,10 +293,9 @@ private void OnFiltering(FilteringEventArgs args)
 @page "/grouping-basic"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               AllowGrouping="true"
+               DataSource="@Items"
                Placeholder="Select items (grouped)">
     <MultiSelectFieldSettings Text="Name" Value="ID" GroupBy="Category"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -319,6 +323,8 @@ private void OnFiltering(FilteringEventArgs args)
 }
 ```
 
+**Note:** Grouping is controlled via the `GroupBy` property in `MultiSelectFieldSettings`, not an `AllowGrouping` property on the component.
+
 **Output:**
 ```
 Fruit
@@ -331,11 +337,15 @@ Vegetable
 
 ### Grouping with Sorting
 
+The `SortOrder` enum controls how items are sorted:
+- `SortOrder.None` - No sorting (default)
+- `SortOrder.Ascending` - Sort A to Z
+- `SortOrder.Descending` - Sort Z to A
+
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               AllowGrouping="true"
+               DataSource="@Items"
                SortOrder="SortOrder.Ascending"
                Placeholder="Sorted groups">
     <MultiSelectFieldSettings Text="Name" Value="ID" GroupBy="Category"></MultiSelectFieldSettings>
@@ -367,18 +377,17 @@ Vegetable
 @page "/custom-group-template"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
-               AllowGrouping="true"
+               DataSource="@Items"
                Placeholder="Custom group headers">
     <MultiSelectFieldSettings Text="Name" Value="ID" GroupBy="Category"></MultiSelectFieldSettings>
     <MultiSelectTemplates TItem="Item">
         <GroupTemplate>
             <div>
                 <span style="font-weight: bold; color: #2196F3;">
-                    @((context as IGroupsData<Item>).Key) 
-                    (@((context as IGroupsData<Item>).Items.Count) items)
+                    @context.Text
+                    (@context.Items.Count() items)
                 </span>
             </div>
         </GroupTemplate>
@@ -431,15 +440,14 @@ For multi-level grouping, group items in code before binding:
 ### Combine Filtering and Grouping
 
 ```csharp
-<SfMultiSelect DataSource="@FilteredAndGroupedItems" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@FilteredAndGroupedItems"
                AllowFiltering="true"
-               AllowGrouping="true"
                FilterType="FilterType.Contains"
                Placeholder="Filter and grouped">
     <MultiSelectFieldSettings Text="Name" Value="ID" GroupBy="Category"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item" 
+    <MultiSelectEvents TValue="string[]" TItem="Item" 
                        Filtering="OnFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -492,9 +500,11 @@ private void OnFiltering(FilteringEventArgs args)
 ## Key Takeaways
 
 ✅ `AllowFiltering="true"` enables search  
-✅ Use `FilterType` to control matching behavior  
+✅ Use `FilterType` enum to control matching behavior (StartsWith, EndsWith, Contains)  
+✅ Use `DebounceDelay` property to delay filtering (default: 300ms)  
 ✅ Implement `Filtering` event for custom logic  
-✅ `AllowGrouping="true"` + `GroupBy` property organizes items  
+✅ Grouping is enabled by setting `GroupBy` property in `MultiSelectFieldSettings`  
+✅ Use `SortOrder` enum for sorting (None, Ascending, Descending)  
 ✅ Debounce remote API calls to reduce server load  
 ✅ Combine filtering + grouping for powerful UX  
 

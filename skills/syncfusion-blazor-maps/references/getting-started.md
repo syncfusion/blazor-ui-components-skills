@@ -1,4 +1,4 @@
-﻿## Table of Contents
+## Table of Contents
 
 - [Installation and Setup](#installation-and-setup)
    - [Step 1: Install NuGet Package](#step-1-install-nuget-package)
@@ -31,6 +31,8 @@
 
 ### Step 1: Install NuGet Package
 
+> **Security Note:** This step installs the Syncfusion.Blazor NuGet package from the official NuGet.org repository. This is a legitimate vendor package required for the Maps component functionality. The package integrates into your Blazor application and is loaded at runtime.
+
 Install the Syncfusion.Blazor package via NuGet Package Manager:
 
 ```bash
@@ -41,6 +43,11 @@ Or using Package Manager Console:
 ```
 Install-Package Syncfusion.Blazor
 ```
+
+**Package Verification:**
+- Publisher: Syncfusion Inc
+- Source: https://www.nuget.org/packages/Syncfusion.Blazor
+- Verify package signature before installation in production environments
 
 ### Step 2: Register in Program.cs
 
@@ -95,7 +102,7 @@ Create a new component or page with a basic map:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -109,22 +116,19 @@ Control the initial map view:
 
 ```csharp
 <SfMaps >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+    <MapsCenterPosition Latitude="25.54244147012483" Longitude="-89.62646484375"></MapsCenterPosition>
+    <MapsZoomSettings Enable="false" ZoomFactor="11"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
-@code {
-    private int ZoomLevel = 4;
-}
 ```
 
 **Properties:**
 - `CenterPosition.Latitude`: Initial latitude (e.g., 37.368)
 - `CenterPosition.Longitude`: Initial longitude (e.g., -122.095)
-- `ZoomLevel`: Initial zoom level (1-20, default is 1)
+- `ZoomLevel`: Initial zoom level (1-10, default is 1)
 
 ### Map with Fixed Size
 
@@ -134,7 +138,7 @@ Set explicit dimensions for the map container:
 <div style="width: 100%; height: 600px;">
     <SfMaps>
         <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+            <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             </MapsLayer>
         </MapsLayers>
     </SfMaps>
@@ -150,29 +154,28 @@ Complete working example with markers and basic interaction:
 ```csharp
 @page "/maps-demo"
 @using Syncfusion.Blazor.Maps
-
-<h2>My First Map</h2>
-
-<div style="width: 100%; height: 500px;">
-    <SfMaps >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-        <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-                <MapsMarkerSettings>
-                    <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                        Shape="MarkerType.Circle" Width="15" Height="15">
-                    </MapsMarker>
-                    <MapsMarker Latitude="40.726" Longitude="-73.986" 
-                        Shape="MarkerType.Circle" Width="15" Height="15">
-                    </MapsMarker>
-                </MapsMarkerSettings>
-            </MapsLayer>
-        </MapsLayers>
-    </SfMaps>
-</div>
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
+                    Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
+                </MapsMarker>
+            </MapsMarkerSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
+     public class MapMarkerDataSource
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    };
+    public List<MapMarkerDataSource> MarkerData = new List<MapMarkerDataSource>
+    {
+        new MapMarkerDataSource { Latitude = 47.60621, Longitude = -122.332071 }
+    };
 }
 ```
 
@@ -187,14 +190,20 @@ A layer is a collection of visual elements (tiles, shapes, markers) displayed on
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <!-- Base tile layer -->
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+             <MapsShapeSettings Fill="#E5E5E5">
+                <MapsShapeBorder Color="black" Width="0.1"></MapsShapeBorder>
+            </MapsShapeSettings>
         </MapsLayer>
-        <MapsLayer TValue="string">
-            <!-- Shape data layer -->
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+        <MapsShapeSettings Fill="rgba(141, 206, 255, 0.6)">
+                <MapsShapeBorder Color="#1a9cff" Width="0.25"></MapsShapeBorder>
+            </MapsShapeSettings>
         </MapsLayer>
-        <MapsLayer TValue="string">
-            <!-- Marker overlay layer -->
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/california.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+             <MapsShapeSettings Fill="rgba(141, 206, 255, 0.6)">
+                <MapsShapeBorder Color="#1a9cff" Width="0.25"></MapsShapeBorder>
+            </MapsShapeSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -229,28 +238,28 @@ Switch themes at runtime:
 ```csharp
 @page "/maps"
 @using Syncfusion.Blazor.Maps
+@inject IJSRuntime JS
 
-<button @onclick="() => SwitchTheme('material')">Material</button>
-<button @onclick="() => SwitchTheme('bootstrap5')">Bootstrap</button>
-
-<div style="width: 100%; height: 600px;" id="mapContainer">
-    <SfMaps @ref="mapInstance">
-        <MapsLayers>
-            <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            </MapsLayer>
-        </MapsLayers>
-    </SfMaps>
+<div style="margin-bottom: 20px;">
+    <button @onclick='() => SwitchTheme("bootstrap5")'>Bootstrap</button>
+    <button @onclick='() => SwitchTheme("material")'>Material</button>
 </div>
+
+<SfMaps @ref="mapInstance" Theme="Theme">
+<MapsZoomSettings ZoomFactor="1"></MapsZoomSettings>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
 
 @code {
     private SfMaps mapInstance;
+    Syncfusion.Blazor.Theme Theme;
 
     private async Task SwitchTheme(string theme)
-    {
-        // Remove previous theme
-        var link = new Uri($"_content/Syncfusion.Blazor/styles/{theme}.css", UriKind.Relative);
-        // Update theme in your layout or use JavaScript interop
-        await mapInstance.RefreshAsync();
+    {        
+       Theme = theme == "bootstrap5" ? Syncfusion.Blazor.Theme.Bootstrap5 : Syncfusion.Blazor.Theme.Material;
     }
 }
 ```
@@ -259,19 +268,19 @@ Switch themes at runtime:
 
 Maps need a properly sized container:
 
-**✅ Correct - Container with explicit height:**
+** Correct - Container with explicit height:**
 ```html
 <div style="width: 100%; height: 500px;">
     <SfMaps>...</SfMaps>
 </div>
 ```
 
-**❌ Incorrect - Missing height:**
+** Incorrect - Missing height:**
 ```html
 <SfMaps>...</SfMaps>  <!-- Collapses to 0 height -->
 ```
 
-**✅ Responsive Container:**
+** Responsive Container:**
 ```html
 <div style="width: 100%; height: 100vh;">  <!-- Full viewport height -->
     <SfMaps>...</SfMaps>
@@ -306,7 +315,7 @@ Maps need a properly sized container:
 | `CenterPosition.Latitude` | double | 37.368 | Initial map center latitude |
 | `CenterPosition.Longitude` | double | -122.095 | Initial map center longitude |
 | `ZoomLevel` | int | 4 | Initial zoom level (1-20) |
-| `UrlTemplate` | string | "https://tile.openstreetmap.org/level/tileX/tileY.png" | Tile provider URL |
+| `UrlTemplate` | string | "https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" | Tile provider URL |
 | `Width` | string | "100%" | Map container width |
 | `Height` | string | "600px" | Map container height |
 
@@ -315,14 +324,16 @@ Maps need a properly sized container:
 ### Essential Properties
 
 ```csharp
-<SfMaps 
-        Width="100%"
+@using Syncfusion.Blazor.Maps
+<SfMaps Width="100%"
         Height="600px"
-        Orientation="Orientation.Portrait"
         BaseLayerIndex="0"
-        EnableLegend="true"
-        Background="white"
-        TabIndex="0">
+        Background="blue">
+<MapsZoomSettings ZoomFactor="2"></MapsZoomSettings>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        </MapsLayer>
+    </MapsLayers>
 </SfMaps>
 ```
 
@@ -332,9 +343,7 @@ Maps need a properly sized container:
 | `ZoomLevel` | `int` | Initial zoom (1-20) |
 | `Width` | `string` | Container width |
 | `Height` | `string` | Container height |
-| `Orientation` | `Orientation` | Portrait or Landscape |
 | `BaseLayerIndex` | `int` | Index of base tile layer |
-| `EnableLegend` | `bool` | Show/hide legend |
 | `Background` | `string` | Background color |
 
 ### Essential Methods
@@ -345,7 +354,7 @@ Maps need a properly sized container:
 await mapInstance.RefreshAsync();
 
 // Get current bounds
-var bounds = await mapInstance.GetBoundsAsync();
+MinMaxLatitudeLongitude bounds = mapInstance.GetMinMaxLatitudeLongitude();
 
 // Export map
 await mapInstance.ExportAsync(ExportType.PNG, "mymap");

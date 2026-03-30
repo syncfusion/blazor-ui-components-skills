@@ -27,10 +27,11 @@ Use the `Headers` property to attach custom key-value pairs to every outbound HT
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
 <SfGrid TValue="Order" AllowPaging="true">
     <GridPageSettings PageSize="10"></GridPageSettings>
     <SfDataManager Headers="@HeaderData"
-                   Url="https://blazor.syncfusion.com/services/production/api/Orders/"
+                   Url="@AuthenticatedWebApiEndpointUrl"
                    Adaptor="Adaptors.WebApiAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -45,11 +46,36 @@ Use the `Headers` property to attach custom key-value pairs to every outbound HT
 </SfGrid>
 
 @code {
-    private IDictionary<string, string> HeaderData = new Dictionary<string, string>
+    // Whitelist of trusted Web API endpoints
+    private static readonly HashSet<string> TrustedWebApiEndpoints = new()
     {
-        { "Authorization", "Bearer <token>" },
-        { "X-Tenant-ID", "Tenant123" }
+        "https://blazor.syncfusion.com/services/production/api/",
+        "https://api.yourtrusted-domain.com/api/"
     };
+
+    // String variable for endpoint URL
+    private string AuthenticatedWebApiEndpointUrl { get; set; } = string.Empty;
+
+    // Authentication headers
+    private IDictionary<string, string> HeaderData { get; set; } = new Dictionary<string, string>();
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://blazor.syncfusion.com/services/production/api/Orders/";
+        
+        if (!TrustedWebApiEndpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        AuthenticatedWebApiEndpointUrl = endpoint;
+
+        // Configure headers with authentication token (retrieve from secure storage in production)
+        HeaderData = new Dictionary<string, string>
+        {
+            { "Authorization", "Bearer <token>" },  // Replace with actual token from secure storage
+            { "X-Tenant-ID", "Tenant123" }
+        };
+    }
 
     public class Order
     {
@@ -85,8 +111,9 @@ Set `Offline="true"` on `SfDataManager` to fetch the complete dataset **once** f
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variable for endpoint URL with whitelist validation -->
 <SfGrid TValue="EmployeeData" ID="Grid" AllowPaging="true">
-    <SfDataManager Url="https://services.odata.org/Northwind/Northwind.svc/Orders"
+    <SfDataManager Url="@OfflineODataEndpointUrl"
                    Adaptor="Adaptors.ODataAdaptor"
                    Offline="true">
     </SfDataManager>
@@ -101,6 +128,27 @@ Set `Offline="true"` on `SfDataManager` to fetch the complete dataset **once** f
 </SfGrid>
 
 @code {
+    // Whitelist of trusted OData endpoints
+    private static readonly HashSet<string> TrustedODataEndpoints = new()
+    {
+        "https://services.odata.org/Northwind/Northwind.svc/",
+        "https://api.yourtrusted-domain.com/odata/"
+    };
+
+    // String variable for endpoint URL
+    private string OfflineODataEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Define endpoint and validate against whitelist
+        const string endpoint = "https://services.odata.org/Northwind/Northwind.svc/Orders";
+        
+        if (!TrustedODataEndpoints.Any(trusted => endpoint.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: endpoint '{endpoint}' is not in the trusted list");
+        
+        OfflineODataEndpointUrl = endpoint;
+    }
+
     public class EmployeeData
     {
         public int OrderID { get; set; }

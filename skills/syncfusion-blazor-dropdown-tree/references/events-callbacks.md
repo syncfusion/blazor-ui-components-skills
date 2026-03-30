@@ -689,7 +689,7 @@ Triggered when any Dropdown Tree action fails (e.g., remote data fetch error). A
     <ChildContent>
         <DropDownTreeField TItem="TreeData" Query="@employeeQuery" 
             ID="EmployeeID" Text="FirstName" HasChildren="EmployeeID">
-            <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc" 
+            <SfDataManager Url="url" 
                 Adaptor="Syncfusion.Blazor.Adaptors.ODataV4Adaptor" 
                 CrossDomain="true">
             </SfDataManager>

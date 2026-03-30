@@ -83,7 +83,7 @@ private async void OnCreated()
     Console.WriteLine("Image Editor initialized");
     
     // Load initial image
-    await ImageEditor.OpenAsync("https://example.com/image.png");
+    await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     
     // Configure settings
     // Ready to use all component methods

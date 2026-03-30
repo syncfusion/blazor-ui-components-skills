@@ -1,4 +1,4 @@
-﻿# Map Providers and Configuration
+# Map Providers and Configuration
 
 ## Table of Contents
 
@@ -31,6 +31,11 @@
 - [Switching Providers](#switching-providers)
    - [Switch at Runtime](#switch-at-runtime)
    - [Managing API Keys Securely](#managing-api-keys-securely)
+- [Security Best Practices](#security-best-practices)
+   - [Protecting API Keys](#protecting-api-keys)
+   - [API Key Restrictions](#api-key-restrictions)
+   - [Preventing Data Exfiltration](#preventing-data-exfiltration)
+   - [Content Security Policy](#content-security-policy)
 - [Troubleshooting Provider Issues](#troubleshooting-provider-issues)
    - [Tiles not loading or blank map](#tiles-not-loading-or-blank-map)
    - ["Access denied" or authentication errors](#access-denied-or-authentication-errors)
@@ -60,7 +65,7 @@ Where:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -72,19 +77,19 @@ Different tile providers with OpenStreetMap data:
 
 **Stamen Terrain (landscape focus):**
 ```csharp
-<MapsLayer UrlTemplate="https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/level/tileX/tileY.png" TValue="string">
+<MapsLayer UrlTemplate="https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{level}/{tileX}/{tileY}.png" TValue="string">
 </MapsLayer>
 ```
 
 **CartoDB Positron (clean, minimal):**
 ```csharp
-<MapsLayer UrlTemplate="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/level/tileX/tileY.png" TValue="string">
+<MapsLayer UrlTemplate="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{level}/{tileX}/{tileY}.png" TValue="string">
 </MapsLayer>
 ```
 
 **USGS Topo (US topographic map):**
 ```csharp
-<MapsLayer UrlTemplate="https://basemap.nationalmap.gov/arcrest/services/USGSTopo/MapServer/tile/level/tileY/tileX" TValue="string">
+<MapsLayer UrlTemplate="https://basemap.nationalmap.gov/arcrest/services/USGSTopo/MapServer/tile/{level}/{tileY}/{tileX}" TValue="string">
 </MapsLayer>
 ```
 
@@ -95,17 +100,9 @@ Always display attribution for OpenStreetMap:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
-    <MapsLayouts>
-        <MapsLayout Type="Type.BottomRight">
-            <MapsLayoutAnnotations>
-                <MapsLayoutAnnotation Content="© OpenStreetMap contributors">
-                </MapsLayoutAnnotation>
-            </MapsLayoutAnnotations>
-        </MapsLayout>
-    </MapsLayouts>
 </SfMaps>
 ```
 
@@ -158,15 +155,15 @@ Always display attribution for OpenStreetMap:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.GoogleStaticMap" 
-                   Key="AIzaSyDOkaKwIy4-B-5lW3j7H7xUV8k1JnPXpCU"
-                   GoogleStaticMapType="GoogleMapType.Satellite">
+        <MapsLayer UrlTemplate="https://tile.googleapis.com/v1/2dtiles/level/tileX/tileY?session={sessionToken}&key={apiKey}">
         </MapsLayer>
     </MapsLayers>
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+    <MapsZoomSettings Enable="true"></MapsZoomSettings>
 </SfMaps>
 
 ```
+
+> **Security Warning:** Never hardcode API keys in source code. Use configuration files (appsettings.json) or environment variables. See [Managing API Keys Securely](#managing-api-keys-securely) section below.
 
 ### Pricing
 
@@ -198,13 +195,22 @@ Always display attribution for OpenStreetMap:
 ### Implementation
 
 ```csharp
+@using Syncfusion.Blazor.Maps
+
 <SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.Bing" Key="YOUR_BING_MAPS_KEY" 
-                   BingMapType="BingMapType.Road">
-        </MapsLayer>
+        <MapsLayer UrlTemplate="@UrlTemplate" TValue="string"></MapsLayer>
     </MapsLayers>
 </SfMaps>
+
+@code {
+    public string UrlTemplate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/RoadOnDemand?output=json&uriScheme=https&key=");
+    }
+}
 ```
 
 ### Bing Map Types
@@ -220,15 +226,22 @@ Always display attribution for OpenStreetMap:
 ### Example with Aerial View
 
 ```csharp
-<SfMaps >
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.Bing" 
-                   Key="YOUR_BING_MAPS_KEY"
-                   BingMapType="BingMapType.Aerial">
-        </MapsLayer>
+        <MapsLayer UrlTemplate="@UrlTemplate" TValue="string"></MapsLayer>
     </MapsLayers>
-    <MapsZoomSettings ZoomFactor="12"></MapsZoomSettings>
 </SfMaps>
+
+@code {
+    public string UrlTemplate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/Aerial?output=json&uriScheme=https&key=");
+    }
+}
 
 ```
 
@@ -256,9 +269,11 @@ Always display attribution for OpenStreetMap:
 ### Implementation
 
 ```csharp
+@using Syncfusion.Blazor.Maps
+
 <SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.AzureMap" Key="YOUR_AZURE_MAPS_KEY">
+        <MapsLayer UrlTemplate="https://atlas.microsoft.com/map/imagery/png?subscription-key=Your-Key &api-version=1.0&style=satellite&zoom=level&x=tileX&y=tileY" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -277,14 +292,13 @@ Always display attribution for OpenStreetMap:
 ### Example with Dark Grayscale
 
 ```csharp
-<SfMaps >
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.AzureMap" 
-                   Key="YOUR_AZURE_MAPS_KEY"
-                   AzureMapStyleName="GrayscaleDark">
+        <MapsLayer UrlTemplate="https://atlas.microsoft.com/map/imagery/png?subscription-key=Your-Key &api-version=1.0&style=GrayscaleDark&zoom=level&x=tileX&y=tileY" TValue="string">
         </MapsLayer>
     </MapsLayers>
-    <MapsZoomSettings ZoomFactor="8"></MapsZoomSettings>
 </SfMaps>
 
 ```
@@ -327,25 +341,21 @@ Store provider config and update dynamically:
 
 <div style="width: 100%; height: 500px;">
     <SfMaps >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+    <MapsZoomSettings Enable="true"></MapsZoomSettings>
         <MapsLayers>
             @if (CurrentProvider == "osm")
             {
-                <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+                <MapsLayer UrlTemplate="@UrlTemplate" TValue="string">
                 </MapsLayer>
             }
             else if (CurrentProvider == "google")
             {
-                <MapsLayer Type="LayerType.GoogleStaticMap" 
-                           Key="YOUR_GOOGLE_KEY"
-                           GoogleStaticMapType="GoogleMapType.Roadmap">
+                <MapsLayer UrlTemplate="@UrlTemplate">
                 </MapsLayer>
             }
             else if (CurrentProvider == "bing")
             {
-                <MapsLayer Type="LayerType.Bing" 
-                           Key="YOUR_BING_KEY"
-                           BingMapType="BingMapType.Road">
+                <MapsLayer UrlTemplate="@UrlTemplate">
                 </MapsLayer>
             }
         </MapsLayers>
@@ -354,50 +364,127 @@ Store provider config and update dynamically:
 
 @code {
     private SfMaps mapInstance;
+    private UrlTemplate = "https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png";
     private string CurrentProvider = "osm";
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition 
-    { 
-        Latitude = 39.0, 
-        Longitude = -98.0 
-    };
-
     private async Task ChangeProvider(string provider)
     {
-        CurrentProvider = provider;
-        await mapInstance.RefreshAsync();
+        if (provider == "osm") {
+            UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png";
+        } else if(provider == "google") {
+            UrlTemplate="https://tile.googleapis.com/v1/2dtiles/level/tileX/tileY?session={sessionToken}&key={apiKey}"
+        } else{
+            UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/Aerial?output=json&uriScheme=https&key=");
+        }
     }
 }
 ```
+## Security Best Practices
 
-### Managing API Keys Securely
+### Protecting API Keys
 
-Store API keys in configuration, not code:
+**Never hardcode API keys in source code.** Store them securely using one of these methods:
 
-**appsettings.json:**
+#### 1. Configuration Files (Development)
 ```json
+// appsettings.json
 {
   "MapProviders": {
-    "GoogleKey": "AIzaSyD...",
-    "BingKey": "Ao8...",
-    "AzureKey": "..."
+    "GoogleKey": "YOUR_GOOGLE_API_KEY",
+    "BingKey": "YOUR_BING_API_KEY"
   }
 }
 ```
 
-**Razor component:**
+#### 2. User Secrets (Development)
+```powershell
+# Initialize user secrets
+dotnet user-secrets init
+
+# Set API keys
+dotnet user-secrets set "MapProviders:GoogleKey" "YOUR_GOOGLE_API_KEY"
+dotnet user-secrets set "MapProviders:BingKey" "YOUR_BING_API_KEY"
+```
+
+#### 3. Environment Variables (Production)
 ```csharp
 @inject IConfiguration Configuration
 
 @code {
     private string GoogleKey;
-    private string BingKey;
 
     protected override void OnInitialized()
     {
+        // Reads from environment variable or appsettings.json
         GoogleKey = Configuration["MapProviders:GoogleKey"];
-        BingKey = Configuration["MapProviders:BingKey"];
     }
 }
+```
+
+#### 4. Azure Key Vault / AWS Secrets Manager (Production)
+```csharp
+// Program.cs
+builder.Configuration.AddAzureKeyVault(
+    new Uri($"https://{keyVaultName}.vault.azure.net/"),
+    new DefaultAzureCredential());
+```
+
+### API Key Restrictions
+
+Configure provider-side restrictions:
+
+**Google Maps:**
+- Restrict to HTTP referrers: `https://yourdomain.com/*`
+- Restrict to specific APIs: Maps JavaScript API, Static Maps API
+- Set usage quotas to prevent abuse
+
+**Bing Maps:**
+- Restrict to application URL
+- Enable usage tracking
+- Set rate limits
+
+**Azure Maps:**
+- Use Managed Identity when possible
+- Configure CORS origins
+- Enable Azure AD authentication
+
+### Preventing Data Exfiltration
+
+When handling external data sources:
+
+```csharp
+@code {
+    private async Task<object> LoadExternalGeoJson(string url)
+    {
+        // Validate URL is from trusted domain
+        var trustedDomains = new[] { "cdn.syncfusion.com", "yourdomain.com" };
+        var uri = new Uri(url);
+        
+        if (!trustedDomains.Any(d => uri.Host.EndsWith(d)))
+        {
+            throw new SecurityException("Untrusted data source");
+        }
+        
+        // Load data securely
+        return await HttpClient.GetFromJsonAsync<object>(url);
+    }
+}
+```
+
+### Content Security Policy
+
+Add CSP headers to prevent malicious content:
+
+```csharp
+// Program.cs or Startup.cs
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Content-Security-Policy", 
+        "default-src 'self'; " +
+        "img-src 'self' https://tile.openstreetmap.org https://*.google.com; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "style-src 'self' 'unsafe-inline';");
+    await next();
+});
 ```
 
 ## Troubleshooting Provider Issues

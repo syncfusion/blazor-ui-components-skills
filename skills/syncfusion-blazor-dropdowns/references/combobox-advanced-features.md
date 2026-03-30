@@ -62,14 +62,16 @@ HR
     Placeholder="Select an employee"
     DataSource="@Employees">
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId" GroupBy="Department"></ComboBoxFieldSettings>
-    <GroupTemplate>
-        <div style="padding: 10px; background-color: #f0f0f0; font-weight: bold;">
-            📁 @context.Department (@GetDepartmentCount(context.Department) employees)
-        </div>
-    </GroupTemplate>
-    <ItemTemplate>
-        <div style="padding: 8px; padding-left: 20px;">👤 @context.Name</div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Employee">
+        <GroupTemplate>
+            <div style="padding: 10px; background-color: #f0f0f0; font-weight: bold;">
+                📁 @context.Department (@GetDepartmentCount(context.Department) employees)
+            </div>
+        </GroupTemplate>
+        <ItemTemplate>
+            <div style="padding: 8px; padding-left: 20px;">👤 @context.Name</div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {
@@ -178,8 +180,7 @@ Handle large datasets efficiently using virtualization:
     Placeholder="Search items (1000+)"
     DataSource="@Items"
     AllowFiltering="true"
-    EnableVirtualization="true"
-    VirtualScrollHeight="300">
+    EnableVirtualization="true">
     <ComboBoxFieldSettings Text="ItemName" Value="ItemId"></ComboBoxFieldSettings>
 </SfComboBox>
 
@@ -211,8 +212,7 @@ Handle large datasets efficiently using virtualization:
 - Performance issues with large datasets
 - Remote data with pagination
 
-**EnableVirtualization:** true/false  
-**VirtualScrollHeight:** Visible height in pixels (default: 300)
+**EnableVirtualization:** true/false 
 
 ---
 
@@ -269,15 +269,17 @@ Prevent certain items from being selected:
     <ComboBoxEvents TItem="Employee" TValue="int"
         OnValueSelect="@OnValueSelect"></ComboBoxEvents>
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
-    <ItemTemplate>
-        <div style="@GetItemStyle(context)">
-            @context.Name
-            @if (context.Status == "Inactive")
-            {
-                <span style="margin-left: 10px; color: #999;">(Inactive)</span>
-            }
-        </div>
-    </ItemTemplate>
+    <ComboBoxTemplates TItem="Employee">
+        <ItemTemplate>
+            <div style="@GetItemStyle(context)">
+                @context.Name
+                @if (context.Status == "Inactive")
+                {
+                    <span style="margin-left: 10px; color: #999;">(Inactive)</span>
+                }
+            </div>
+        </ItemTemplate>
+    </ComboBoxTemplates>
 </SfComboBox>
 
 @code {

@@ -1,4 +1,4 @@
-﻿## Table of Contents
+## Table of Contents
 
 - [Handling Mouse Clicks](#handling-mouse-clicks)
    - [Click on Markers](#click-on-markers)
@@ -17,6 +17,12 @@
 - [Custom Interaction Patterns](#custom-interaction-patterns)
    - [Selection State Management](#selection-state-management)
    - [Drag to Pan](#drag-to-pan)
+- [Sanitizing External Content](#sanitizing-external-content)
+   - [Understanding the Risk](#understanding-the-risk)
+   - [Safe Data Binding Patterns](#safe-data-binding-patterns)
+   - [Preventing Prompt Injection](#preventing-prompt-injection)
+   - [Content Security Policy for Maps](#content-security-policy-for-maps)
+   - [Security Checklist](#security-checklist)
 
 # User Interactions
 
@@ -30,16 +36,14 @@
 
 <div>Last clicked: @ClickedMarkerInfo</div>
 
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
+<SfMaps @ref="mapInstance">
+    <MapsEvents MarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                    Shape="MarkerType.Circle" Width="15" Height="15">
-                </MapsMarker>
-                <MapsMarker Latitude="40.7128" Longitude="-74.0060" 
-                    Shape="MarkerType.Circle" Width="15" Height="15">
-                </MapsMarker>
+                <MapsMarker Visible="true" DataSource="California" Height="25" Width="15" TValue="City"></MapsMarker>
+                <MapsMarker Visible="true" DataSource="NewYork" Height="25" Width="15" TValue="City"></MapsMarker>
+                <MapsMarker Visible="true" DataSource="Iowa" Height="25" Width="15" TValue="City"></MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
@@ -48,7 +52,20 @@
 @code {
     private SfMaps mapInstance;
     private string ClickedMarkerInfo = "None";
-
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+    public List<City> California = new List<City> {
+        new City {Latitude = 35.145083,Longitude = -117.960260}
+    };
+    public List<City> NewYork = new List<City> {
+        new City { Latitude = 40.724546, Longitude = -73.850344 }
+    };
+    public List<City> Iowa = new List<City> {
+        new City {Latitude = 41.657782, Longitude = -91.533857}
+    };
     private void MarkerClickHandler(MarkerClickEventArgs args)
     {
         ClickedMarkerInfo = $"Latitude: {args.Latitude}, Longitude: {args.Longitude}";
@@ -59,21 +76,22 @@
 ### Click on Shapes (Polygons)
 
 ```csharp
-<SfMaps @ref="mapInstance" OnShapeSelected="ShapeClickHandler">
+@using Syncfusion.Blazor.Maps
+<SfMaps>
+    <MapsEvents ShapeSelected="@ShapeSelectedEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer TValue="StateData" DataSource="@StateData">
-            <MapsShapeSettings Fill="lightblue">
-            </MapsShapeSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsLayerSelectionSettings Enable="true" Fill="green">
+                <MapsLayerSelectionBorder Color="White" Width="2"></MapsLayerSelectionBorder>
+            </MapsLayerSelectionSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-
-    private void ShapeClickHandler(ShapeSelectedEventArgs args)
+    public void ShapeSelectedEvent(Syncfusion.Blazor.Maps.ShapeSelectedEventArgs args)
     {
-        Console.WriteLine($"Selected shape data: {args.ShapeData}");
+        // Here you can customize your code
     }
 }
 ```
@@ -81,19 +99,16 @@
 ### Double-Click Events
 
 ```csharp
-<SfMaps @ref="mapInstance" OnDoubleClick="DoubleClickHandler">
+<SfMaps>
+    <MapsEvents OnDoubleClick="@OnDoubleClickEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095">
-                </MapsMarker>
-            </MapsMarkerSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private void DoubleClickHandler(MapClickEventArgs args)
+    private void OnDoubleClickEvent(Syncfusion.Blazor.Maps.MouseEventArgs args)
     {
         Console.WriteLine($"Double-clicked at: {args.Latitude}, {args.Longitude}");
     }
@@ -105,22 +120,20 @@
 ### Enable/Disable Zoom
 
 ```csharp
-<SfMaps ZoomSettings="@ZoomOptions">
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
+    <MapsZoomSettings Enable="true" EnableSelectionZooming="true" EnablePanning="true">
+        <MapsZoomToolbarSettings>
+            <MapsZoomToolbarButton ToolbarItems="new List<ToolbarItem>() { ToolbarItem.Zoom, ToolbarItem.ZoomIn, ToolbarItem.ZoomOut,
+            ToolbarItem.Pan, ToolbarItem.Reset }"></MapsZoomToolbarButton>
+        </MapsZoomToolbarSettings>
+    </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
-@code {
-    private MapsZoomSettings ZoomOptions = new()
-    {
-        Enable = true,
-        ZoomFactor = 2,  // Multiplier for each zoom action
-        MaxZoom = 20,
-        MinZoom = 1
-    };
-}
 ```
 
 ### Programmatic Zoom
@@ -129,55 +142,100 @@
 @page "/zoom-control"
 @using Syncfusion.Blazor.Maps
 
-
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
+<MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+```
+
+## Tooltip and Popup Handling
+
+> **Security Warning:** When binding tooltips or popups to external data sources, always sanitize HTML content to prevent XSS attacks and prompt injection. See [Sanitizing External Content](#sanitizing-external-content) below.
+
+### Basic Tooltip
+
+```csharp
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Name"
+                   ShapePropertyPath='new string[] {"name"}' DataSource='PerformanceReport' TValue="Country">
+            <MapsLayerTooltipSettings Visible="true" ValuePath="CountryName"
+                                  Format="<b>${CountryName}</b><br>Finalist: <b>${Winner}</b><br>Win: <b>${Finalist}">
+            </MapsLayerTooltipSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
+    public class Country
+    {
+        public string Name { get; set; }
+        public string Winner { get; set; }
+        public string Finalist { get; set; }
+        public string CountryName { get; set; }
+    }
 
-    
+    public List<Country> PerformanceReport = new List<Country> {
+        new Country { CountryName = "India", Name = "India", Finalist = "3", Winner = "2" },
+    };
 }
-```
-
-## Tooltip and Popup Handling
-
-### Basic Tooltip
-
-```csharp
-<SfMaps>
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-            <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095"
-                    Tooltip="San Francisco, CA">
-                </MapsMarker>
-            </MapsMarkerSettings>
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
 ```
 
 ### Tooltip on Hover
 
 ```csharp
+@using Syncfusion.Blazor.Maps
+
 <SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="string">
-            <MapsShapeSettings Fill="lightblue">
-                <MapsShapeTooltipSettings Visible="true" 
-                    ValuePath="StateName">
-                </MapsShapeTooltipSettings>
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Name"
+                   ShapePropertyPath='new string[] {"name"}' DataSource='PerformanceReport' TValue="Country">
+            <MapsLayerTooltipSettings Visible="true" ValuePath="CountryName"
+                                  Format="<b>${CountryName}</b><br>Finalist: <b>${Winner}</b><br>Win: <b>${Finalist}">
+            </MapsLayerTooltipSettings>
+            <MapsShapeSettings Fill="#E5E5E5" ColorValuePath="Finalist">
+                <MapsShapeColorMappings>
+                    <MapsShapeColorMapping Value="1" Color='new string[] {"#acaed8"}'></MapsShapeColorMapping>
+                    <MapsShapeColorMapping Value="2" Color='new string[] {"#80c1ff"}'></MapsShapeColorMapping>
+                    <MapsShapeColorMapping Value="3" Color='new string[] {"#1a90ff"}'></MapsShapeColorMapping>
+                    <MapsShapeColorMapping Value="4" Color='new string[] {"#005cb3"}'></MapsShapeColorMapping>
+                    <MapsShapeColorMapping Value="7" Color='new string[] {"#0b0d35"}'></MapsShapeColorMapping>
+                </MapsShapeColorMappings>
             </MapsShapeSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
+
+@code {
+    public class Country
+    {
+        public string Name { get; set; }
+        public string Winner { get; set; }
+        public string Finalist { get; set; }
+        public string CountryName { get; set; }
+    }
+
+    public List<Country> PerformanceReport = new List<Country> {
+        new Country { CountryName = "India", Name = "India", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "United Kingdom", Name = "United Kingdom", Finalist = "4", Winner = "1" },
+        new Country { CountryName = "Australia", Name = "Australia", Finalist = "7", Winner = "5" },
+        new Country { CountryName = "Sri Lanka", Name = "Sri Lanka", Finalist = "3", Winner = "1" },
+        new Country { CountryName = "Pakistan", Name = "Pakistan", Finalist = "2", Winner = "1" },
+        new Country { CountryName = "New Zealand", Name = "New Zealand", Finalist = "1", Winner = "0" },
+        new Country { CountryName = "West Indies", Name = "Dominican Rep", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Cuba", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Jamaica", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Haiti", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Gayana", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Suriname", Finalist = "3", Winner = "2" },
+        new Country { CountryName = "West Indies", Name = "Trinidad and Tobago", Finalist = "3", Winner = "2" }
+    };
+}
 ```
 
 When user hovers over a shape, the tooltip displays the value from `StateName` property.
@@ -188,14 +246,16 @@ When user hovers over a shape, the tooltip displays the value from `StateName` p
 @page "/popup-map"
 @using Syncfusion.Blazor.Maps
 
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
+<SfMaps @ref="mapInstance">
+    <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095" 
-                    Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" DataSource="MarkerData" Height="25" Width="15" Fill="red" DashArray="1" Opacity="0.9"
+                            TValue="City">
+                    <MapsMarkerBorder Color="green" Width="2"></MapsMarkerBorder>
                 </MapsMarker>
-            </MapsMarkerSettings>
+            </MapsMarkerSettings>    
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -224,6 +284,17 @@ When user hovers over a shape, the tooltip displays the value from `StateName` p
         PopupLng = args.Longitude;
         ShowPopup = true;
     }
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+    public List<City> MarkerData = new List<City> {
+        new City { Latitude = 35.145083, Longitude = -117.960260 },
+        new City { Latitude = 40.724546, Longitude = -73.850344 },
+        new City { Latitude = 41.657782, Longitude = -91.533857 }
+    };
 }
 ```
 
@@ -234,9 +305,10 @@ When user hovers over a shape, the tooltip displays the value from `StateName` p
 Enable keyboard navigation for accessibility:
 
 ```csharp
-<SfMaps NavigationButtons="true">
+<SfMaps>
+    <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -248,30 +320,6 @@ Enable keyboard navigation for accessibility:
 - `Arrow keys`: Pan map
 - `Home`: Reset to default view
 
-### Custom Keyboard Handlers
-
-```csharp
-@page "/keyboard-map"
-@using Syncfusion.Blazor.Maps
-
-<SfMaps @ref="mapInstance" @onkeydown="HandleKeyDown" 
-    <SfMaps @ref="mapInstance" tabindex="0" >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-<p>Use arrow keys to pan, +/- to zoom</p>
-
-@code {
-    private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-
-}
-```
-
 ## Custom Interaction Patterns
 
 ### Selection State Management
@@ -282,63 +330,43 @@ Track which elements are selected:
 @page "/selection-tracking"
 @using Syncfusion.Blazor.Maps
 
-<div>Selected markers: @string.Join(", ", SelectedMarkers.Select(m => $"({m.Lat},{m.Lng})"))</div>
-
-<SfMaps @ref="mapInstance" OnMarkerClick="MarkerClickHandler">
+<div>@MarkerDataSourceList.Count</div>
+<SfMaps>
+    <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   TValue="string">
             <MapsMarkerSettings>
-                @foreach (var marker in AllMarkers)
-                {
-                    var isSelected = SelectedMarkers.Any(m => m.Lat == marker.Lat && m.Lng == marker.Lng);
-                    <MapsMarker Latitude="@marker.Lat" Longitude="@marker.Lng"
-                        Fill="@(isSelected ? "red" : "blue")"
-                        Shape="MarkerType.Circle" Width="15" Height="15">
-                    </MapsMarker>
-                }
+                <MapsMarker Visible="true"
+                            DataSource="@MarkerDataSource"
+                            TValue="City">
+                </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
 @code {
-    private SfMaps mapInstance;
-    private List<MarkerData> AllMarkers = new()
+    public List<City> MarkerDataSourceList = new();
+    // ✅ Single marker data source
+    public List<City> MarkerDataSource = new()
     {
-        new MarkerData { Lat = 37.368, Lng = -122.095 },
-        new MarkerData { Lat = 40.7128, Lng = -74.0060 }
+        new City { Latitude = 37.368, Longitude = -122.095 },
+        new City { Latitude = 40.724546, Longitude = -73.850344 }
     };
-    private List<MarkerData> SelectedMarkers = new();
+
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
 
     private void MarkerClickHandler(MarkerClickEventArgs args)
     {
-        var marker = new MarkerData { Lat = args.Latitude, Lng = args.Longitude };
-        if (SelectedMarkers.Any(m => m.Lat == marker.Lat && m.Lng == marker.Lng))
+        MarkerDataSourceList.Add(new City
         {
-            SelectedMarkers.Remove(marker);
-        }
-        else
-        {
-            SelectedMarkers.Add(marker);
-        }
-    }
-
-    public class MarkerData
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is MarkerData other)
-                return Lat == other.Lat && Lng == other.Lng;
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Lat, Lng);
-        }
+            Latitude = args.Latitude,
+            Longitude = args.Longitude
+        });
     }
 }
 ```
@@ -348,9 +376,12 @@ Track which elements are selected:
 Most maps support native drag-to-pan. Enable explicitly:
 
 ```csharp
-<SfMaps AllowDrag="true">
+@using Syncfusion.Blazor.Maps
+
+<SfMaps>
+    <MapsZoomSettings Enable="true" EnablePanning="true" ZoomFactor="2" />
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -358,4 +389,55 @@ Most maps support native drag-to-pan. Enable explicitly:
 
 Users can now click and drag the map to pan smoothly.
 
+## Sanitizing External Content
 
+> **Critical Security Requirement:** When displaying data from external sources (APIs, user input, databases) in tooltips, popups, or annotations, you MUST sanitize HTML content to prevent XSS attacks and prompt injection vulnerabilities.
+
+### Understanding the Risk
+
+Map components can render HTML content in:
+- **Tooltips** - Shown on hover over markers/shapes
+- **Annotations** - Custom HTML overlays on the map
+- **Popups** - Click-triggered information windows
+- **Data labels** - Text displayed on map features
+
+If untrusted data contains malicious HTML/JavaScript, it can:
+1. Execute arbitrary JavaScript (XSS attacks)
+2. Inject prompt instructions to manipulate AI agents
+3. Steal user data or session tokens
+4. Redirect users to phishing sites
+
+### Safe Data Binding Patterns
+
+#### Pattern 1: Use Plain Text Only (Recommended)
+
+```csharp
+@page "/safe-tooltips"
+@using Syncfusion.Blazor.Maps
+<SfMaps>
+    <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Fill="white" Width="20"
+                            DataSource="HighestPopulation" TValue="City">
+                    <MapsMarkerBorder Width="2" Color="#333"></MapsMarkerBorder>
+                    <MapsMarkerTooltipSettings Visible="true" ValuePath="Name"></MapsMarkerTooltipSettings>
+                </MapsMarker>
+            </MapsMarkerSettings>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+
+@code {
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public string Name { get; set; }
+    }
+
+    public List<City> HighestPopulation = new List<City> {
+        new City { Latitude = 40.7424509, Longitude = -74.0081468, Name = "New York" }
+    };
+}
+```

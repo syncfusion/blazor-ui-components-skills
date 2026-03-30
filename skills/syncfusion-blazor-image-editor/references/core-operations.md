@@ -68,7 +68,7 @@ Navigate to `/image-editor-loading` to try all loading methods interactively.
     private async void OnCreated()
     {
         // Simple load - resets all changes
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -251,7 +251,7 @@ Task ExportAsync(
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     // Export as PNG (lossless, default)

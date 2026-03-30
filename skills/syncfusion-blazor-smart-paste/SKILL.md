@@ -41,7 +41,7 @@ Start with [getting-started.md](./references/getting-started.md) to:
 
 ### 2. Configure AI Service
 
-Proceed to [ai-service-configuration.md](./references/ai-service-configuration.md) to:
+Proceed here to [Custom AI Integration Steps](https://blazor.syncfusion.com/documentation/smart-paste/custom-inference-backend) to:
 - Choose your AI provider (OpenAI, Azure OpenAI, or Ollama)
 - Install AI service-specific NuGet packages
 - Configure your AI backend in `Program.cs`

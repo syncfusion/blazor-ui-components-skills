@@ -346,7 +346,7 @@ Each data type supports the `TItem` generic parameter and `MentionFieldSettings`
         <input id="apiMention" type="text" placeholder="Search users..." />
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/api/users" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.WebApiAdaptor">
         </SfDataManager>
         <MentionFieldSettings Text="Name" Value="UserId"></MentionFieldSettings>
@@ -376,7 +376,7 @@ GET /api/users?$top=25&$skip=0&$filter=Name startswith 'alice'
         <div id="offlineMention" contenteditable="true"></div>
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/products" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.ODataV4Adaptor"
                        Offline="true">
         </SfDataManager>

@@ -193,10 +193,11 @@ The Syncfusion Blazor Image Editor is a powerful, feature-rich component for bui
 
 @code {
     SfImageEditor ImageEditor;
+    private string ImageUrl = "YOUR_IMAGE_URL"; 
     
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync(ImageUrl);
     }
     
     private async Task AddTextAnnotation()

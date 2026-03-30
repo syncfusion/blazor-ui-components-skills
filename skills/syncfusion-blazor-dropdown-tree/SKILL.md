@@ -199,7 +199,7 @@ Bind to remote OData services with DataManager:
 <SfDropDownTree TValue="int?" TItem="TreeData" Placeholder="Select an employee" Width="500px">
     <DropDownTreeField TItem="TreeData" Query="@Query" 
         ID="EmployeeID" Text="FirstName" ParentID="ReportsTo" HasChildren="HasChildren">
-        <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc" 
+        <SfDataManager Url="url" 
             Adaptor="Syncfusion.Blazor.Adaptors.ODataV4Adaptor" 
             CrossDomain="true">
         </SfDataManager>

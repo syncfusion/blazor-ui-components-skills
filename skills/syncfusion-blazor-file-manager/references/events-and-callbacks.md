@@ -449,7 +449,7 @@ From `file-operations.md` (lines 680-710):
         // Custom image URL transformation
         if (!args.ImageUrl.StartsWith("https"))
         {
-            args.ImageUrl = "https://secure-server" + args.ImageUrl;
+            args.ImageUrl = "url" + args.ImageUrl;
         }
     }
 }

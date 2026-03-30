@@ -1,7 +1,28 @@
 # Connecting to Data Sources — Syncfusion Blazor Pivot Table
 
+## ⚠️ CRITICAL SECURITY NOTICE
+
+**All database connections MUST be handled through secure server-side services.** This documentation assumes proper security measures are in place:
+
+✅ **Required Security Controls:**
+- Secure connection strings (never exposed to client)
+- Proper authentication and authorization
+- SQL injection prevention (parameterized queries)
+- Input validation and sanitization
+- Rate limiting and monitoring
+- Encrypted connections (SSL/TLS)
+- Principle of least privilege for database access
+
+❌ **NEVER:**
+- Expose connection strings in client code
+- Allow direct database access from browser
+- Accept user-provided connection strings or queries
+- Skip input validation and parameterization
+- Use plaintext database connections
+
 ## Table of Contents
 - [Overview](#overview)
+- [Security Best Practices](#security-best-practices)
 - [Microsoft SQL Server](#microsoft-sql-server)
 - [MySQL](#mysql)
 - [PostgreSQL](#postgresql)
@@ -20,7 +41,99 @@ For connecting databases to the Blazor Pivot Table, the recommended pattern is:
 2. Return data as `List<T>` or JSON
 3. Bind the result to `PivotViewDataSourceSettings.DataSource`
 
-Direct database access from Blazor WASM is not possible; use a server-side service or Web API.
+**🔒 Security Requirement**: Direct database access from Blazor WASM is not possible and should NEVER be attempted. Always use a server-side service or Web API with proper authentication.
+
+---
+
+## Security Best Practices
+
+### Database Connection Security
+
+#### 1. **Secure Connection Strings**
+
+✅ **DO**: Store in secure configuration
+```csharp
+// appsettings.json (server-side only)
+{
+  "ConnectionStrings": {
+    "SalesDB": "Server=localhost;Database=SalesDB;Integrated Security=True;"
+  }
+}
+
+// Usage
+@inject IConfiguration Configuration
+string conStr = Configuration.GetConnectionString("SalesDB");
+```
+
+❌ **DON'T**: Hardcode connection strings
+```csharp
+// NEVER DO THIS
+string conStr = "Server=prod-db;User=admin;Password=secret123;";
+```
+
+#### 2. **SQL Injection Prevention**
+
+✅ **DO**: Use parameterized queries
+```csharp
+string query = "SELECT * FROM Orders WHERE CustomerId = @customerId";
+var command = new SqlCommand(query, connection);
+command.Parameters.AddWithValue("@customerId", customerId);
+```
+
+❌ **DON'T**: Use string concatenation
+```csharp
+// VULNERABLE TO SQL INJECTION
+string query = $"SELECT * FROM Orders WHERE CustomerId = '{customerId}'";
+```
+
+#### 3. **Authentication & Authorization**
+
+```csharp
+[Authorize(Roles = "DataAnalyst")]
+[HttpGet]
+public IActionResult GetPivotData()
+{
+    // Verify user has permission to access this data
+    if (!User.HasClaim("Permission", "ViewSalesData"))
+        return Forbid();
+    
+    // Return data
+}
+```
+
+#### 4. **Input Validation**
+
+```csharp
+private bool ValidateInput(string input)
+{
+    // Validate against whitelist
+    if (string.IsNullOrWhiteSpace(input) || input.Length > 100)
+        return false;
+    
+    // Check for suspicious patterns
+    if (input.Contains("--") || input.Contains(";"))
+        return false;
+    
+    return true;
+}
+```
+
+#### 5. **Error Handling**
+
+```csharp
+try
+{
+    // Database operations
+}
+catch (Exception ex)
+{
+    // Log error internally
+    _logger.LogError(ex, "Database error");
+    
+    // Return generic error to client (don't expose details)
+    return StatusCode(500, "An error occurred processing your request");
+}
+```
 
 ---
 
@@ -52,27 +165,49 @@ Direct database access from Blazor WASM is not possible; use a server-side servi
 
 @code {
     private List<OrderDetails> dataSource { get; set; }
+    
+    [Inject]
+    private IConfiguration Configuration { get; set; }
+    
+    [Inject]
+    private ILogger<YourComponent> Logger { get; set; }
 
     protected override void OnInitialized()
     {
-        string conStr = "Server=localhost;Database=SalesDB;Trusted_Connection=True;";
-        string query = "SELECT Product, Date, Country, Quantity, Amount FROM Orders";
+        // 🔒 SECURITY: Use configuration, not hardcoded connection strings
+        string conStr = Configuration.GetConnectionString("SalesDB");
+        
+        // 🔒 SECURITY: Use parameterized queries to prevent SQL injection
+        string query = "SELECT Product, Date, Country, Quantity, Amount FROM Orders WHERE IsActive = @isActive";
 
-        using var connection = new SqlConnection(conStr);
-        connection.Open();
-        using var adapter = new SqlDataAdapter(new SqlCommand(query, connection));
-        var table = new DataTable();
-        adapter.Fill(table);
+        try
+        {
+            using var connection = new SqlConnection(conStr);
+            connection.Open();
+            
+            var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@isActive", true);
+            
+            using var adapter = new SqlDataAdapter(command);
+            var table = new DataTable();
+            adapter.Fill(table);
 
-        dataSource = (from DataRow row in table.Rows
-                      select new OrderDetails
-                      {
-                          Product = row["Product"].ToString(),
-                          Date    = row["Date"].ToString(),
-                          Country = row["Country"].ToString(),
-                          Quantity = Convert.ToInt32(row["Quantity"]),
-                          Amount  = Convert.ToDouble(row["Amount"])
-                      }).ToList();
+            dataSource = (from DataRow row in table.Rows
+                          select new OrderDetails
+                          {
+                              Product = row["Product"].ToString(),
+                              Date    = row["Date"].ToString(),
+                              Country = row["Country"].ToString(),
+                              Quantity = Convert.ToInt32(row["Quantity"]),
+                              Amount  = Convert.ToDouble(row["Amount"])
+                          }).ToList();
+        }
+        catch (Exception ex)
+        {
+            // 🔒 SECURITY: Log errors, don't expose to client
+            Logger.LogError(ex, "Error fetching data from database");
+            dataSource = new List<OrderDetails>(); // Return empty list on error
+        }
     }
 
     public class OrderDetails

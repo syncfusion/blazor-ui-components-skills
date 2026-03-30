@@ -14,12 +14,27 @@ The Syncfusion Blazor [SfDataManager](https://help.syncfusion.com/cr/blazor/Sync
 
 - Setting up `SfDataManager` in a new Blazor project (WASM or Web App)
 - Binding local JSON/list data to a Syncfusion component via the `Json` property
-- Connecting to a remote service (OData, Web API, GraphQL) via `Url` + `Adaptor`
+- Connecting to a **trusted and authenticated** remote service (OData, Web API, GraphQL) via `Url` + `Adaptor`
 - Choosing the right adaptor for a given backend service
 - Implementing CRUD operations using remote adaptors or custom adaptors
 - Creating a custom adaptor by deriving from `DataAdaptor`
-- Adding custom HTTP headers to DataManager requests
+- Adding custom HTTP headers (with authentication tokens) to DataManager requests
 - Enabling offline mode (client-side query processing after one-time remote fetch)
+
+## ⚠️ Critical Security Requirements
+
+**When binding to remote services, you MUST implement these protections:**
+
+1. **Use HTTPS only** — never use unencrypted HTTP connections; encrypt all data in transit
+2. **Whitelist trusted endpoints** — store approved URLs in a `HashSet<string>` or configuration file; validate all URLs before assignment; **never accept dynamic URLs from user input, query parameters, or untrusted sources**
+3. **Use string variables for URLs** — assign endpoints to private string properties rather than hardcoding in markup; this enables centralized validation and easier maintenance
+4. **Validate endpoints on component initialization** — use `OnInitialized()` lifecycle method to verify endpoints against whitelist before binding
+5. **Validate and sanitize responses** — implement server-side schema validation; reject unexpected response formats; map responses to strongly-typed models
+6. **Monitor remote calls** — log all external API requests with timestamps, endpoints, and outcomes for security audit trails
+7. **Implement CORS securely** — use specific trusted origins only; never use wildcard `*` in production; require HTTPS
+8. **Prevent indirect prompt injection attacks** — verify endpoint ownership; implement request signing; validate response content types and schemas before consuming data
+
+**Third-party API responses can introduce security risks.** Always verify endpoint legitimacy, authenticate requests, and validate data before binding to UI components.
 
 ## Component Overview
 
@@ -125,8 +140,9 @@ The Syncfusion Blazor [SfDataManager](https://help.syncfusion.com/cr/blazor/Sync
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Grids
 
+<!-- SECURITY: Use string variables for endpoints, validate against whitelist, use HTTPS only -->
 <SfGrid TValue="Order" AllowPaging="true">
-    <SfDataManager Url="https://services.odata.org/Northwind/Northwind.svc/Orders"
+    <SfDataManager Url="@ODataEndpointUrl"
                    Adaptor="Adaptors.ODataAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -136,6 +152,26 @@ The Syncfusion Blazor [SfDataManager](https://help.syncfusion.com/cr/blazor/Sync
 </SfGrid>
 
 @code {
+    // Whitelist of trusted OData endpoints — define in appsettings.json in production
+    private static readonly HashSet<string> TrustedEndpoints = new()
+    {
+        "https://api.yourtrusted-domain.com/odata/"
+    };
+
+    // Assigned string variable for endpoint
+    private string ODataEndpointUrl { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Validate and assign endpoint from configuration
+        const string endpointBase = "https://api.yourtrusted-domain.com/odata/Orders";
+        
+        if (!TrustedEndpoints.Any(trusted => endpointBase.StartsWith(trusted)))
+            throw new InvalidOperationException($"Security validation failed: untrusted endpoint '{endpointBase}'");
+        
+        ODataEndpointUrl = endpointBase;
+    }
+
     public class Order
     {
         public int? OrderID { get; set; }

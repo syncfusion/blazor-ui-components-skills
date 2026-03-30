@@ -51,7 +51,7 @@ Task<bool> DrawRedactAsync(
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private async Task AddBlurRedaction()

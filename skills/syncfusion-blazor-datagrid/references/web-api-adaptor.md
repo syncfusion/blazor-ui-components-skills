@@ -117,7 +117,7 @@ builder.Services.AddControllers();
 app.MapControllers();
 ```
 
-> The endpoint will be accessible at `https://localhost:xxxx/api/Grid`.
+> The endpoint will be accessible at `https://api.example.com/data/grid` (operator-configured placeholder — do NOT accept user-supplied URLs).
 
 ---
 
@@ -137,8 +137,15 @@ app.MapControllers();
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Data
 
+<!-- Use a configured, operator-controlled URL variable. Set `ALLOWED_API_URL` in environment or secure config. -->
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@code {
+    private string DataApiUrl => Configuration["ALLOWED_API_URL"] ?? "https://api.example.com/data/grid"; // operator-configured only
+}
+
 <SfGrid TValue="OrdersDetails" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid"
+    <SfDataManager Url="@DataApiUrl"    
                    Adaptor="Adaptors.WebApiAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -172,6 +179,41 @@ string? filterQuery = queryString["$filter"];
 string? sortQuery = queryString["$orderby"];
 int skip = Convert.ToInt32(queryString["$skip"]);
 int take = Convert.ToInt32(queryString["$top"]);
+```
+
+## Security Considerations
+
+Important: do NOT bind the `SfDataManager` `Url` to arbitrary or user-supplied values. Allowing free-form URLs enables untrusted third-party content to influence runtime behavior and can create indirect prompt-injection and supply-chain risks. Follow these minimal protections:
+
+- **Operator-configured endpoints only:** Use environment variables or a secure config store to define allowed API endpoints. Never accept a URL typed in by end users.
+- **Use an internal proxy/gateway:** Route requests through a service that enforces TLS, a domain allowlist, authentication, size and rate limits, and content-type checks. The proxy should normalize responses to `{ Items, Count }`.
+- **Server-side fetching only:** Fetch remote data server-side (controller or proxy). Do not let the browser request arbitrary third-party URLs directly.
+- **Validate query parameters:** Parse and validate `$skip`, `$top`, `$filter`, and `$orderby`. Use `int.TryParse` for numeric values and cap `take` (e.g., `MaxTop = 200`).
+- **Whitelist fields & operators:** Tokenize and only allow predefined field names and operators in `$filter` and `$orderby`. Reject complex or unknown expressions.
+- **Sanitize returned content:** If text from remote sources is later used as input to downstream logic or rendered, sanitize/escape it and scan for prompt-like patterns.
+- **Authentication & provenance:** Require API keys or mTLS for external sources and log provenance for audits.
+
+Example safeguards (server-side snippets):
+
+```csharp
+int skip = 0, take = 50;
+int.TryParse(queryString["$skip"], out skip);
+if (!int.TryParse(queryString["$top"], out take) || take <= 0) take = 50;
+take = Math.Min(take, 200); // hard cap
+```
+
+```csharp
+var allowedFields = new HashSet<string>{ "OrderID","CustomerID","ShipCity","ShipCountry","EmployeeID" };
+string? sort = queryString["$orderby"];
+if (!string.IsNullOrEmpty(sort)) {
+    var sortParts = sort.Split(',');
+    foreach(var part in sortParts){
+        var p = part.Trim().Split(' ');
+        if (!allowedFields.Contains(p[0])) throw new BadRequestException("Invalid sort field");
+        var dir = p.Length>1 ? p[1].ToLower() : "asc";
+        if (dir != "asc" && dir != "desc") throw new BadRequestException("Invalid sort direction");
+    }
+}
 ```
 
 ---
@@ -219,7 +261,7 @@ public object GetOrderData()
 
 ```razor
 <SfGrid TValue="OrdersDetails" Toolbar="@(new List<string>() { "Search" })" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -269,7 +311,7 @@ if (!string.IsNullOrEmpty(filterQuery))
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowFiltering="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -309,7 +351,7 @@ if (!string.IsNullOrEmpty(sort))
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowSorting="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -330,7 +372,7 @@ return take != 0
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowPaging="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -345,7 +387,7 @@ return take != 0
 <SfGrid TValue="OrdersDetails"
         Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
         Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/Grid" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
     <GridEditSettings AllowEditing="true" AllowDeleting="true" AllowAdding="true"
                       Mode="EditMode.Normal">
     </GridEditSettings>

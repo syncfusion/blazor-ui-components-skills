@@ -11,6 +11,9 @@ metadata:
 
 A comprehensive guide to implementing Syncfusion Maps component in Blazor applications. Syncfusion Maps provides powerful spatial visualization capabilities including marker management, polygon overlays, layer support, event handling, and integration with multiple map providers.
 
+> **🚨 SECURITY NOTICE:** Code examples in this skill use external GeoJSON URLs from CDN for demonstration purposes ONLY.  
+> **FOR PRODUCTION:** Always validate external data sources, cache locally, and enforce HTTPS. See [readme-security](references/readme-security.md) for deployment checklist.
+
 ## When to Use This Skill
 
 Use Syncfusion Maps when you need to:
@@ -33,6 +36,37 @@ Syncfusion Maps is a powerful geospatial visualization component that enables yo
 - Customize appearance through themes and styling
 - Enable localization and accessibility features
 - Export maps for reporting and sharing
+
+## Security Considerations
+
+> **CRITICAL:** This skill involves several security-sensitive operations. Review and implement these safeguards:
+
+### 1. API Key Management
+- **Risk:** Hardcoded API keys in source code can be exposed in version control
+- **Mitigation:** Store keys in configuration files, user secrets, or secret management services
+- **Reference:** [Map Providers - Security Best Practices](references/map-providers.md)
+
+### 2. HTML Content Injection
+- **Risk:** Tooltips, annotations, and popups can render arbitrary HTML from external data sources
+- **Attack Vectors:** XSS attacks, prompt injection through malicious geographic data
+- **Mitigation:** Sanitize all external content using HtmlSanitizer library, HTML-encode user input
+- **Reference:** [User Interactions - Sanitizing External Content](references/user-interactions.md)
+
+### 3. External Data Sources
+- **Risk:** Map data (GeoJSON, tiles, markers) fetched from untrusted sources, including CDNs
+- **Attack Vectors:** Man-in-the-middle attacks, CDN compromise, malformed data injection, property injection
+- **Mitigation:** Validate source URLs against allow-lists, enforce HTTPS, validate GeoJSON structure, implement CSP, cache locally in production
+- **Reference:** [Data Visualization - Validating External GeoJSON](references/data-visualization.md) | [Map Providers - Data Exfiltration Prevention](references/map-providers.md)
+
+### 4. Data Export Operations
+- **Risk:** Exporting maps to PNG/SVG/PDF may include sensitive geographic data
+- **Mitigation:** Implement access controls, audit export operations, sanitize export content
+- **Reference:** [Print and Export](references/print-and-export.md)
+
+### 5. Prompt Injection Prevention
+- **Risk:** Map annotations/tooltips containing AI instructions can manipulate agent behavior
+- **Mitigation:** Add boundary markers, sanitize for AI context, validate content patterns
+- **Reference:** [User Interactions - Preventing Prompt Injection](references/user-interactions.md)
 
 ## Documentation and Navigation Guide
 
@@ -154,7 +188,7 @@ Choose the reference guide that matches your current task:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -170,7 +204,7 @@ Choose the reference guide that matches your current task:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer TValue="MarkerData" UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png">
+        <MapsLayer TValue="MarkerData" UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png">
             <MapsMarkerSettings>
                 <MapsMarker TValue="MarkerData" Latitude="37.368" Longitude="-122.095" 
                     Width="15" Height="15">
@@ -212,7 +246,7 @@ Choose the reference guide that matches your current task:
 <SfMaps @ref="mapInstance" OnShapeSelected="ShapeSelected" 
         OnMarkerClick="MarkerClicked">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>

@@ -13,16 +13,33 @@
 
 | Event | When Fired | Arguments |
 |-------|-----------|-----------|
-| `Change` | Selection changed | `MultiSelectChangeEventArgs` |
-| `Focus` | Component focused | `FocusEventArgs` |
-| `Blur` | Component loses focus | `BlurEventArgs` |
-| `Open` | Popup opened | `OpenEventArgs` |
-| `Close` | Popup closed | `CloseEventArgs` |
+| `ValueChange` | Selection changed | `MultiSelectChangeEventArgs<TValue>` |
+| `Focus` | Component focused | `object` |
+| `Blur` | Component loses focus | `object` |
+| `Opened` | Popup opened | `PopupEventArgs` |
+| `Closed` | Popup closed | `ClosedEventArgs` |
+| `OnOpen` | Before popup opens | `BeforeOpenEventArgs` |
+| `OnClose` | Before popup closes | `PopupEventArgs` |
 | `Filtering` | Filter text entered | `FilteringEventArgs` |
-| `CustomValueSelection` | Custom value entered | `CustomValueEventArgs` |
-| `OnRemove` | Item removed from selection | `RemoveEventArgs` |
+| `CustomValueSpecifier` | Custom value entered | `CustomValueEventArgs<TItem>` |
+| `OnValueSelect` | Before item selected | `SelectEventArgs<TItem>` |
+| `OnValueRemove` | Before item removed | `RemoveEventArgs<TItem>` |
+| `ValueRemoved` | After item removed | `RemoveEventArgs<TItem>` |
+| `ChipSelected` | Chip/tag selected | `ChipSelectedEventArgs<TItem>` |
+| `OnChipTag` | Before item set as chip | `TaggingEventArgs<TItem>` |
+| `Cleared` | All items cleared | `MouseEventArgs` |
+| `SelectingAll` | Before select all starts | `SelectingAllEventArgs<TItem>` |
+| `SelectedAll` | After select all completes | `SelectAllEventArgs<TItem>` |
+| `OnActionBegin` | Before async action starts | `ActionBeginEventArgs` |
+| `OnActionComplete` | After async action completes | `ActionCompleteEventArgs<TItem>` |
+| `OnActionFailure` | When async action fails | `Exception` |
+| `DataBound` | After data binding completes | `DataBoundEventArgs` |
+| `OnResizeStart` | Popup resize begins | `object` |
+| `OnResizeStop` | Popup resize completes | `object` |
+| `Created` | After component created | `object` |
+| `Destroyed` | Before component destroyed | `object` |
 
-### Change Event
+### ValueChange Event
 
 Fired when user selects or deselects items:
 
@@ -30,13 +47,13 @@ Fired when user selects or deselects items:
 @page "/events-change"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="Select items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
-                       Change="OnSelectionChange">
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       ValueChange="OnSelectionChange">
     </MultiSelectEvents>
 </SfMultiSelect>
 
@@ -55,9 +72,9 @@ Fired when user selects or deselects items:
         };
     }
 
-    private void OnSelectionChange(MultiSelectChangeEventArgs<List<string>> args)
+    private void OnSelectionChange(MultiSelectChangeEventArgs<string[]> args)
     {
-        EventLog = $"Selected: {string.Join(", ", args.Value ?? new List<string>())}";
+        EventLog = $"Selected: {string.Join(", ", args.Value ?? Array.Empty<string>())}";
     }
 
     public class Item { public string ID { get; set; } public string Name { get; set; } }
@@ -66,22 +83,22 @@ Fired when user selects or deselects items:
 
 **Arguments:**
 ```csharp
-public class MultiSelectChangeEventArgs<T>
+public class MultiSelectChangeEventArgs<TValue>
 {
-    public T Value { get; set; }        // Current selected values
-    public T PreviousValue { get; set; } // Previous selected values
-    public MultiSelectChangeEventArgs IsInteracted { get; set; }  // User-triggered
+    public TValue Value { get; set; }        // Current selected values
+    public TValue PreviousValue { get; set; } // Previous selected values
+    public bool IsInteracted { get; set; }  // True if user-triggered
 }
 ```
 
 ### Focus and Blur Events
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
+    <MultiSelectEvents TValue="string[]" TItem="Item"
                        Focus="OnFocus"
                        Blur="OnBlur">
     </MultiSelectEvents>
@@ -93,7 +110,7 @@ public class MultiSelectChangeEventArgs<T>
         Console.WriteLine("Component focused");
     }
 
-    private void OnBlur(BlurEventArgs args)
+    private void OnBlur(FocusEventArgs args)
     {
         Console.WriteLine("Component lost focus");
     }
@@ -102,29 +119,29 @@ public class MultiSelectChangeEventArgs<T>
 }
 ```
 
-### Open and Close Events
+### Opened and Closed Events
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
-                       Open="OnOpen"
-                       Close="OnClose">
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       Opened="OnOpened"
+                       Closed="OnClosed">
     </MultiSelectEvents>
 </SfMultiSelect>
 
 @code {
     private bool IsPopupOpen { get; set; } = false;
 
-    private void OnOpen(OpenEventArgs args)
+    private void OnOpened(PopupEventArgs args)
     {
         IsPopupOpen = true;
         Console.WriteLine("Popup opened");
     }
 
-    private void OnClose(CloseEventArgs args)
+    private void OnClosed(PopupEventArgs args)
     {
         IsPopupOpen = false;
         Console.WriteLine("Popup closed");
@@ -134,15 +151,17 @@ public class MultiSelectChangeEventArgs<T>
 }
 ```
 
+**Note:** Event names are `Opened` and `Closed` (past tense), not `Open` and `Close`.
+
 ### Filtering Event
 
 ```csharp
-<SfMultiSelect DataSource="@FilteredItems" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@FilteredItems"
                AllowFiltering="true">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
+    <MultiSelectEvents TValue="string[]" TItem="Item"
                        Filtering="OnFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -167,26 +186,240 @@ public class MultiSelectChangeEventArgs<T>
 ### Custom Value Event
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
                AllowCustomValue="true">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
-                       CustomValueSelection="OnCustomValue">
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       CustomValueSpecifier="OnCustomValue">
     </MultiSelectEvents>
 </SfMultiSelect>
 
 @code {
-    private void OnCustomValue(CustomValueEventArgs args)
+    private void OnCustomValue(CustomValueEventArgs<Item> args)
     {
-        // Handle custom value
-        Console.WriteLine($"Custom value: {args.NewValue}");
+        // Handle custom value - args.Text contains the user input
+        Console.WriteLine($"Custom value: {args.Text}");
         
-        // Optionally add to data source
-        Items.Add(new Item 
+        // Create and return a new item
+        args.NewData = new Item 
         { 
             ID = Guid.NewGuid().ToString(), 
-            Name = args.NewValue 
-        });
+            Name = args.Text 
+        };
+        
+        // Optionally add to data source
+        Items.Add(args.NewData);
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+**Note:** Event is `CustomValueSpecifier` (not `CustomValueSelection`). Use `args.Text` for input and set `args.NewData` with the created object.
+
+### OnValueSelect and OnValueRemove Events
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       OnValueSelect="OnSelect"
+                       OnValueRemove="OnRemove"
+                       ValueRemoved="OnRemoved">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnSelect(SelectEventArgs<Item> args)
+    {
+        // Called before item is selected
+        Console.WriteLine($"Selecting: {args.ItemData.Name}");
+        
+        // Cancel selection if needed
+        if (args.ItemData.ID == "restricted")
+            args.Cancel = true;
+    }
+
+    private void OnRemove(RemoveEventArgs<Item> args)
+    {
+        // Called before item is removed
+        Console.WriteLine($"Removing: {args.ItemData.Name}");
+        
+        // Cancel removal if needed
+        args.Cancel = false;
+    }
+
+    private void OnRemoved(RemoveEventArgs<Item> args)
+    {
+        // Called after item is removed
+        Console.WriteLine($"Removed: {args.ItemData.Name}");
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+### ChipSelected and OnChipTag Events
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               Mode="VisualMode.Box">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       OnChipTag="OnTagging"
+                       ChipSelected="OnChipSelect">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnTagging(TaggingEventArgs<Item> args)
+    {
+        // Called before item is displayed as a chip
+        Console.WriteLine($"Tagging: {args.ItemData.Name}");
+        
+        // Customize chip display if needed
+        args.SetClass = "custom-chip-class";
+    }
+
+    private void OnChipSelect(ChipSelectedEventArgs<Item> args)
+    {
+        // Called when a chip is clicked/selected
+        Console.WriteLine($"Chip selected: {args.Data.Name}");
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+### Cleared Event
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               ShowClearButton="true">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       Cleared="OnCleared">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnCleared(MouseEventArgs args)
+    {
+        // Called after clear button is clicked and all items are cleared
+        Console.WriteLine("All selections cleared");
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+### SelectingAll and SelectedAll Events
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               Mode="VisualMode.CheckBox"
+               ShowSelectAll="true">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       SelectingAll="OnSelectingAll"
+                       SelectedAll="OnSelectedAll">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnSelectingAll(SelectingAllEventArgs<Item> args)
+    {
+        // Called before select all operation
+        Console.WriteLine($"Selecting all: {args.Items.Count} items");
+        
+        // Cancel select all if needed
+        args.Cancel = false;
+        
+        // Suppress individual OnValueSelect/OnValueRemove events during select all
+        args.SuppressItemEvents = true;
+    }
+
+    private void OnSelectedAll(SelectAllEventArgs<Item> args)
+    {
+        // Called after select all operation completes
+        Console.WriteLine($"Selected all: {args.Items.Count} items");
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+### OnOpen and OnClose Events
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       OnOpen="OnBeforeOpen"
+                       OnClose="OnBeforeClose">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnBeforeOpen(BeforeOpenEventArgs args)
+    {
+        // Called before popup opens
+        Console.WriteLine("Popup opening...");
+        
+        // Cancel popup open if needed
+        args.Cancel = false;
+    }
+
+    private void OnBeforeClose(PopupEventArgs args)
+    {
+        // Called before popup closes
+        Console.WriteLine("Popup closing...");
+        
+        // Cancel popup close if needed
+        args.Cancel = false;
+    }
+
+    private List<Item> Items { get; set; } = new();
+}
+```
+
+### OnResizeStart and OnResizeStop Events
+
+```csharp
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               AllowResize="true">
+    <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       OnResizeStart="OnResizeBegin"
+                       OnResizeStop="OnResizeEnd">
+    </MultiSelectEvents>
+</SfMultiSelect>
+
+@code {
+    private void OnResizeBegin(object args)
+    {
+        // Called when popup resize starts
+        Console.WriteLine("Popup resize started");
+    }
+
+    private void OnResizeEnd(object args)
+    {
+        // Called when popup resize completes
+        Console.WriteLine("Popup resize completed");
     }
 
     private List<Item> Items { get; set; } = new();
@@ -198,28 +431,28 @@ public class MultiSelectChangeEventArgs<T>
 ### Async Event Handlers
 
 ```csharp
-<SfMultiSelect DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+<SfMultiSelect TValue="string[]"
+               TItem="Item"
+               DataSource="@Items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="Item"
-                       Change="OnSelectionChangeAsync">
+    <MultiSelectEvents TValue="string[]" TItem="Item"
+                       ValueChange="OnSelectionChangeAsync">
     </MultiSelectEvents>
 </SfMultiSelect>
 
 @code {
-    private async Task OnSelectionChangeAsync(MultiSelectChangeEventArgs<List<string>> args)
+    private async Task OnSelectionChangeAsync(MultiSelectChangeEventArgs<string[]> args)
     {
         // Async operations like API calls
         var result = await FetchDataAsync(args.Value);
         Console.WriteLine($"Result: {result}");
     }
 
-    private async Task<string> FetchDataAsync(List<string> values)
+    private async Task<string> FetchDataAsync(string[] values)
     {
         // Simulate API call
         await Task.Delay(1000);
-        return $"Processed {values.Count} items";
+        return $"Processed {values?.Length ?? 0} items";
     }
 
     private List<Item> Items { get; set; } = new();
@@ -245,9 +478,9 @@ private void OnFiltering(FilteringEventArgs args)
 @using Syncfusion.Blazor.DropDowns
 
 <SfMultiSelect @ref="MultiSelectRef"
-               DataSource="@Items" 
-               TValue="List<string>"
+               TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
                Placeholder="See buttons below">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -258,7 +491,7 @@ private void OnFiltering(FilteringEventArgs args)
 <button @onclick="ClearSelection">Clear</button>
 
 @code {
-    private SfMultiSelect<Item, List<string>> MultiSelectRef;
+    private SfMultiSelect<string[], Item> MultiSelectRef;
     private List<Item> Items { get; set; } = new();
 
     protected override void OnInitialized()
@@ -312,9 +545,11 @@ private async Task RefreshData()
 
     // Refresh component
     if (MultiSelectRef != null)
-        await MultiSelectRef.Refresh();
+        await MultiSelectRef.RefreshDataAsync();
 }
 ```
+
+**Note:** Use `RefreshDataAsync()` method (not `Refresh()`).
 
 ## Properties
 
@@ -322,16 +557,21 @@ private async Task RefreshData()
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `Value` | `List<T>` | Currently selected values |
-| `DataSource` | `IEnumerable<T>` | Items to display |
-| `Enabled` | `bool` | Enable/disable component |
+| `Value` | `TValue` | Currently selected values (array type) |
+| `DataSource` | `IEnumerable<TItem>` | Items to display |
+| `Enabled` | `bool` | Enable/disable component (default: true) |
 | `Readonly` | `bool` | Read-only mode |
 | `AllowFiltering` | `bool` | Enable filtering |
-| `ShowCheckbox` | `bool` | Show checkboxes |
+| `Mode` | `VisualMode` | Display mode (Default, Box, CheckBox, Delimiter) |
 | `Placeholder` | `string` | Placeholder text |
 | `PopupHeight` | `string` | Popup height |
-| `AllowGrouping` | `bool` | Enable grouping |
-| `Mode` | `VisualMode` | Display mode (Box, Delimiter, Default) |
+| `PopupWidth` | `string` | Popup width |
+| `AllowCustomValue` | `bool` | Allow custom values |
+| `ShowClearButton` | `bool` | Show clear button |
+| `ShowDropDownIcon` | `bool` | Show dropdown icon |
+| `MaximumSelectionLength` | `int` | Maximum selection limit |
+
+**Note:** Grouping is enabled via `GroupBy` in `MultiSelectFieldSettings` (no `AllowGrouping` or `ShowCheckbox` properties).
 
 ### Accessing Properties
 
@@ -340,10 +580,10 @@ private async Task RefreshData()
 @using Syncfusion.Blazor.DropDowns
 
 <SfMultiSelect @ref="MultiSelectRef"
-               @bind-Value="SelectedValues"
-               DataSource="@Items" 
-               TValue="List<string>"
-               TItem="Item">
+               TValue="string[]"
+               TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedValues">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
@@ -351,8 +591,8 @@ private async Task RefreshData()
 <p>@Info</p>
 
 @code {
-    private SfMultiSelect<Item, List<string>> MultiSelectRef;
-    private List<string> SelectedValues { get; set; } = new();
+    private SfMultiSelect<string[], Item> MultiSelectRef;
+    private string[] SelectedValues { get; set; } = Array.Empty<string>();
     private List<Item> Items { get; set; } = new();
     private string Info { get; set; } = "";
 
@@ -367,7 +607,7 @@ private async Task RefreshData()
 
     private void GetInfo()
     {
-        Info = $"Selected: {SelectedValues.Count}, Total: {Items.Count}";
+        Info = $"Selected: {SelectedValues.Length}, Total: {Items.Count}";
     }
 
     public class Item { public string ID { get; set; } public string Name { get; set; } }
@@ -382,16 +622,16 @@ private async Task RefreshData()
 @page "/reactive-state"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Items" 
-               @bind-Value="SelectedItems"
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]"
                TItem="Item"
+               DataSource="@Items"
+               @bind-Value="SelectedItems"
                Placeholder="Select items">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 <div>
-    <h4>Selected Items: @SelectedItems.Count</h4>
+    <h4>Selected Items: @SelectedItems.Length</h4>
     <ul>
         @foreach (var item in SelectedItems)
         {
@@ -401,7 +641,7 @@ private async Task RefreshData()
 </div>
 
 @code {
-    private List<string> SelectedItems { get; set; } = new();
+    private string[] SelectedItems { get; set; } = Array.Empty<string>();
     private List<Item> Items { get; set; } = new();
 
     protected override void OnInitialized()
@@ -425,25 +665,26 @@ private async Task RefreshData()
 @using Syncfusion.Blazor.DropDowns
 
 <p>Department: @SelectedDepartment</p>
-<SfMultiSelect @bind-Value="SelectedDepartment"
-               DataSource="@Departments" 
-               TValue="string"
+<SfMultiSelect TValue="string[]"
                TItem="string"
+               DataSource="@Departments"
+               @bind-Value="SelectedDepartments"
                Placeholder="Select department">
 </SfMultiSelect>
 
-<p>Employees in @SelectedDepartment:</p>
-<SfMultiSelect DataSource="@FilteredEmployees" 
-               @bind-Value="SelectedEmployees"
-               TValue="List<string>"
+<p>Employees in selected departments:</p>
+<SfMultiSelect TValue="string[]"
                TItem="Employee"
+               DataSource="@FilteredEmployees"
+               @bind-Value="SelectedEmployees"
                Placeholder="Select employees">
     <MultiSelectFieldSettings Text="Name" Value="EmployeeID"></MultiSelectFieldSettings>
 </SfMultiSelect>
 
 @code {
-    private string SelectedDepartment { get; set; } = "IT";
-    private List<string> SelectedEmployees { get; set; } = new();
+    private string[] SelectedDepartments { get; set; } = new[] { "IT" };
+    private string SelectedDepartment => SelectedDepartments?.FirstOrDefault() ?? "IT";
+    private string[] SelectedEmployees { get; set; } = Array.Empty<string>();
     
     private List<string> Departments { get; set; } = new() { "IT", "HR", "Finance" };
     private List<Employee> AllEmployees { get; set; } = new();
@@ -484,12 +725,25 @@ private async Task RefreshData()
 
 ## Key Takeaways
 
-✅ `Change` event fires on selection updates  
+✅ `ValueChange` event fires on selection updates (not `Change`)  
+✅ Use `Opened`/`Closed` events after popup state changes  
+✅ Use `OnOpen`/`OnClose` events before popup state changes (cancellable)  
+✅ `CustomValueSpecifier` for custom values (use `args.NewData` not `args.Item`)  
+✅ `OnValueSelect`/`OnValueRemove` fire before item selection/removal (cancellable)  
+✅ `ValueRemoved` fires after item is removed (not cancellable)  
+✅ `ChipSelected` fires when clicking a chip in Box mode  
+✅ `OnChipTag` fires before item is rendered as chip (customize display)  
+✅ `Cleared` fires when clear button removes all items  
+✅ `SelectingAll`/`SelectedAll` for select all operations in CheckBox mode  
+✅ Use `args.Cancel` to prevent default behavior in `On*` events  
+✅ Use `RefreshDataAsync()` method (not `Refresh()`)  
 ✅ Use async handlers for API calls  
-✅ `PreventDefaultAction` for custom behavior  
-✅ Reference component for API method calls  
+✅ `PreventDefaultAction` for custom filtering behavior  
+✅ Reference component for API method calls (e.g., `ShowPopupAsync()`, `HidePopupAsync()`, `FocusAsync()`)  
 ✅ Binding provides real-time state sync  
 ✅ Cascading updates enable dependent selectors  
+✅ `OnResizeStart`/`OnResizeStop` for popup resize handling (requires `AllowResize="true"`)  
+✅ Use `args.SuppressItemEvents` in `SelectingAll` to prevent individual item events  
 
 ## Next Steps
 

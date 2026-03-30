@@ -195,7 +195,7 @@ Fetch data from a Web API endpoint using **SfDataManager**:
 <SfAutoComplete TValue="string" TItem="Product" 
                 AllowFiltering="true"
                 DebounceDelay="300">
-    <SfDataManager Url="https://api.example.com/products" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
                    Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor">
     </SfDataManager>
     <AutoCompleteFieldSettings Value="ProductName" ></AutoCompleteFieldSettings>

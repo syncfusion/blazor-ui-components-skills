@@ -69,7 +69,7 @@ Define which toolbar items to display:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 }
 ```
@@ -334,7 +334,7 @@ Replace the entire toolbar with a custom template:
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/image.png");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private async void OpenImage()

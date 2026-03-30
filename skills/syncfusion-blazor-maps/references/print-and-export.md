@@ -1,5 +1,6 @@
-﻿## Table of Contents
+## Table of Contents
 
+- [Security Warning](#security-warning)
 - [Prerequisites for Export and Print (NEW - Important)](#prerequisites-for-export-and-print-new---important)
 - [Exporting Maps](#exporting-maps)
    - [Export as PNG](#export-as-png)
@@ -22,19 +23,46 @@
 
 # Print and Export
 
+> **Security Warning:** Export and print operations allow users to save map visualizations to external files (PNG, SVG, PDF). This can result in data exfiltration if maps contain sensitive geographic information. Consider implementing:
+> - Access controls for export functionality
+> - Audit logging of export operations
+> - Watermarking exported content
+> - User permission validation before export
+> - Content sanitization in exported files
+
 ## Prerequisites for Export and Print (NEW - Important)
 
 Ensure the following properties are enabled on your `SfMaps` component:
 
 ```csharp
-<SfMaps AllowImageExport="true"   // ← Required for PNG/SVG export
-        AllowPdfExport="true"     // ← Required for PDF export
-        AllowPrint="true">        // ← Required for printing
+<SfMaps AllowImageExport="true"   //  Required for PNG/SVG export
+        AllowPdfExport="true"     //  Required for PDF export
+        AllowPrint="true">        //  Required for printing
     <!-- Map configuration -->
 </SfMaps>
 ```
 
 Without these properties set to `true`, export and print methods will not function.
+
+**Security Recommendation:** Only enable these properties for authorized users:
+
+```csharp
+<SfMaps AllowImageExport="@IsUserAuthorized"
+        AllowPdfExport="@IsUserAuthorized"
+        AllowPrint="@IsUserAuthorized">
+    <!-- Map configuration -->
+</SfMaps>
+
+@code {
+    private bool IsUserAuthorized { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Check user permissions
+        IsUserAuthorized = await AuthService.CanExportMaps();
+    }
+}
+```
 
 ---
 
@@ -47,29 +75,34 @@ Export the current map view as PNG image:
 ```csharp
 @page "/export-png"
 @using Syncfusion.Blazor.Maps
-
 <button @onclick="ExportAsPng">Export as PNG</button>
-
 <SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
             <MapsMarkerSettings>
-                <MapsMarker Latitude="37.368" Longitude="-122.095"
-                    Shape="MarkerType.Circle" Width="15" Height="15">
+                <MapsMarker Visible="true" Datasource="@MarkerDataSource" TValue="MarkerData"
+                     Width="15" Height="15">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
-
 @code {
     private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
+    public class MarkerData
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    };
+    public List<MarkerData> MarkerDataSource = new List<MarkerData>
+    {
+        new MarkerData { Latitude = 47.60621, Longitude = -122.332071 }
+    };
 
     private async Task ExportAsPng()
     {
-        await mapInstance.ExportAsync(ExportType.PNG, "map-export");
+        await mapInstance.ExportAsync(Syncfusion.Blazor.Maps.ExportType.PNG, "map-export");
     }
 }
 ```
@@ -105,13 +138,13 @@ Export map as a PDF document with optional page orientation:
     private async Task ExportAsPdfPortrait()
     {
         // Export with Portrait orientation (default)
-        await mapInstance.ExportAsync(ExportType.PDF, "map-report", PdfPageOrientation.Portrait);
+        await mapInstance.ExportAsync(ExportType.PDF, "map-report", 0);
     }
 
     private async Task ExportAsPdfLandscape()
     {
         // Export with Landscape orientation
-        await mapInstance.ExportAsync(ExportType.PDF, "map-report", PdfPageOrientation.Landscape);
+        await mapInstance.ExportAsync(ExportType.PDF, "map-report", 1);
     }
 }
 ```
@@ -133,47 +166,21 @@ Control export parameters:
 @page "/export-advanced"
 @using Syncfusion.Blazor.Maps
 
-<div style="margin: 20px 0;">
-    <label>
-        <input type="checkbox" @bind="IncludeLegend" /> Include Legend
-    </label>
-    <label>
-        <input type="checkbox" @bind="IncludeLabels" /> Include Labels
-    </label>
-    
-    <label>
-        Width: <input type="number" @bind="ExportWidth" min="100" max="2000" />
-    </label>
-    <label>
-        Height: <input type="number" @bind="ExportHeight" min="100" max="2000" />
-    </label>
-</div>
-
-<button @onclick="ExportWithOptions">Export</button>
-
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<button @onclick="export">Export</button>
+<SfMaps @ref="Maps" AllowPdfExport="true">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
-    <MapsLegendSettings Visible="@IncludeLegend">
-    </MapsLegendSettings>
 </SfMaps>
 
 @code {
-    private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    
-    private bool IncludeLegend = true;
-    private bool IncludeLabels = true;
-    private int ExportWidth = 800;
-    private int ExportHeight = 600;
-
-    private async Task ExportWithOptions()
+    SfMaps Maps;
+    string exportString;
+    public async Task export()
     {
-        // Export with current settings
-        await mapInstance.ExportAsync(ExportType.PNG, "map", ExportWidth, ExportHeight);
+        exportString = await this.Maps.ExportAsync(Syncfusion.Blazor.Maps.ExportType.PDF, "Maps", 0, false);
+        Console.WriteLine(exportString);
     }
 }
 ```
@@ -191,18 +198,15 @@ Print the map with browser print dialog:
 
 <button @onclick="PrintMap">Print Map</button>
 
-<SfMaps @ref="mapInstance" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps @ref="mapInstance" AllowPrint="true">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
     private SfMaps mapInstance;
-    private int ZoomLevel = 4;
-
     private async Task PrintMap()
     {
         await mapInstance.PrintAsync();
@@ -212,86 +216,6 @@ Print the map with browser print dialog:
 
 This opens the browser's print dialog. Users can select printer, page layout, and margins.
 
-### Custom Print Styling
-
-Optimize appearance when printed:
-
-```html
-<style media="print">
-    /* Hide controls that aren't needed in print -->
-    .no-print {
-        display: none !important;
-    }
-
-    /* Optimize map for paper -->
-    .e-maps {
-        width: 100%;
-        height: auto;
-        page-break-inside: avoid;
-    }
-
-    /* Larger legend for readability -->
-    .e-legend {
-        font-size: 12px;
-        margin-top: 20px;
-    }
-
-    /* Ensure layers print -->
-    .e-layer {
-        display: block !important;
-    }
-</style>
-
-<button class="no-print" @onclick="PrintMap">Print</button>
-
-<SfMaps @ref="mapInstance">
-    <!-- Map content -->
-</SfMaps>
-```
-
-### Page Setup for Printing
-
-```csharp
-@page "/print-setup"
-@using Syncfusion.Blazor.Maps
-
-<div style="margin: 20px 0;">
-    <label>
-        Paper Size:
-        <select @bind="PaperSize">
-            <option value="A4">A4</option>
-            <option value="A3">A3</option>
-            <option value="Letter">Letter</option>
-            <option value="Legal">Legal</option>
-        </select>
-    </label>
-
-    <label>
-        <input type="checkbox" @bind="PrintInColor" /> Print in Color
-    </label>
-
-    <label>
-        Margin: <input type="number" @bind="PrintMargin" min="0" max="50" /> mm
-    </label>
-</div>
-
-<button @onclick="PrintMap">Print</button>
-
-@code {
-    private SfMaps mapInstance;
-    private string PaperSize = "A4";
-    private bool PrintInColor = true;
-    private int PrintMargin = 10;
-
-    private async Task PrintMap()
-    {
-        // Apply print styles
-        // Note: Actual paper size/margin control depends on browser capabilities
-        await mapInstance.PrintAsync();
-    }
-}
-```
-
 ## Export with Legend and Labels
 
 ### Including Map Elements
@@ -299,44 +223,63 @@ Optimize appearance when printed:
 ```csharp
 @page "/export-complete"
 @using Syncfusion.Blazor.Maps
-
 <button @onclick="ExportWithLegend">Export Map with Legend</button>
-
-<SfMaps @ref="mapInstance" CenterPosition="@CenterLatLng" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps @ref="mapInstance" AllowImageExport="true">
+    <MapsLegendSettings Visible="true" Shape="Syncfusion.Blazor.Maps.LegendShape.Star" ShapeHeight="30" ShapeWidth="30" ShapePadding="10">
+        <MapsLegendShapeBorder Color="blue" Width="2">
+        </MapsLegendShapeBorder>
+    </MapsLegendSettings>
     <MapsLayers>
-        <MapsLayer TValue="StateData" DataSource="@StateData">
-            <MapsShapeSettings ColorValuePath="Population">
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Country"
+                   DataSource="MemberShipDetails" ShapePropertyPath='new string[] {"name"}' TValue="UNCouncil">
+            <MapsDataLabelSettings Visible="true" LabelPath="name"></MapsDataLabelSettings>
+            <MapsShapeSettings ColorValuePath="Membership">
                 <MapsShapeColorMappings>
-                    <MapsShapeColorMapping StartRange="0" EndRange="5000000" Color='new string[] { "#B3E5FC" }'>
-                    </MapsShapeColorMapping>
-                    <MapsShapeColorMapping StartRange="5000000" EndRange="30000000" Color='new string[] { "#0288D1" }'>
-                    </MapsShapeColorMapping>
+                    <MapsShapeColorMapping Value="Permanent" Color='new string[] {"#D84444"}' />
+                    <MapsShapeColorMapping Value="Non-Permanent" Color='new string[] {"#316DB5"}' />
                 </MapsShapeColorMappings>
             </MapsShapeSettings>
-            <MapsDataLabelSettings Visible="true" LabelPath="Name">
-            </MapsDataLabelSettings>
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" DataSource="MarkerData" Height="25" Width="15" TValue="City"
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Image" ImageUrl="https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/ballon.png">
+                </MapsMarker>
+            </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
-    <MapsLegendSettings Visible="true" Position="LegendPosition.BottomRight">
-    </MapsLegendSettings>
 </SfMaps>
 
 @code {
     private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    private List<StateData> StateData = new();
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
 
+    public List<City> MarkerData = new List<City> {
+        new City { Latitude  = 35.145083, Longitude = -117.960260 },
+        new City { Latitude = 40.724546, Longitude = -73.850344 },
+        new City { Latitude = 41.657782, Longitude = -91.533857 }
+    };
+    public class UNCouncil
+    {
+        public string Country { get; set; }
+        public string Membership { get; set; }
+    }
+
+    private List<UNCouncil> MemberShipDetails = new List<UNCouncil>
+    {
+        new UNCouncil { Country = "China", Membership = "Permanent" },
+        new UNCouncil { Country = "France", Membership = "Permanent" },
+        new UNCouncil { Country = "Russia", Membership = "Permanent" },
+        new UNCouncil { Country = "Kazakhstan", Membership = "Non-Permanent" },
+        new UNCouncil { Country = "Poland", Membership = "Non-Permanent" },
+        new UNCouncil { Country = "Sweden", Membership = "Non-Permanent" }
+    };
     private async Task ExportWithLegend()
     {
         // Map exports automatically include visible legend and labels
-        await mapInstance.ExportAsync(ExportType.PNG, "map-with-legend");
-    }
-
-    public class StateData
-    {
-        public string Name { get; set; }
-        public int Population { get; set; }
+        await mapInstance.ExportAsync(Syncfusion.Blazor.Maps.ExportType.PNG, "map-with-legend");
     }
 }
 ```
@@ -356,86 +299,66 @@ Optimize appearance when printed:
 ```csharp
 @page "/export-workflow"
 @using Syncfusion.Blazor.Maps
-
-<div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 4px;">
-    <h3>Export Map</h3>
-    
-    <div>
-        <label>
-            Format:
-            <select @bind="ExportFormat">
-                <option value="PNG">PNG Image</option>
-                <option value="SVG">SVG Vector</option>
-                <option value="PDF">PDF Document</option>
-            </select>
-        </label>
-    </div>
-
-    <div style="margin: 10px 0;">
-        <label>
-            <input type="checkbox" @bind="ExportLegend" /> Include Legend
-        </label>
-        <label>
-            <input type="checkbox" @bind="ExportWithMarkers" /> Include Markers
-        </label>
-    </div>
-
-    <button @onclick="PerformExport" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-        @(IsExporting ? "Exporting..." : "Export")
-    </button>
-</div>
-
-<SfMaps @ref="mapInstance" CenterPosition="@CenterLatLng" >
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<button @onclick="ExportWithPNG">PNG</button>
+<button @onclick="ExportWithJPEG">JPEG</button>
+<button @onclick="ExportWithSVG">SVG</button>
+<SfMaps @ref="mapInstance" AllowImageExport="true" AllowPdfExport="true" AllowPrint="true">
     <MapsLayers>
-        <MapsLayer TValue="StateData" DataSource="@StateData">
-            <MapsShapeSettings ColorValuePath="Population">
+        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Country"
+                   DataSource="MemberShipDetails" ShapePropertyPath='new string[] {"name"}' TValue="UNCouncil">
+            <MapsShapeSettings ColorValuePath="Membership">
+                <MapsShapeColorMappings>
+                    <MapsShapeColorMapping Value="Permanent" Color='new string[] {"#D84444"}' />
+                    <MapsShapeColorMapping Value="Non-Permanent" Color='new string[] {"#316DB5"}' />
+                </MapsShapeColorMappings>
             </MapsShapeSettings>
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" DataSource="MarkerData" Height="25" Width="15" TValue="City" >
+                </MapsMarker>
+            </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
-    @if (ExportLegend)
-    {
-        <MapsLegendSettings Visible="true" Position="LegendPosition.BottomRight">
-        </MapsLegendSettings>
-    }
 </SfMaps>
 
 @code {
     private SfMaps mapInstance;
-    private MapsCenterPosition CenterLatLng = new MapsCenterPosition { Latitude = 39.0, Longitude = -98.0 };
-    
-    private string ExportFormat = "PNG";
-    private bool ExportLegend = true;
-    private bool ExportWithMarkers = true;
-    private bool IsExporting = false;
-    private List<StateData> StateData = new();
-
-    private async Task PerformExport()
+    public class City
     {
-        IsExporting = true;
-
-        try
-        {
-            var exportType = ExportFormat switch
-            {
-                "SVG" => ExportType.SVG,
-                "PDF" => ExportType.PDF,
-                _ => ExportType.PNG
-            };
-
-            var fileName = $"map-export-{DateTime.Now:yyyyMMdd-HHmmss}";
-            await mapInstance.ExportAsync(exportType, fileName);
-        }
-        finally
-        {
-            IsExporting = false;
-        }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 
-    public class StateData
+    public List<City> MarkerData = new List<City> {
+        new City { Latitude  = 35.145083, Longitude = -117.960260 },
+        new City { Latitude = 40.724546, Longitude = -73.850344 },
+        new City { Latitude = 41.657782, Longitude = -91.533857 }
+    };
+    public class UNCouncil
     {
-        public string Name { get; set; }
-        public int Population { get; set; }
+        public string Country { get; set; }
+        public string Membership { get; set; }
+    }
+
+    private List<UNCouncil> MemberShipDetails = new List<UNCouncil>
+    {
+        new UNCouncil { Country = "China", Membership = "Permanent" },
+        new UNCouncil { Country = "France", Membership = "Permanent" },
+        new UNCouncil { Country = "Russia", Membership = "Permanent" },
+        new UNCouncil { Country = "Kazakhstan", Membership = "Non-Permanent" },
+        new UNCouncil { Country = "Poland", Membership = "Non-Permanent" },
+        new UNCouncil { Country = "Sweden", Membership = "Non-Permanent" }
+    };
+    private async Task ExportWithPNG()
+    {
+        await mapInstance.ExportAsync(Syncfusion.Blazor.Maps.ExportType.PNG, "PNG");
+    }
+    private async Task ExportWithJPEG()
+    {
+        await mapInstance.ExportAsync(Syncfusion.Blazor.Maps.ExportType.JPEG, "JPEG");
+    }
+    private async Task ExportWithSVG()
+    {
+        await mapInstance.ExportAsync(Syncfusion.Blazor.Maps.ExportType.SVG, "SVG");
     }
 }
 ```

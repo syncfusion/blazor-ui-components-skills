@@ -15,6 +15,8 @@
 
 ## Image Settings Properties
 
+> **Security:** Validate external media URLs against a whitelist of trusted domains before embedding.
+
 Use `RichTextEditorImageSettings` to control image behaviour:
 
 | Property | Type | Description |

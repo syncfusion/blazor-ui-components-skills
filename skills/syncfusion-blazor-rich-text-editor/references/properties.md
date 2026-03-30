@@ -38,7 +38,7 @@ When `true`, the editor content cannot be changed by user interaction. You can s
 
 ```razor
 <SfRichTextEditor Value="@HtmlContent" Readonly="true">
-    <RichTextEditorToolbarSettings Visible="false" />
+    <RichTextEditorToolbarSettings Enable="false" />
 </SfRichTextEditor>
 ```
 

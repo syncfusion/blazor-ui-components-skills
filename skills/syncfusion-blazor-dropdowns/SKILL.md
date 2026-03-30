@@ -950,9 +950,9 @@ builder.Services.AddSyncfusionBlazor();
 @page "/multiselect-demo"
 @using Syncfusion.Blazor.DropDowns
 
-<SfMultiSelect DataSource="@Employees" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]" 
                TItem="EmployeeData"
+               DataSource="@Employees"
                Placeholder="Select employees">
     <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
 </SfMultiSelect>
@@ -988,17 +988,17 @@ builder.Services.AddSyncfusionBlazor();
 
 <div>
     <p>Selected IDs: @string.Join(", ", SelectedValues)</p>
-    <SfMultiSelect DataSource="@Items" 
-                   @bind-Value="SelectedValues"
-                   TValue="List<string>"
+    <SfMultiSelect TValue="string[]" 
                    TItem="ItemData"
+                   DataSource="@Items"
+                   @bind-Value="SelectedValues"
                    Placeholder="Select items">
         <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
     </SfMultiSelect>
 </div>
 
 @code {
-    private List<string> SelectedValues { get; set; } = new();
+    private string[] SelectedValues { get; set; } = Array.Empty<string>();
     private List<ItemData> Items { get; set; } = new();
 
     protected override void OnInitialized()
@@ -1022,14 +1022,14 @@ builder.Services.AddSyncfusionBlazor();
 #### Pattern 2: Filtering with Remote Data
 
 ```csharp
-<SfMultiSelect DataSource="@RemoteData" 
-               TValue="List<string>"
+<SfMultiSelect TValue="string[]" 
                TItem="RemoteItem"
+               DataSource="@RemoteData"
                AllowFiltering="true"
-               ShowCheckbox="true"
+               Mode="VisualMode.CheckBox"
                Placeholder="Search and select">
     <MultiSelectFieldSettings Text="Text" Value="ID"></MultiSelectFieldSettings>
-    <MultiSelectEvents TValue="List<string>" TItem="RemoteItem" 
+    <MultiSelectEvents TValue="string[]" TItem="RemoteItem" 
                        Filtering="OnFiltering">
     </MultiSelectEvents>
 </SfMultiSelect>
@@ -1065,10 +1065,10 @@ builder.Services.AddSyncfusionBlazor();
     
     <div class="form-group">
         <label>Select at least 2 items:</label>
-        <SfMultiSelect DataSource="@Items"
-                       @bind-Value="FormData.SelectedItems"
-                       TValue="List<string>"
+        <SfMultiSelect TValue="string[]"
                        TItem="ItemData"
+                       DataSource="@Items"
+                       @bind-Value="FormData.SelectedItems"
                        Placeholder="Select items">
             <MultiSelectFieldSettings Text="Name" Value="ID"></MultiSelectFieldSettings>
         </SfMultiSelect>
@@ -1091,7 +1091,7 @@ builder.Services.AddSyncfusionBlazor();
     {
         [Required(ErrorMessage = "Please select items")]
         [MinLength(2, ErrorMessage = "Select at least 2 items")]
-        public List<string> SelectedItems { get; set; } = new();
+        public string[] SelectedItems { get; set; } = Array.Empty<string>();
     }
 
     public class ItemData
@@ -1106,18 +1106,30 @@ builder.Services.AddSyncfusionBlazor();
 
 | Property | Type | Description | When to Use |
 |----------|------|-------------|-----------|
-| `DataSource` | `IEnumerable<T>` | Collection of items to display | Always required |
-| `Value` | `List<T>` | Currently selected values | Binding selections |
+| `DataSource` | `IEnumerable<TItem>` | Collection of items to display | Always required |
+| `Value` | `TValue` | Currently selected values (array or collection) | Binding selections |
 | `Placeholder` | `string` | Placeholder text when empty | UX improvement |
 | `AllowFiltering` | `bool` | Enable/disable search filtering | For searchable lists |
-| `ShowCheckbox` | `bool` | Show checkboxes for selection | Explicit selection mode |
-| `Mode` | `VisualMode` | Selection display mode (Box, Delimiter, Default) | Customize chip display |
-| `Disabled` | `bool` | Enable/disable component | Conditional states |
+| `Mode` | `VisualMode` | Selection display mode (Default, Box, Delimiter, CheckBox) | Customize display style |
+| `Enabled` | `bool` | Enable/disable component (default: true) | Conditional states |
 | `AllowCustomValue` | `bool` | Allow user-entered custom values | Free-form input |
 | `EnableVirtualization` | `bool` | Enable virtualization for large data | Performance optimization |
-| `AllowGrouping` | `bool` | Enable item grouping | Organize items |
-| `PopupHeight` | `string` | Height of dropdown popup | Customize appearance |
+| `PopupHeight` | `string` | Height of dropdown popup (default: 300px) | Customize appearance |
+| `PopupWidth` | `string` | Width of dropdown popup (default: 100%) | Customize appearance |
 | `CssClass` | `string` | Custom CSS class | Custom styling |
+| `ShowSelectAll` | `bool` | Show select all option in CheckBox mode | Bulk selection |
+| `ShowClearButton` | `bool` | Display clear button (default: true) | Allow clearing selection |
+| `ShowDropDownIcon` | `bool` | Display dropdown icon (default: true) | Visual indicator |
+| `MaximumSelectionLength` | `int` | Max items that can be selected (default: 1000) | Limit selections |
+| `HideSelectedItem` | `bool` | Hide selected items in popup | Clean popup display |
+| `EnableSelectionOrder` | `bool` | Enable selection order display (default: true) | Show selection sequence |
+| `EnableCloseOnSelect` | `bool` | Auto-close popup after selection | Quick selection UX |
+| `DelimiterChar` | `string` | Separator for Delimiter mode (default: ",") | Customize separator |
+| `FilterBarPlaceholder` | `string` | Placeholder for filter input | Filter UX |
+| `FloatLabelType` | `FloatLabelType` | Floating label behavior (Never, Always, Auto) | Modern form styling |
+| `EnableRtl` | `bool` | Right-to-left language support | International apps |
+| `ReadOnly` | `bool` | Read-only mode (default: false) | Display-only state |
+| `TabIndex` | `int` | Tab order index (default: 0) | Keyboard navigation |
 
 ### Common Use Cases
 
@@ -1294,7 +1306,7 @@ Choose your topic below to get started:
         <input id="employeeInput" type="text" placeholder="Search employees..." />
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://api.example.com/employees" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+        <SfDataManager Url="YOUR_API_ENDPOINT" Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
     </ChildContent>
 </SfMention>

@@ -565,7 +565,7 @@ Map the NavigateUrl field in TreeViewFieldsSettings:
 
 - **Default behavior:** Node click navigates to URL in new tab/window (if Url contains http/https)
 - **Relative URLs:** Navigate within application (e.g., "/dashboard", "/settings")
-- **Absolute URLs:** Navigate to external sites (e.g., "https://example.com")
+- **Absolute URLs:** Navigate to external sites
 - **Empty URL:** Click selects node without navigation
 - **Hash routes:** Support for SPA routing (e.g., "#/products/list")
 

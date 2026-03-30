@@ -140,10 +140,10 @@ From `getting-started-with-web-app.md` (lines 150-165):
 @using Syncfusion.Blazor.FileManager
 
 <SfFileManager TValue="FileManagerDirectoryContent">
-    <FileManagerAjaxSettings Url="https://ej2-aspcore-service.azurewebsites.net/api/FileManager/FileOperations"
-                             UploadUrl="https://ej2-aspcore-service.azurewebsites.net/api/FileManager/Upload"
-                             DownloadUrl="https://ej2-aspcore-service.azurewebsites.net/api/FileManager/Download"
-                             GetImageUrl="https://ej2-aspcore-service.azurewebsites.net/api/FileManager/GetImage">
+    <FileManagerAjaxSettings Url="url"
+                             UploadUrl="url"
+                             DownloadUrl="url"
+                             GetImageUrl="url">
     </FileManagerAjaxSettings>
 </SfFileManager>
 ```

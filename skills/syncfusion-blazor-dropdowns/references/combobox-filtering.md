@@ -135,7 +135,7 @@ With remote data via DataManager, filtering sends requests to the server:
     Placeholder="Search employees"
     AllowFiltering="true"
     FilterType="@FilterType.Contains">
-    <SfDataManager Url="https://api.example.com/employees" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor"></SfDataManager>
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
 </SfComboBox>
@@ -224,7 +224,7 @@ The `DebounceDelay` property (in milliseconds) controls the delay before filteri
     Placeholder="Search countries"
     AllowFiltering="true"
     DebounceDelay="500">
-    <SfDataManager Url="https://api.example.com/countries" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor"></SfDataManager>
     <ComboBoxFieldSettings Text="Name" Value="Code"></ComboBoxFieldSettings>
 </SfComboBox>
@@ -304,7 +304,7 @@ The `MinFilterLength` property determines how many characters must be typed befo
     Placeholder="Search (min 3 chars)"
     AllowFiltering="true"
     MinFilterLength="3">
-    <SfDataManager Url="https://api.example.com/employees" 
+    <SfDataManager Url="YOUR_API_ENDPOINT" 
         Adaptor="Syncfusion.Blazor.Adaptors.UrlAdaptor"></SfDataManager>
     <ComboBoxFieldSettings Text="Name" Value="EmployeeId"></ComboBoxFieldSettings>
 </SfComboBox>

@@ -1,4 +1,4 @@
-﻿## Table of Contents
+## Table of Contents
 
 - [WCAG 2.1 Compliance](#wcag-21-compliance)
    - [Semantic HTML Structure](#semantic-html-structure)
@@ -38,9 +38,9 @@ Ensure map container has proper semantic markup:
         <p>This interactive map displays population density by region.</p>
         
         <div role="region" aria-live="polite" aria-label="Map container">
-            <SfMaps @ref="mapInstance" AriaLabel="Zoomable and pannable map of world regions">
+            <SfMaps @ref="mapInstance">
                 <MapsLayers>
-                    <MapsLayer TValue="string">
+                    <MapsLayer ShapeData='new {dataOptions = "https://cdn.syncfusion.com/blazor/data/maps/world-map.json"}' TValue="string">
                     </MapsLayer>
                 </MapsLayers>
             </SfMaps>
@@ -114,12 +114,10 @@ Use contrast checkers:
     </ul>
 </div>
 
-<SfMaps @ref="mapInstance" 
-    TabIndex="0"
-    AriaLabel="Interactive map, use arrow keys to pan, +/- to zoom">
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps>
+    <MapsZoomSettings Enable="true" ZoomFactor="2"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -169,34 +167,23 @@ Allow users to skip to map content:
         Use keyboard arrows to pan, +/- to zoom. Click regions for details.
     </p>
 
-    <SfMaps @ref="mapInstance" 
-         Role="application">
-         <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+    <SfMaps @ref="mapInstance">
+         <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
         <MapsLayers>
-            <MapsLayer TValue="TemperatureData" DataSource="@TemperatureData">
+            <MapsLayer ShapeData='new {dataOptions = "https://cdn.syncfusion.com/blazor/data/maps/world-map.json"}' TValue="TemperatureRegion" DataSource="@TemperatureData">
                 <MapsShapeSettings ColorValuePath="Temperature">
                     <MapsShapeColorMappings>
-                        <MapsShapeColorMapping StartRange="-20" EndRange="0" Color='new string[] { "#4575B4" }'
-                            AriaLabel="Cold regions below 0 degrees">
-                        </MapsShapeColorMapping>
-                        <MapsShapeColorMapping StartRange="0" EndRange="15" Color='new string[] { "#91BFDB" }'
-                            AriaLabel="Cool regions 0 to 15 degrees">
-                        </MapsShapeColorMapping>
-                        <MapsShapeColorMapping StartRange="15" EndRange="25" Color='new string[] { "#FEE090" }'
-                            AriaLabel="Warm regions 15 to 25 degrees">
-                        </MapsShapeColorMapping>
-                        <MapsShapeColorMapping StartRange="25" EndRange="40" Color='new string[] { "#F46D43" }'
-                            AriaLabel="Hot regions 25 to 40 degrees">
-                        </MapsShapeColorMapping>
+                        <MapsShapeColorMapping StartRange="-20" EndRange="0" Color='new string[] { "#4575B4" }' />
+                        <MapsShapeColorMapping StartRange="0" EndRange="15" Color='new string[] { "#91BFDB" }' />
+                        <MapsShapeColorMapping StartRange="15" EndRange="25" Color='new string[] { "#FEE090" }' />
+                        <MapsShapeColorMapping StartRange="25" EndRange="40" Color='new string[] { "#F46D43" }' />
                     </MapsShapeColorMappings>
                 </MapsShapeSettings>
                 <MapsDataLabelSettings Visible="true" LabelPath="RegionName">
                 </MapsDataLabelSettings>
             </MapsLayer>
         </MapsLayers>
-        <MapsLegendSettings Visible="true" 
-            AriaLabel="Color legend showing temperature ranges">
-        </MapsLegendSettings>
+        <MapsLegendSettings Visible="true" />
     </SfMaps>
 </div>
 
@@ -237,19 +224,18 @@ Allow users to skip to map content:
                 <tr>
                     <td>@region.Name</td>
                     <td>@region.Population.ToString("N0")</td>
-                    <td>@region.Density.ToString("F1") per km²</td>
+                    <td>@region.Density.ToString("F1") per km</td>
                 </tr>
             }
         </tbody>
     </table>
 </details>
 
-<SfMaps @ref="mapInstance" 
-    >
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+<SfMaps @ref="mapInstance">
+    <MapsZoomSettings ZoomFactor="1"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer TValue="RegionData" DataSource="@RegionData">
-            <MapsDataLabelSettings Visible="true" LabelPath="Name">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="RegionInfo" DataSource="@RegionData">
+            <MapsDataLabelSettings Visible="true" LabelPath="name">
             </MapsDataLabelSettings>
         </MapsLayer>
     </MapsLayers>
@@ -260,7 +246,7 @@ Allow users to skip to map content:
 
     private List<RegionInfo> RegionData = new()
     {
-        new RegionInfo { Name = "Region A", Population = 5000000, Density = 120 },
+        new RegionInfo { Name = "Texas", Population = 5000000, Density = 120 },
         new RegionInfo { Name = "Region B", Population = 3000000, Density = 85 }
     };
 
@@ -276,149 +262,12 @@ Allow users to skip to map content:
 ### Descriptive Tooltips
 
 ```csharp
-<MapsMarker Latitude="37.368" Longitude="-122.095"
-    Shape="MarkerType.Circle" Width="15" Height="15"
-    Tooltip="San Francisco: Population 870,000, Latitude 37.37°N, Longitude 122.10°W"
-    AriaLabel="San Francisco marker, population 870,000 people">
-</MapsMarker>
-```
-
-## High Contrast Mode Support
-
-### Detect and Apply High Contrast
-
-```csharp
-@page "/high-contrast-map"
-@using Syncfusion.Blazor.Maps
-@inject IJSRuntime JS
-
-<style>
-    /* Default theme */
-    .e-maps {
-        --map-shape-color: #4575B4;
-        --map-shape-border: #1a1a1a;
-        --map-text-color: #000000;
-        --map-bg-color: #ffffff;
-    }
-
-    /* High Contrast mode */
-    @media (prefers-contrast: more) {
-        .e-maps {
-            --map-shape-color: #FFFF00;
-            --map-shape-border: #000000;
-            --map-text-color: #000000;
-            --map-bg-color: #ffffff;
-        }
-
-        .e-shape {
-            stroke-width: 2px;
-            stroke: var(--map-shape-border);
-        }
-
-        .e-marker {
-            stroke-width: 1px;
-            stroke: var(--map-shape-border);
-        }
-    }
-</style>
-
-<SfMaps @ref="mapInstance">
-<MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
-    <MapsLayers>
-        <MapsLayer TValue="string">
-</SfMaps>
-
-@code {
-    private SfMaps mapInstance;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Check for high contrast preference
-            var prefersContrast = await JS.InvokeAsync<string>(
-                "window.matchMedia", "(prefers-contrast: more)");
-            
-            if (prefersContrast == "true")
-            {
-                // Apply high contrast styling
-                await mapInstance.RefreshAsync();
-            }
-        }
-    }
-}
-```
-
-## Focus Management
-
-### Focus Indicators
-
-```csharp
-<style>
-    /* Visible focus indicators for all interactive elements -->
-    .e-maps:focus,
-    .e-marker:focus,
-    .e-shape:focus {
-        outline: 3px solid #4A90E2;
-        outline-offset: 2px;
-    }
-
-    /* Remove default outline and replace with custom */
-    button:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.5);
-        border-radius: 2px;
-    }
-</style>
-
-<SfMaps @ref="mapInstance" 
-    TabIndex="0"
-    Style="outline: none; border-radius: 4px;">
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-```
-
-### Focus Trap for Modal-Like Behavior
-
-```csharp
-@page "/focus-management"
-@using Syncfusion.Blazor.Maps
-@inject IJSRuntime JS
-
-<button @onclick="OpenMapDetails" id="openBtn">View Map Details</button>
-
-@if (ShowDetails)
-{
-    <div role="dialog" aria-modal="true" aria-labelledby="dialog-title" @ref="dialogElement">
-        <h2 id="dialog-title">Map Details</h2>
-        <p>Region Information</p>
-        <button @onclick="() => ShowDetails = false" id="closeBtn">Close</button>
-    </div>
-}
-
-<SfMaps @ref="mapInstance">
-    <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
-        </MapsLayer>
-    </MapsLayers>
-</SfMaps>
-
-@code {
-    private SfMaps mapInstance;
-    private bool ShowDetails = false;
-    private ElementReference dialogElement;
-
-    private async Task OpenMapDetails()
-    {
-        ShowDetails = true;
-        await Task.Delay(100);
-        // Focus first focusable element in dialog
-        await JS.InvokeVoidAsync("focusElement", "closeBtn");
-    }
-}
+<MapsMarker Visible="true" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Fill="white" Width="20"
+                DataSource="HighestPopulation" TValue="City">
+        <MapsMarkerBorder Width="2" Color="#333"></MapsMarkerBorder>
+        <MapsMarkerTooltipSettings Visible="true" ValuePath="Name"></MapsMarkerTooltipSettings>
+    </MapsMarker>
+</MapsMarkerSettings>
 ```
 
 ## Testing for Accessibility

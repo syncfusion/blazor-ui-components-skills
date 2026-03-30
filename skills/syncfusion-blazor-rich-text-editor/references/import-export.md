@@ -13,6 +13,8 @@
 
 ## Import HTML File
 
+> **Security:** Always enable `EnableHtmlSanitizer="true"` when importing untrusted content. Validate file types and sizes server-side.
+
 Read an HTML file from the server with `StreamReader` and bind it to `@bind-Value`:
 
 ```razor

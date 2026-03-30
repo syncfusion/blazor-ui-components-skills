@@ -1,4 +1,4 @@
-﻿# API Reference - Syncfusion Maps for Blazor
+# API Reference - Syncfusion Maps for Blazor
 
 Complete API reference for the Syncfusion Blazor Maps component, including all classes, interfaces, enums, and events.
 
@@ -94,18 +94,25 @@ The primary Maps component for rendering interactive geospatial visualizations.
 
 **Basic Usage:**
 ```csharp
-<SfMaps @ref="mapInstance" 
-    Width="100%"
-    Height="600px">
-    <MapsZoomSettings ZoomFactor="4"></MapsZoomSettings>
+@using Syncfusion.Blazor.Maps
+<SfMaps @ref="mapInstance">
+    <MapsEvents ShapeSelected="@ShapeSelectedEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsLayerSelectionSettings Enable="true" Fill="green">
+                <MapsLayerSelectionBorder Color="White" Width="2"></MapsLayerSelectionBorder>
+            </MapsLayerSelectionSettings>
         </MapsLayer>
     </MapsLayers>
-    <MapsEvents OnMarkerClick="MarkerClicked" 
-                 OnShapeSelected="ShapeSelected">
-    </MapsEvents>
 </SfMaps>
+
+@code {
+    SfMaps mapInstance;
+    public void ShapeSelectedEvent(Syncfusion.Blazor.Maps.ShapeSelectedEventArgs args)
+    {
+        // Here you can customize your code
+    }
+}
 ```
 
 **Key Properties:**
@@ -194,8 +201,8 @@ Generic marker component for rendering markers on the map with support for data 
 
 **Basic Usage:**
 ```csharp
-<MapsMarker Latitude="37.368" 
-            Longitude="-122.095"
+<MapsMarker DataSource="MarkerDataSource"
+            TValue="City"
             Shape="MarkerType.Circle"
             Width="20" 
             Height="20"
@@ -204,6 +211,16 @@ Generic marker component for rendering markers on the map with support for data 
             Visible="true"
             EnableDrag="false">
 </MapsMarker>
+
+@code {
+    public class City
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+    public List<City> MarkerDataSource = new List<City> {
+    };
+}
 ```
 
 **Key Properties:**
@@ -541,9 +558,12 @@ public class MarkerClickEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public MarkerType MarkerType { get; set; }
-    public string Color { get; set; }
-    public object Data { get; set; }  // Associated data
+    public Dictionary<string, string> Data { get; set; }
+    public string Target { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public bool IsTouch { get; set; }
+    public string Value { get; set; }
 }
 
 // Usage:
@@ -561,6 +581,11 @@ public class MarkerDragStartEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public double X { get; internal set; }
+    public double Y { get; internal set; }
+    public int LayerIndex { get; internal set; }
+    public int MarkerIndex { get; internal set; }
+    public int DataIndex { get; internal set; }
 }
 ```
 
@@ -572,8 +597,12 @@ public class MarkerDragEndEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public double PreviousLatitude { get; set; }
-    public double PreviousLongitude { get; set; }
+    public double X { get; internal set; }
+    public double Y { get; internal set; }
+    public int LayerIndex { get; internal set; }
+    public int MarkerIndex { get; internal set; }
+    public int DataIndex { get; internal set; }
+    public Dictionary<string, object> Data { get; set; }
 }
 ```
 
@@ -585,6 +614,11 @@ public class MarkerMoveEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Target { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public bool IsTouch { get; set; }
 }
 ```
 
@@ -596,7 +630,9 @@ public class BubbleClickEventArgs
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public object BubbleData { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
 }
 ```
 
@@ -606,8 +642,12 @@ Triggered when shape/polygon is selected.
 ```csharp
 public class ShapeSelectedEventArgs
 {
-    public object ShapeData { get; set; }
-    public GeometryType GeometryType { get; set; }
+    public MapsBorderSettings Border { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Fill { get; set; }
+    public double Opacity { get; set; }
+    public Dictionary<string, string> ShapeData { get; set; }
+    public string Target { get; set; }
 }
 ```
 
@@ -617,7 +657,11 @@ Generic selection event.
 ```csharp
 public class SelectionEventArgs
 {
-    public object Data { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Fill { get; set; }
+    public double Opacity { get; set; }
+    public Dictionary<string, string> ShapeData { get; set; }
+    public string Target { get; set; }
 }
 ```
 
@@ -627,9 +671,11 @@ Triggered on zoom change.
 ```csharp
 public class MapZoomEventArgs
 {
-    public double PreviousZoomLevel { get; set; }
-    public double NewZoomLevel { get; set; }
+    public double Scale { get; set; }
     public string Type { get; set; }  // "ZoomIn", "ZoomOut", or programmatic
+    public PointF TileTranslatePoint { get; set; }
+    public double TileZoomLevel { get; set; }
+    public PointF TranslatePoint { get; set; }
 }
 ```
 
@@ -639,8 +685,12 @@ Triggered on pan.
 ```csharp
 public class MapPanEventArgs
 {
-    public MapsCenterPosition CurrentCenterPosition { get; set; }
-    public MapsCenterPosition NewCenterPosition { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public double Scale { get; set; }
+    public PositionValues TileTranslatePoint { get; set; } = null!;
+    public double TileZoomLevel { get; set; }
+    public PositionValues TranslatePoint { get; set; } = null!;
 }
 ```
 
@@ -652,7 +702,9 @@ public class LabelRenderingEventArgs
 {
     public string Text { get; set; }
     public string Fill { get; set; }
-    public object ShapeData { get; set; }
+    public int LayerIndex { get; set; }
+    public double OffsetX { get; set; }
+    public double OffsetY { get; set; }
 }
 ```
 
@@ -662,7 +714,9 @@ Triggered before layer rendering.
 ```csharp
 public class LayerRenderingEventArgs
 {
-    public object LayerData { get; set; }
+    public double Index { get; set; }
+    public bool Visible { get; set; }
+
 }
 ```
 
@@ -672,8 +726,8 @@ Triggered before shape rendering.
 ```csharp
 public class ShapeRenderingEventArgs
 {
-    public object ShapeData { get; set; }
-    public string Fill { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public double Index { get; set; }
 }
 ```
 
@@ -683,10 +737,18 @@ Triggered before marker rendering.
 ```csharp
 public class MarkerRenderingEventArgs
 {
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
+    public string ColorValuePath { get; set; }
+    public string WidthValuePath { get; set; }
+    public string HeightValuePath { get; set; }
+    public Dictionary<string, string> Data { get; set; }
     public string Fill { get; set; }
-    public MarkerType MarkerType { get; set; }
+    public double Height { get; set; }
+    public string ImageUrl { get; set; }
+    public string ImageUrlValuePath { get; set; }
+    public MarkerType Shape { get; set; }
+    public string ShapeValuePath { get; set; }
+    public string Template { get; set; }
+    public double Width { get; set; }
 }
 ```
 
@@ -696,9 +758,11 @@ Triggered before bubble rendering.
 ```csharp
 public class BubbleRenderingEventArgs
 {
-    public object BubbleData { get; set; }
+    public Dictionary<string, string> Data { get; set; }
     public string Fill { get; set; }
     public double Radius { get; set; }
+    public double CenterX { get; set; }
+    public double CenterY { get; set; }
 }
 ```
 
@@ -708,7 +772,7 @@ Triggered when animation completes.
 ```csharp
 public class AnimationCompleteEventArgs
 {
-    public object Data { get; set; }
+    public DOM Element { get; set; }
 }
 ```
 
@@ -718,8 +782,9 @@ Triggered before tooltip rendering.
 ```csharp
 public class TooltipRenderEventArgs
 {
-    public string Text { get; set; }
-    public object Data { get; set; }
+    public Dictionary<string, string> Data { get; set; }
+    public string Fill { get; set; }
+    public string Content { get; set; }
 }
 ```
 
@@ -729,8 +794,9 @@ Triggered before legend rendering.
 ```csharp
 public class LegendRenderingEventArgs
 {
-    public object LegendData { get; set; }
+    public string Text { get; set; }
     public string Fill { get; set; }
+    public LegendShape Shape { get; set; }
 }
 ```
 
@@ -750,8 +816,8 @@ Triggered on map resize.
 ```csharp
 public class ResizeEventArgs
 {
-    public double Width { get; set; }
-    public double Height { get; set; }
+    public SizeF CurrentSize { get; set; }
+    public SizeF PreviousSize { get; set; }
 }
 ```
 
@@ -781,8 +847,7 @@ Triggered before annotation rendering.
 ```csharp
 public class AnnotationRenderingEventArgs
 {
-    public object AnnotationData { get; set; }
-    public string Content { get; set; }
+    public bool Cancel { get; set; }
 }
 ```
 
@@ -864,10 +929,13 @@ Defines map projections.
 public enum ProjectionType
 {
     Mercator,             // Web Mercator (default)
-    EquirectangularProjection,
-    GnomnicProjection,
-    PolyconicProjection,
-    MercatorSpherical
+    Winkel3,
+    Miller,
+    Eckert3,
+    Eckert5,
+    Eckert6,
+    AitOff,
+    Equirectangular
 }
 ```
 
@@ -877,13 +945,8 @@ Defines GeoJSON geometry types.
 ```csharp
 public enum GeometryType
 {
-    Point,
-    LineString,
-    Polygon,
-    MultiPoint,
-    MultiLineString,
-    MultiPolygon,
-    GeometryCollection
+    Geographic,
+    Normal
 }
 ```
 
@@ -896,12 +959,8 @@ public enum LegendPosition
     Top,
     Bottom,
     Left,
-    Right,
-    TopLeft,
-    TopRight,
-    BottomLeft,
-    BottomRight,
-    Floating
+    Right,    
+    Float
 }
 ```
 
@@ -924,8 +983,7 @@ public enum LegendType
 {
     Layers,
     Markers,
-    Bubbles,
-    Shapes
+    Bubbles
 }
 ```
 
@@ -952,7 +1010,11 @@ public enum LegendShape
     Diamond,
     Cross,
     Star,
-    Hexagon
+    HorizontalLine,
+    VerticalLine,
+    Pentagon,
+    Balloon,
+    InvertedTriangle
 }
 ```
 
@@ -1028,20 +1090,13 @@ public enum IntersectAction
 ```
 
 ### LabelPosition
-Defines label placement relative to shape.
+Defines label placement relative to legend.
 
 ```csharp
 public enum LabelPosition
 {
-    Top,
-    Bottom,
-    Left,
-    Right,
-    Center,
-    TopLeft,
-    TopRight,
-    BottomLeft,
-    BottomRight
+    Before,
+    After
 }
 ```
 
@@ -1063,10 +1118,8 @@ Defines polygon shape types.
 ```csharp
 public enum PolygonShapeType
 {
-    Circle,
-    Rectangle,
-    Triangle,
-    Polygon
+    Polygon,
+    LineString
 }
 ```
 
@@ -1076,14 +1129,11 @@ Defines pan direction.
 ```csharp
 public enum PanDirection
 {
-    North,
-    South,
-    East,
-    West,
-    NorthEast,
-    NorthWest,
-    SouthEast,
-    SouthWest
+    Left,
+    Right,
+    Top,
+    Bottom,
+    None
 }
 ```
 
@@ -1095,7 +1145,9 @@ public enum ToolbarItem
 {
     ZoomIn,
     ZoomOut,
-    Reset
+    Reset,
+    Zoom,
+    Pan
 }
 ```
 
@@ -1105,9 +1157,8 @@ Defines layer data type.
 ```csharp
 public enum Type
 {
-    GeometryNormalShape,
-    ShapeGeometry,
-    OSMShapeGeometry
+    Layer,
+    SubLayer
 }
 ```
 

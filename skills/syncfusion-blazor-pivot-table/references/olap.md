@@ -1,5 +1,15 @@
 # OLAP Data Source — Syncfusion Blazor Pivot Table
 
+## ⚠️ SECURITY NOTICE
+
+**All OLAP connections MUST use authenticated, enterprise-managed OLAP servers.** Never connect to untrusted OLAP endpoints.
+
+✅ **Required Security Controls:**
+- Enterprise OLAP server authentication
+- Role-based access control (RBAC)
+- Encrypted connections (HTTPS/SSL)
+- Configuration-based endpoints (IConfiguration)
+
 ## Table of Contents
 - [Overview](#overview)
 - [Getting Started with OLAP](#getting-started-with-olap)

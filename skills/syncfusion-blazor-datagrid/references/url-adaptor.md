@@ -143,8 +143,20 @@ app.MapControllers();
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Data
 
+<!-- Use a configuration-backed base URL to avoid embedding literal URLs. Set `ALLOWED_API_URL` in secure config. -->
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@code {
+    private string DataApiUrl => Configuration["ALLOWED_API_URL"] ?? "https://api.example.com/api/grid"; // operator-configured only
+    private string InsertUrl => Configuration["ALLOWED_API_INSERT_URL"] ?? DataApiUrl + "/Insert";
+    private string UpdateUrl => Configuration["ALLOWED_API_UPDATE_URL"] ?? DataApiUrl + "/Update";
+    private string RemoveUrl => Configuration["ALLOWED_API_REMOVE_URL"] ?? DataApiUrl + "/Remove";
+    private string CrudUrl => Configuration["ALLOWED_API_CRUD_URL"] ?? DataApiUrl + "/CrudUpdate";
+    private string BatchUrl => Configuration["ALLOWED_API_BATCH_URL"] ?? DataApiUrl + "/BatchUpdate";
+}
+
 <SfGrid TValue="OrdersDetails" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid"
+    <SfDataManager Url="@DataApiUrl"
                    Adaptor="Adaptors.UrlAdaptor">
     </SfDataManager>
     <GridColumns>
@@ -183,7 +195,7 @@ public object Post([FromBody] DataManagerRequest DataManagerRequest)
 
 ```razor
 <SfGrid TValue="OrdersDetails" Toolbar="@(new List<string>() { "Search" })" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -206,7 +218,7 @@ if (DataManagerRequest.Where != null && DataManagerRequest.Where.Count > 0)
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowFiltering="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -222,7 +234,7 @@ if (DataManagerRequest.Sorted != null && DataManagerRequest.Sorted.Count > 0)
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowSorting="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -247,7 +259,7 @@ return new { result = DataSource, count = totalRecordsCount };
 
 ```razor
 <SfGrid TValue="OrdersDetails" AllowPaging="true" Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+    <SfDataManager Url="@DataApiUrl" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
     <GridColumns>...</GridColumns>
 </SfGrid>
 ```
@@ -311,10 +323,10 @@ Use `InsertUrl`, `UpdateUrl`, `RemoveUrl` on `SfDataManager` for individual CRUD
 <SfGrid TValue="OrdersDetails"
         Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
         Height="348">
-    <SfDataManager Url="https://localhost:xxxx/api/grid"
-                   InsertUrl="https://localhost:xxxx/api/grid/Insert"
-                   UpdateUrl="https://localhost:xxxx/api/grid/Update"
-                   RemoveUrl="https://localhost:xxxx/api/grid/Remove"
+    <SfDataManager Url="@DataApiUrl"
+                   InsertUrl="@InsertUrl"
+                   UpdateUrl="@UpdateUrl"
+                   RemoveUrl="@RemoveUrl"
                    Adaptor="Adaptors.UrlAdaptor">
     </SfDataManager>
     <GridEditSettings AllowEditing="true" AllowDeleting="true" AllowAdding="true"

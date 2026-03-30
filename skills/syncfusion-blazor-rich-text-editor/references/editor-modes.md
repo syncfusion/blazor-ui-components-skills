@@ -133,11 +133,13 @@ For Markdown mode, use markdown-specific toolbar commands instead of the HTML de
 
 ### Displaying a Markdown Preview
 
-Add the **Marked** library and render the preview on `ValueChange`:
+**Security:** Do not load Marked from external CDNs. Bundle locally instead.
+
+Download `marked.min.js` and place it in `wwwroot/lib/marked/`:
 
 ```html
 <!-- wwwroot/index.html or Pages/_Host.cshtml -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/lib/marked/marked.min.js"></script>
 ```
 
 ```razor
@@ -155,7 +157,6 @@ Add the **Marked** library and render the preview on `ValueChange`:
 
     private async Task OnValueChange(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
     {
-        // Render Markdown → HTML using Marked.js
         await JS.InvokeVoidAsync("renderMarkdown", PreviewDiv, args.Value);
     }
 }
