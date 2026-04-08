@@ -222,7 +222,7 @@ Connect to OData endpoints like SharePoint or Azure Data Services:
 <SfAutoComplete TValue="string" TItem="Order" 
                 AllowFiltering="true"
                 DebounceDelay="300">
-    <SfDataManager Url="https://services.odata.org/v4/northwind/northwind.svc/Orders" 
+    <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>
     <AutoCompleteFieldSettings Value="CustomerID"></AutoCompleteFieldSettings>
@@ -242,7 +242,7 @@ Connect to OData endpoints like SharePoint or Azure Data Services:
 ```blazor
 <SfAutoComplete TValue="string" TItem="Order" 
                 AllowFiltering="true">
-    <SfDataManager Url="https://services.odata.org/v4/northwind/northwind.svc/Orders" 
+    <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
         <SfDataManagerRequest PageSize="10"></SfDataManagerRequest>
     </SfDataManager>

@@ -64,7 +64,7 @@ Task<bool> DrawFrameAsync(
 
     private async void OnCreated()
     {
-        await ImageEditor.OpenAsync("https://example.com/photo.jpg");
+        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
     }
 
     private async Task AddSimpleFrame()

@@ -2,6 +2,8 @@
 
 Complete API reference for the Syncfusion Blazor Maps component, including all classes, interfaces, enums, and events.
 
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
 ## Table of Contents
 
 - [Main Component](#main-component)
@@ -98,7 +100,8 @@ The primary Maps component for rendering interactive geospatial visualizations.
 <SfMaps @ref="mapInstance">
     <MapsEvents ShapeSelected="@ShapeSelectedEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- In production, bundle GeoJSON locally or validate external sources. Example uses local path: /data/world-map.json -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsLayerSelectionSettings Enable="true" Fill="green">
                 <MapsLayerSelectionBorder Color="White" Width="2"></MapsLayerSelectionBorder>
             </MapsLayerSelectionSettings>

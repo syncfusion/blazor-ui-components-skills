@@ -1,5 +1,9 @@
 # Customization and Styling
 
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
+> **COMMAND_EXECUTION WARNING (IJSRuntime):** Dynamic CSS theme switching uses IJSRuntime to manipulate the DOM (adding/removing stylesheet links). Ensure theme URLs come from your application only. Never allow external or user-controlled URLs for stylesheets. Validate all CSS injection points and use CSP headers to prevent unauthorized script execution. Always use `rel="stylesheet"` and verify the href is from a trusted source before injecting via JavaScript.
+
 ## Table of Contents
 - [Themes and Visual Styles](#themes-and-visual-styles)
    - [SfMaps Theme Property (NEW - Previously Missing)](#sfmaps-theme-property-new---previously-missing)
@@ -42,7 +46,8 @@ Apply predefined visual themes to your maps:
 ```csharp
 <SfMaps Theme="Theme.Bootstrap5">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <!-- Use validated TileUrl variable or local tiles in production -->
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -327,7 +332,8 @@ Style tooltips globally.
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
                     Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -356,7 +362,7 @@ Style tooltips globally.
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
                     Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15" Fill="lightblue">
@@ -413,7 +419,8 @@ Syncfusion provides pre-built themes. Import in your layout:
 <SfMaps @ref="mapInstance" Theme="Theme">
 <MapsZoomSettings ZoomFactor="1"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -485,7 +492,8 @@ Style markers based on data:
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                     <MapsMarker DataSource="@LocationOne" Visible="true"
                         Shape="Syncfusion.Blazor.Maps.MarkerType.Circle"
@@ -543,7 +551,8 @@ Style markers based on data:
         </MapsZoomToolbarSettings>
     </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -560,7 +569,8 @@ Style markers based on data:
 
 <SfMaps Theme="@Theme">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -625,7 +635,7 @@ Style markers based on data:
     <SfMaps Width="100%" Height="100%">
     <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
         <MapsLayers>
-            <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+            <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             </MapsLayer>
         </MapsLayers>
     </SfMaps>

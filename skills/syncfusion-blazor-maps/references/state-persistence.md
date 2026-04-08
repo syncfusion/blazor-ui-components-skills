@@ -14,6 +14,10 @@
 
 # State Persistence
 
+> **MANDATORY SECURITY NOTICE:** State persistence examples may reference external GeoJSON or tile sources. Do NOT persist untrusted GeoJSON or annotation payloads without server-side validation, sanitization, and human review. When storing or restoring state (localStorage, session), ensure persisted artifacts do not include raw ShapeData, HTML, or other untrusted content. Prefer storing only minimal state (center, zoom, visible layer IDs) and rehydrate content from validated, local sources.
+
+> **COMMAND_EXECUTION WARNING (IJSRuntime):** This skill uses IJSRuntime for browser-side interactions (localStorage access, dynamic CSS/script injection). Never allow user-controlled or external data to be injected as script or style content. Always validate and sanitize any values passed to JavaScript interop. Do NOT dynamically load scripts or stylesheets from untrusted sources.
+
 ## Automatic State Persistence (NEW - Previously Missing)
 
 ### EnablePersistence Property
@@ -27,7 +31,7 @@ Enable automatic persistence of map state across page refreshes:
 <SfMaps EnablePersistence="true"  //  NEW: Automatically saves state
         ID="maps-instance">       //  ID is required when EnablePersistence is true
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -79,7 +83,7 @@ Save the current map view and restore it later:
 <button @onclick="ClearMapState">Disable Persistence</button>
 <SfMaps ID="Maps" EnablePersistence="@EnablePersistence">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}'
                    DataSource="PopulationDetails" ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
             <MapsBubbleSettings>
                 <MapsBubble MinRadius="5" MaxRadius="25" Visible="true" ValuePath="Population" ColorValuePath="Color" DataSource="PopulationDetails" TValue="Country">
@@ -124,7 +128,7 @@ Save the current map view and restore it later:
 <button @onclick="ClearMapState">Disable Persistence</button>
 <SfMaps ID="Maps" EnablePersistence="@EnablePersistence">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}' TValue="string">
         <MapsNavigationLines>
                 <MapsNavigationLine Visible="true" Color="blue" Angle="90" Width="2" DashArray="4"
                                     Latitude="new double[]{ 40.7128, 36.7783 }" Longitude="new double[]{ -74.0060, -119.4179 }">

@@ -148,7 +148,7 @@ Fetch data from remote APIs or OData services using `SfDataManager`.
 @using Syncfusion.Blazor.Data
 
 <SfListBox TValue="string[]" TItem="OrderDetails" Query="@RemoteDataQuery">
-    <SfDataManager Url="https://js.syncfusion.com/demos/services/Wcf/Northwind.svc/Orders" 
+    <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
                    CrossDomain="true" 
                    Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor">
     </SfDataManager>

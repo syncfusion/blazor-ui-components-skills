@@ -190,7 +190,7 @@ Bind to an OData service:
 <SfComboBox TItem="Order" TValue="int"
     Placeholder="Select an order"
     AllowFiltering="true">
-    <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc/Orders" 
+    <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
         Adaptor="Syncfusion.Blazor.Adaptors.ODataAdaptor"
         CrossDomain="true"></SfDataManager>
     <ComboBoxFieldSettings Text="ShipName" Value="OrderID"></ComboBoxFieldSettings>

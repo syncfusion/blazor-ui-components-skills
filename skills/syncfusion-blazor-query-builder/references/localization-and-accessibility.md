@@ -37,26 +37,6 @@ Query Builder supports multiple locales:
 - `ru-RU` - Russian
 - And many more...
 
-### Component with Locale
-
-```razor
-@using Syncfusion.Blazor.QueryBuilder
-
-<SfQueryBuilder TValue="Order" Locale="de-DE">
-    <QueryBuilderColumns>
-        <QueryBuilderColumn Field="OrderID" Label="Bestellnummer" Type="ColumnType.Number"></QueryBuilderColumn>
-        <QueryBuilderColumn Field="Status" Label="Status" Type="ColumnType.String"></QueryBuilderColumn>
-    </QueryBuilderColumns>
-</SfQueryBuilder>
-
-@code {
-    public class Order {
-        public int OrderID { get; set; }
-        public string Status { get; set; }
-    }
-}
-```
-
 ### Custom Localization
 
 Define custom translated strings:
@@ -98,7 +78,7 @@ localization.SetLocale(new Dictionary<string, object>
 ### RTL with Locale
 
 ```razor
-<SfQueryBuilder TValue="Order" Locale="ar-AR" EnableRtl="true">
+<SfQueryBuilder TValue="Order" EnableRtl="true">
     <QueryBuilderColumns>
         <QueryBuilderColumn Field="OrderID" Label="معرّف الطلب" Type="ColumnType.Number"></QueryBuilderColumn>
     </QueryBuilderColumns>
@@ -278,59 +258,6 @@ Respect user's motion preferences:
     .e-querybuilder * {
         animation: none !important;
         transition: none !important;
-    }
-}
-```
-
-## Multi-Language Example
-
-```razor
-@using Syncfusion.Blazor.QueryBuilder
-
-<div>
-    <label for="language-select">Language:</label>
-    <select id="language-select" @onchange="ChangeLanguage">
-        <option value="en-US">English</option>
-        <option value="es-ES">Español</option>
-        <option value="fr-FR">Français</option>
-        <option value="de-DE">Deutsch</option>
-        <option value="ar-AR">العربية</option>
-    </select>
-</div>
-
-<SfQueryBuilder TValue="Product" Locale="@CurrentLocale" EnableRtl="@IsRtl">
-    <QueryBuilderColumns>
-        <QueryBuilderColumn Field="Name" Label="@GetLabel("Name")" Type="ColumnType.String"></QueryBuilderColumn>
-        <QueryBuilderColumn Field="Price" Label="@GetLabel("Price")" Type="ColumnType.Number"></QueryBuilderColumn>
-    </QueryBuilderColumns>
-</SfQueryBuilder>
-
-@code {
-    private string CurrentLocale = "en-US";
-    private bool IsRtl = false;
-    
-    private Dictionary<string, Dictionary<string, string>> Labels = new() {
-        { "en-US", new() { { "Name", "Product Name" }, { "Price", "Price" } } },
-        { "es-ES", new() { { "Name", "Nombre del Producto" }, { "Price", "Precio" } } },
-        { "fr-FR", new() { { "Name", "Nom du Produit" }, { "Price", "Prix" } } },
-        { "ar-AR", new() { { "Name", "اسم المنتج" }, { "Price", "السعر" } } }
-    };
-    
-    private void ChangeLanguage(ChangeEventArgs e) {
-        CurrentLocale = e.Value.ToString();
-        IsRtl = CurrentLocale.StartsWith("ar-") || CurrentLocale.StartsWith("he-");
-    }
-    
-    private string GetLabel(string key) {
-        return Labels.ContainsKey(CurrentLocale) && 
-               Labels[CurrentLocale].ContainsKey(key)
-            ? Labels[CurrentLocale][key]
-            : key;
-    }
-    
-    public class Product {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
     }
 }
 ```

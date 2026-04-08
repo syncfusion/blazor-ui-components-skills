@@ -234,7 +234,7 @@ Enable RTL for languages like Arabic, Hebrew, Urdu, Persian:
 
 @* All components RTL *@
 <SfBaseProvider RtlMode="true">
-    <SfTimePicker TValue="DateTime?" Locale="ar"></SfTimePicker>
+    <SfTimePicker TValue="DateTime?"></SfTimePicker>
 </SfBaseProvider>
 ```
 

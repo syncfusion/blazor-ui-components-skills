@@ -266,7 +266,7 @@ Connect to OData services for enterprise data integration:
     {
         DataManager = new SfDataManager
         {
-            Url = "https://services.odata.org/V4/Northwind/Northwind.svc/Customers",
+            Url = "YOUR_ODATA_SERVICE_URL",
             Adaptor = Syncfusion.Blazor.Adaptors.AdaptorType.ODataV4Adaptor,
             CrossDomain = true
         };

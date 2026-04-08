@@ -1,5 +1,7 @@
 # Spatial Features and Overlays
 
+> **MANDATORY SECURITY NOTICE:** This topic includes GeoJSON, tile, and annotation examples for illustration only. In production you MUST host assets locally or serve them via a server-side validation proxy that enforces allow-lists, HTTPS, GeoJSON/schema validation, size/feature limits, property sanitization, and short-lived signed URLs for client consumption. NEVER forward raw `ShapeData`, tooltip, or annotation content to automated agents or LLM prompts without strict validation and documented human review. See [readme-security](readme-security.md) for required validation templates and checklists.
+
 ## Table of Contents
 
 - [Polygons and Shapes](#polygons-and-shapes)
@@ -94,10 +96,10 @@ Each polygon is defined by an array of coordinate pairs [longitude, latitude].
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
         <MapsLayer TValue="string"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'>
+                   ShapeData='new { dataOptions = "/data/usa-map.json" }'>
                 <MapsShapeSettings Fill="rgba(0, 100, 200, 0.3)">
                     <MapsShapeBorder Color="blue" Width="1"></MapsShapeBorder>
                 </MapsShapeSettings>
@@ -163,7 +165,7 @@ Polylines connect multiple points to show routes, paths, or connections between 
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
             <MapsNavigationLines>
                 <MapsNavigationLine Visible="true" Color="red" Angle="90" Width="3" DashArray="5"
                     Latitude="new double[] { 37.368, 40.7128, 34.0522 }"
@@ -229,7 +231,7 @@ This creates a polyline connecting San Francisco → New York → Los Angeles.
 </div>
 <SfMaps @ref="mapInstance">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}'
                    TValue="string">
             <MapsNavigationLines>
                 <MapsNavigationLine Visible="true"
@@ -301,7 +303,7 @@ Annotations are text labels, icons, or custom HTML elements placed at specific c
         </MapsAnnotation>
     </MapsAnnotations>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}'
                    ShapePropertyPath='new string[] {"name"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
@@ -316,7 +318,7 @@ Annotations are text labels, icons, or custom HTML elements placed at specific c
 <MapsAnnotation X="0%" Y="50%">
     <ContentTemplate>
         <div>
-            <img style="height: 30px; width: 40px" src='https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/wheel.png'>
+            <img style="height: 30px; width: 40px" src='/images/wheel.png'>
         </div>
     </ContentTemplate>
 </MapsAnnotation>
@@ -535,7 +537,7 @@ Bubbles automatically size proportionally to the `ValuePath` field and color bas
 <SfMaps @ref="mapInstance">
     <MapsEvents ShapeSelected="ShapeSelected" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsShapeSettings Fill="lightblue"/>
                  <MapsLayerSelectionSettings Enable="true" Fill="green">
                     <MapsLayerSelectionBorder Color="white" Width="2"></MapsLayerSelectionBorder>
@@ -742,7 +744,7 @@ Configure default bubble appearance.
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}'
                    DataSource="PopulationDetails" ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
             <MapsBubbleSettings>
                 <MapsBubble MinRadius="5" MaxRadius="25" Visible="true" ValuePath="Population" ColorValuePath="Color" DataSource="PopulationDetails" TValue="Country">

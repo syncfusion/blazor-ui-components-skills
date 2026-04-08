@@ -187,26 +187,6 @@ When creating custom themes, maintain contrast:
 
 The Image Editor supports multiple language localizations through Syncfusion localization resources.
 
-### Enable Localization
-
-```csharp
-@using Syncfusion.Blazor.ImageEditor
-@using Syncfusion.Globalization
-
-<SfImageEditor @ref="ImageEditor" Height="500px" Locale="es">
-    <ImageEditorEvents Created="OnCreated"></ImageEditorEvents>
-</SfImageEditor>
-
-@code {
-    SfImageEditor ImageEditor;
-    
-    private async void OnCreated()
-    {
-        await ImageEditor.OpenAsync("YOUR_IMAGE_URL");
-    }
-}
-```
-
 ### Supported Locales
 
 | Locale | Language | Code |
@@ -271,7 +251,7 @@ Configure for RTL languages:
 ```csharp
 @using Syncfusion.Blazor.ImageEditor
 
-<SfImageEditor @ref="ImageEditor" Height="500px" EnableRtl="true" Locale="ar">
+<SfImageEditor @ref="ImageEditor" Height="500px" EnableRtl="true">
     <ImageEditorEvents Created="OnCreated"></ImageEditorEvents>
 </SfImageEditor>
 

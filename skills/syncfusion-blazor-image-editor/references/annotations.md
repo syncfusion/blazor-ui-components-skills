@@ -331,7 +331,7 @@ private async void AddImageAnnotation()
     ImageDimension Dimension = await ImageEditor.GetImageDimensionAsync();
     
     await ImageEditor.DrawImageAsync(
-        data: "https://example.com/logo.png",  // Image URL or data
+        data: "YOUR_IMAGE_URL",  // Image URL or data
         x: Dimension.X.Value,
         y: Dimension.Y.Value,
         width: 200,

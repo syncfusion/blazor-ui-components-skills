@@ -8,7 +8,7 @@
 
 ```csharp
 // ❌ DO NOT USE THIS IN PRODUCTION
-<MapsLayer ShapeData='new {dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+<MapsLayer ShapeData='new {dataOptions = "SERVER_VALIDATED_GEOJSON_URL"}' TValue="string">
 ```
 
 **Why this is unsafe:**
@@ -35,7 +35,7 @@
     {
         // Load with validation
         ValidatedGeoJson = await LoadSecureGeoJson(
-            "https://cdn.syncfusion.com/maps/map-data/usa.json"
+            "SERVER_VALIDATED_GEOJSON_URL"
         );
     }
     
@@ -81,7 +81,7 @@ Before deploying to production, ensure:
 ```powershell
 # Download GeoJSON files during build
 New-Item -Path "wwwroot/data" -ItemType Directory -Force
-Invoke-WebRequest -Uri "https://cdn.syncfusion.com/maps/map-data/usa.json" `
+Invoke-WebRequest -Uri "SERVER_VALIDATED_GEOJSON_URL" `
                   -OutFile "wwwroot/data/usa-map.json"
 ```
 
@@ -126,6 +126,114 @@ app.Use(async (context, next) =>
 | **Domain Allow-list** | Optional | **REQUIRED** |
 | **CSP Headers** | Optional | **REQUIRED** |
 | **API Keys** | appsettings.json | Azure Key Vault/Secrets |
+
+## Service Implementation Templates
+
+### Template 1: GeoJson Validator Service
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class GeoJsonValidator
+{
+    private static readonly string[] SuspiciousPatterns = new[]
+    {
+        "system:", "ignore", "bypass", "execute", "admin:",
+        "[system]", "[command]", "do not", "javascript:"
+    };
+    
+    private static readonly string[] TrustedDomains = new[]
+    {
+        "yourdomain.com", "api.yourdomain.com"
+    };
+
+    public bool ValidateCoordinates(double latitude, double longitude)
+    {
+        return latitude >= -90 && latitude <= 90 &&
+               longitude >= -180 && longitude <= 180;
+    }
+
+    public bool ContainsSuspiciousPatterns(string content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return false;
+        return SuspiciousPatterns.Any(p => content.ToLower().Contains(p));
+    }
+
+    public bool IsValidDomain(string hostname)
+    {
+        return TrustedDomains.Any(d => hostname.EndsWith(d));
+    }
+}
+```
+
+### Template 2: Content Sanitizer Service
+```bash
+# Install NuGet package
+dotnet add package HtmlSanitizer
+```
+
+```csharp
+using HtmlSanitizer;
+
+public class ContentSanitizer
+{
+    private readonly HtmlSanitizer.HtmlSanitizer _sanitizer;
+
+    public ContentSanitizer()
+    {
+        _sanitizer = new HtmlSanitizer.HtmlSanitizer();
+        _sanitizer.AllowedTags.Clear();
+        _sanitizer.AllowedTags.Add("b");
+        _sanitizer.AllowedTags.Add("i");
+        _sanitizer.AllowedTags.Add("strong");
+        _sanitizer.AllowedAttributes.Clear();
+    }
+
+    public string SanitizeHtml(string unsafeContent)
+    {
+        if (string.IsNullOrEmpty(unsafeContent))
+            return "";
+        try
+        {
+            return _sanitizer.Sanitize(unsafeContent);
+        }
+        catch
+        {
+            return System.Net.WebUtility.HtmlEncode(unsafeContent);
+        }
+    }
+}
+```
+
+## Register Services
+
+Add to `Program.cs`:
+
+```csharp
+builder.Services.AddScoped<GeoJsonValidator>();
+builder.Services.AddScoped<ContentSanitizer>();
+```
+
+## Content Security Policy
+
+Add to `Program.cs`:
+
+```csharp
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Content-Security-Policy"] = 
+        "default-src 'self'; " +
+        "img-src 'self' data: https://tile.openstreetmap.org; " +
+        "style-src 'self' 'unsafe-inline' _content/Syncfusion.Blazor/; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "connect-src 'self'; " +
+        "base-uri 'self'; " +
+        "form-action 'self'";
+    await next();
+});
+```
 
 ## Need Help?
 

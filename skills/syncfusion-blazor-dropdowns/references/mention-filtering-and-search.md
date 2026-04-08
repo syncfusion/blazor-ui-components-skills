@@ -337,7 +337,7 @@ For organizations with 1000+ employees:
         <input id="largeTeam" type="text" placeholder="Type @ + 3 letters..." />
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://api.company.com/employees" 
+        <SfDataManager Url="YOUR_API_ENDPOINT/employees" 
                        Adaptor="Adaptors.WebApiAdaptor"
                        Offline="true">
         </SfDataManager>

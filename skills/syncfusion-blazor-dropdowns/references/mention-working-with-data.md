@@ -319,7 +319,7 @@ Each data type supports the `TItem` generic parameter and `MentionFieldSettings`
         <div id="odataMention" contenteditable="true" placeholder="Type @..."></div>
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc/Customers" 
+        <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
                        Adaptor="Adaptors.ODataV4Adaptor">
         </SfDataManager>
         <MentionFieldSettings Text="ContactName"></MentionFieldSettings>
@@ -454,7 +454,7 @@ Triggered when data fetch fails:
         <div id="mention" contenteditable="true"></div>
     </TargetComponent>
     <ChildContent>
-        <SfDataManager Url="https://invalid-api.example.com/data" 
+        <SfDataManager Url="YOUR_API_ENDPOINT" 
                        Adaptor="Adaptors.WebApiAdaptor">
         </SfDataManager>
         <MentionFieldSettings Text="Name"></MentionFieldSettings>

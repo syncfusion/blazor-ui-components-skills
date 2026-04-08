@@ -23,13 +23,14 @@
 
 # Print and Export
 
-> **Security Warning:** Export and print operations allow users to save map visualizations to external files (PNG, SVG, PDF). This can result in data exfiltration if maps contain sensitive geographic information. Consider implementing:
-> - Access controls for export functionality
-> - Audit logging of export operations
-> - Watermarking exported content
-> - User permission validation before export
-> - Content sanitization in exported files
-
+> **MANDATORY SECURITY NOTICE:** Export and print examples may reference third-party tiles or GeoJSON for illustration only. In production you MUST ensure exported content does not leak sensitive data. Recommended controls:
+>
+> - Host tiles and GeoJSON locally or serve via a validated server-side proxy that enforces allow-lists, HTTPS, content-type checks, schema validation, size/complexity limits, and property sanitization.
+> - Require user authorization for export features and log all export actions for audit.
+> - Apply watermarks or redaction for sensitive layers before export.
+> - Sanitize labels, tooltips, and annotations (HTML-encode or strip markup) prior to including them in exported files.
+> - NEVER export or forward raw `ShapeData`, tooltips, or annotation content to automated agents or LLMs without explicit schema validation and human sign-off.
+>
 ## Prerequisites for Export and Print (NEW - Important)
 
 Ensure the following properties are enabled on your `SfMaps` component:
@@ -79,7 +80,7 @@ Export the current map view as PNG image:
 <SfMaps @ref="mapInstance" >
 <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Datasource="@MarkerDataSource" TValue="MarkerData"
                      Width="15" Height="15">
@@ -169,7 +170,7 @@ Control export parameters:
 <button @onclick="export">Export</button>
 <SfMaps @ref="Maps" AllowPdfExport="true">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -200,7 +201,7 @@ Print the map with browser print dialog:
 
 <SfMaps @ref="mapInstance" AllowPrint="true">
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -230,7 +231,7 @@ This opens the browser's print dialog. Users can select printer, page layout, an
         </MapsLegendShapeBorder>
     </MapsLegendSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Country"
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}' ShapeDataPath="Country"
                    DataSource="MemberShipDetails" ShapePropertyPath='new string[] {"name"}' TValue="UNCouncil">
             <MapsDataLabelSettings Visible="true" LabelPath="name"></MapsDataLabelSettings>
             <MapsShapeSettings ColorValuePath="Membership">
@@ -241,7 +242,7 @@ This opens the browser's print dialog. Users can select printer, page layout, an
             </MapsShapeSettings>
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="MarkerData" Height="25" Width="15" TValue="City"
-                            Shape="Syncfusion.Blazor.Maps.MarkerType.Image" ImageUrl="https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/ballon.png">
+                            Shape="Syncfusion.Blazor.Maps.MarkerType.Image" ImageUrl="/images/ballon.png">
                 </MapsMarker>
             </MapsMarkerSettings>
         </MapsLayer>
@@ -304,7 +305,7 @@ This opens the browser's print dialog. Users can select printer, page layout, an
 <button @onclick="ExportWithSVG">SVG</button>
 <SfMaps @ref="mapInstance" AllowImageExport="true" AllowPdfExport="true" AllowPrint="true">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Country"
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}' ShapeDataPath="Country"
                    DataSource="MemberShipDetails" ShapePropertyPath='new string[] {"name"}' TValue="UNCouncil">
             <MapsShapeSettings ColorValuePath="Membership">
                 <MapsShapeColorMappings>

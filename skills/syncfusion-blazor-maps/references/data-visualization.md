@@ -37,11 +37,16 @@
 
 Color mapping visualizes data values across geographic regions by applying colors based on data ranges. This technique (called choropleth) is perfect for displaying statistics like population density, income levels, or disease prevalence by region.
 
-> **Security Note:** GeoJSON and map tile data are typically fetched from external sources (CDNs, tile servers). This skill uses legitimate services:
-> - **Syncfusion CDN** (`cdn.syncfusion.com`) - Official vendor resource for geographic datasets
-> - **OpenStreetMap** (`tile.openstreetmap.org`) - Well-known public tile service
-> 
-> When loading data from other sources, validate URLs against trusted domain allow-lists. See [Map Providers - Security Best Practices](map-providers.md#security-best-practices).
+> **MANDATORY SECURITY NOTICE:** GeoJSON and tile data examples in this document are for demonstration only. In production you MUST either host GeoJSON/tiles locally (for example under `wwwroot/data` or `wwwroot/tiles`) or serve them through a server-side proxy that:
+>
+> - validates provider host against an allow‑list and requires HTTPS,
+> - verifies content-type and GeoJSON structure against a strict schema,
+> - enforces maximum file size and feature-count limits,
+> - strips or HTML-encodes properties (tooltips/annotations) to remove markup and scripts,
+> - normalizes coordinates and limits geometry complexity, and
+> - issues short‑lived signed URLs/tokens for client consumption (do NOT embed provider API keys in client code).
+>
+> NEVER forward raw `ShapeData`, tooltips, or annotation content to automated agents or LLM prompts without server-side validation, sanitization, and documented human review. See [readme-security](readme-security.md) for required validation templates and deployment checklist.
 
 ### Basic Color Mapping
 
@@ -52,7 +57,7 @@ Color mapping visualizes data values across geographic regions by applying color
 <SfMaps>
     <MapsLayers>
         <MapsLayer TValue="StateData"
-            ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'
+            ShapeData='new { dataOptions = "/data/usa-map.json" }'
             DataSource="@StateDataSource"
             ShapeDataPath="Name"
             ShapePropertyPath='new string[] { "name" }'>
@@ -247,7 +252,7 @@ Data labels display text directly on map elements (regions, bubbles, markers) to
 ### Labels on Shapes (Regions)
 
 ```csharp
-<MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+<MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="string">
     <MapsDataLabelSettings Visible="true" LabelPath="name" />
 </MapsLayer>
 ```
@@ -257,7 +262,7 @@ This displays the state name on each state polygon.
 ### Custom Label Formatting
 
 ```csharp
-<MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+<MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="string">
     <MapsDataLabelSettings Visible="true" LabelPath="name">
         <MapsLayerDataLabelBorder Color="green" Width="2"></MapsLayerDataLabelBorder>
         <MapsLayerDataLabelTextStyle Color="blue" Size="12px" FontStyle="Sans-serif" FontWeight="normal">
@@ -275,7 +280,7 @@ Show labels only for selected features:
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="string">
             <MapsDataLabelSettings Visible="@ShowAllLabels" LabelPath="name">
             </MapsDataLabelSettings>
         </MapsLayer>
@@ -298,7 +303,7 @@ Match geographic boundaries with your data:
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}' DataSource="PopulationDetails"
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}' DataSource="PopulationDetails"
 		    ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="PopulationDetail">
             <MapsShapeSettings Fill="#E5E5E5" ColorValuePath="Density">
                 <MapsShapeColorMappings>
@@ -339,7 +344,7 @@ Match geographic boundaries with your data:
 
 <SfMaps @ref="mapInstance">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="RegionData" DataSource="@LiveData">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="RegionData" DataSource="@LiveData">
             <MapsShapeSettings ColorValuePath="CurrentValue">
                 <MapsShapeColorMappings>
                     <MapsShapeColorMapping StartRange="0" EndRange="50" Color='new string[] { "green" }' />
@@ -515,7 +520,7 @@ Configure bubble visualization.
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/world-map.json"}'
+        <MapsLayer ShapeData='new {dataOptions ="/data/world-map.json"}'
                    ShapeDataPath="Name" ShapePropertyPath='new string[] {"name"}' TValue="Country">
             @* To add bubbles based on population count *@
             <MapsBubbleSettings>
@@ -609,7 +614,7 @@ Combine multiple data points into regional summaries:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="RegionalSales"
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="RegionalSales"
             DataSource="@AggregatedData">
             <MapsShapeSettings ColorValuePath="TotalSales">
                 <MapsShapeColorMappings>
@@ -654,7 +659,7 @@ Filter and visualize specific data subsets:
 
 <SfMaps @ref="mapInstance" >
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="DataPoint"
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="DataPoint"
             DataSource="@FilteredData">
             <MapsShapeSettings ColorValuePath="Value">
             </MapsShapeSettings>

@@ -1,3 +1,5 @@
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
 ## Table of Contents
 
 - [WCAG 2.1 Compliance](#wcag-21-compliance)
@@ -22,6 +24,8 @@
 
 # Accessibility and Advanced Topics
 
+> **W011 Security Note:** Accessibility examples in this topic load external map data and tiles. If the content is sourced from third parties, validate it before rendering and sanitize any text that could appear in tooltips or annotations.
+
 ## WCAG 2.1 Compliance
 
 ### Semantic HTML Structure
@@ -40,7 +44,7 @@ Ensure map container has proper semantic markup:
         <div role="region" aria-live="polite" aria-label="Map container">
             <SfMaps @ref="mapInstance">
                 <MapsLayers>
-                    <MapsLayer ShapeData='new {dataOptions = "https://cdn.syncfusion.com/blazor/data/maps/world-map.json"}' TValue="string">
+                    <MapsLayer ShapeData='new {dataOptions = "/data/world-map.json"}' TValue="string">
                     </MapsLayer>
                 </MapsLayers>
             </SfMaps>
@@ -117,7 +121,8 @@ Use contrast checkers:
 <SfMaps>
     <MapsZoomSettings Enable="true" ZoomFactor="2"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <!-- Use a validated TileUrl variable; prefer local/cached tiles for production -->
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -170,7 +175,7 @@ Allow users to skip to map content:
     <SfMaps @ref="mapInstance">
          <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
         <MapsLayers>
-            <MapsLayer ShapeData='new {dataOptions = "https://cdn.syncfusion.com/blazor/data/maps/world-map.json"}' TValue="TemperatureRegion" DataSource="@TemperatureData">
+            <MapsLayer ShapeData='new {dataOptions = "/data/world-map.json"}' TValue="TemperatureRegion" DataSource="@TemperatureData">
                 <MapsShapeSettings ColorValuePath="Temperature">
                     <MapsShapeColorMappings>
                         <MapsShapeColorMapping StartRange="-20" EndRange="0" Color='new string[] { "#4575B4" }' />
@@ -234,7 +239,7 @@ Allow users to skip to map content:
 <SfMaps @ref="mapInstance">
     <MapsZoomSettings ZoomFactor="1"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="RegionInfo" DataSource="@RegionData">
+        <MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="RegionInfo" DataSource="@RegionData">
             <MapsDataLabelSettings Visible="true" LabelPath="name">
             </MapsDataLabelSettings>
         </MapsLayer>
@@ -243,7 +248,9 @@ Allow users to skip to map content:
 
 @code {
     private SfMaps mapInstance;
-
+    // Use a validated tile URL in production; prefer bundling tiles locally
+    private string TileUrl = "/tiles/{level}/{tileX}/{tileY}.png";
+}
     private List<RegionInfo> RegionData = new()
     {
         new RegionInfo { Name = "Texas", Population = 5000000, Density = 120 },

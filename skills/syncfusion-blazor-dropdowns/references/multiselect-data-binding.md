@@ -217,7 +217,7 @@ For OData-compliant APIs:
 <SfMultiSelect TValue="int[]"
                TItem="OrderData"
                Placeholder="Select orders">
-    <SfDataManager Url="https://services.odata.org/V4/Northwind/Northwind.svc/Orders" 
+    <SfDataManager Url="YOUR_ODATA_SERVICE_URL" 
                    Adaptor="Adaptors.ODataV4Adaptor">
     </SfDataManager>
     <MultiSelectFieldSettings Text="ShipName" Value="OrderID"></MultiSelectFieldSettings>

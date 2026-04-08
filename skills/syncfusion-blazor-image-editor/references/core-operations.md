@@ -80,7 +80,7 @@ private async Task LoadImageWithOptions()
 {
     // Load with specific dimensions and background
     await ImageEditor.OpenAsync(
-        data: "https://example.com/transparent-logo.png",
+        data: "YOUR_TRANSPARENT_LOGO_URL",
         resetChanges: false,        // Keep existing edits
         fillColor: "#FFFFFF",       // White background for transparency
         width: 800,                 // Target width
@@ -93,7 +93,7 @@ private async Task LoadWithoutReset()
 {
     // Load new image without clearing undo history
     await ImageEditor.OpenAsync(
-        "https://example.com/image2.png",
+        "YOUR_IMAGE_URL",
         resetChanges: false
     );
 }
@@ -102,7 +102,7 @@ private async Task LoadTransparentWithBackground()
 {
     // Handle transparent PNGs with colored background
     await ImageEditor.OpenAsync(
-        "https://example.com/icon.png",
+        "YOUR_ICON_URL",
         resetChanges: true,
         fillColor: "#F0F0F0"  // Light gray background
     );

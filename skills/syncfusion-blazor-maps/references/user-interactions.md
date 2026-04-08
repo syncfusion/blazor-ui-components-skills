@@ -1,3 +1,5 @@
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
 ## Table of Contents
 
 - [Handling Mouse Clicks](#handling-mouse-clicks)
@@ -39,7 +41,7 @@
 <SfMaps @ref="mapInstance">
     <MapsEvents MarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="California" Height="25" Width="15" TValue="City"></MapsMarker>
                 <MapsMarker Visible="true" DataSource="NewYork" Height="25" Width="15" TValue="City"></MapsMarker>
@@ -80,7 +82,7 @@
 <SfMaps>
     <MapsEvents ShapeSelected="@ShapeSelectedEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsLayerSelectionSettings Enable="true" Fill="green">
                 <MapsLayerSelectionBorder Color="White" Width="2"></MapsLayerSelectionBorder>
             </MapsLayerSelectionSettings>
@@ -102,7 +104,7 @@
 <SfMaps>
     <MapsEvents OnDoubleClick="@OnDoubleClickEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -130,7 +132,7 @@
         </MapsZoomToolbarSettings>
     </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions = "/data/usa-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -145,7 +147,7 @@
 <SfMaps>
 <MapsZoomSettings Enable="true" ZoomFactor="4"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="/tiles/{level}/{tileX}/{tileY}.png" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -162,7 +164,7 @@
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Name"
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' ShapeDataPath="Name"
                    ShapePropertyPath='new string[] {"name"}' DataSource='PerformanceReport' TValue="Country">
             <MapsLayerTooltipSettings Visible="true" ValuePath="CountryName"
                                   Format="<b>${CountryName}</b><br>Finalist: <b>${Winner}</b><br>Win: <b>${Finalist}">
@@ -193,7 +195,7 @@
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' ShapeDataPath="Name"
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' ShapeDataPath="Name"
                    ShapePropertyPath='new string[] {"name"}' DataSource='PerformanceReport' TValue="Country">
             <MapsLayerTooltipSettings Visible="true" ValuePath="CountryName"
                                   Format="<b>${CountryName}</b><br>Finalist: <b>${Winner}</b><br>Win: <b>${Finalist}">
@@ -249,7 +251,7 @@ When user hovers over a shape, the tooltip displays the value from `StateName` p
 <SfMaps @ref="mapInstance">
     <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="MarkerData" Height="25" Width="15" Fill="red" DashArray="1" Opacity="0.9"
                             TValue="City">
@@ -308,7 +310,7 @@ Enable keyboard navigation for accessibility:
 <SfMaps>
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -334,7 +336,7 @@ Track which elements are selected:
 <SfMaps>
     <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }'
                    TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true"
@@ -381,7 +383,7 @@ Most maps support native drag-to-pan. Enable explicitly:
 <SfMaps>
     <MapsZoomSettings Enable="true" EnablePanning="true" ZoomFactor="2" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions = "/data/usa-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -416,7 +418,7 @@ If untrusted data contains malicious HTML/JavaScript, it can:
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions ="https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions = "/data/usa-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Fill="white" Width="20"
                             DataSource="HighestPopulation" TValue="City">

@@ -1,3 +1,5 @@
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
 ## Table of Contents
 
 - [Installation and Setup](#installation-and-setup)
@@ -102,7 +104,7 @@ Create a new component or page with a basic map:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -119,7 +121,7 @@ Control the initial map view:
     <MapsCenterPosition Latitude="25.54244147012483" Longitude="-89.62646484375"></MapsCenterPosition>
     <MapsZoomSettings Enable="false" ZoomFactor="11"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -138,9 +140,9 @@ Set explicit dimensions for the map container:
 <div style="width: 100%; height: 600px;">
     <SfMaps>
         <MapsLayers>
-            <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
-            </MapsLayer>
-        </MapsLayers>
+                <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
+                </MapsLayer>
+            </MapsLayers>
     </SfMaps>
 </div>
 ```
@@ -156,7 +158,7 @@ Complete working example with markers and basic interaction:
 @using Syncfusion.Blazor.Maps
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Datasource="@MarkerData" TValue="MapMarkerDataSource"
                     Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -190,17 +192,17 @@ A layer is a collection of visual elements (tiles, shapes, markers) displayed on
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
              <MapsShapeSettings Fill="#E5E5E5">
                 <MapsShapeBorder Color="black" Width="0.1"></MapsShapeBorder>
             </MapsShapeSettings>
         </MapsLayer>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+        <MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
         <MapsShapeSettings Fill="rgba(141, 206, 255, 0.6)">
                 <MapsShapeBorder Color="#1a9cff" Width="0.25"></MapsShapeBorder>
             </MapsShapeSettings>
         </MapsLayer>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/california.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+        <MapsLayer ShapeData='new {dataOptions= "/data/california-map.json"}' TValue="string" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
              <MapsShapeSettings Fill="rgba(141, 206, 255, 0.6)">
                 <MapsShapeBorder Color="#1a9cff" Width="0.25"></MapsShapeBorder>
             </MapsShapeSettings>
@@ -315,7 +317,7 @@ Maps need a properly sized container:
 | `CenterPosition.Latitude` | double | 37.368 | Initial map center latitude |
 | `CenterPosition.Longitude` | double | -122.095 | Initial map center longitude |
 | `ZoomLevel` | int | 4 | Initial zoom level (1-20) |
-| `UrlTemplate` | string | "https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" | Tile provider URL |
+| `UrlTemplate` | string | "@TileUrl" | Tile provider URL |
 | `Width` | string | "100%" | Map container width |
 | `Height` | string | "600px" | Map container height |
 
@@ -331,7 +333,7 @@ Maps need a properly sized container:
         Background="blue">
 <MapsZoomSettings ZoomFactor="2"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>

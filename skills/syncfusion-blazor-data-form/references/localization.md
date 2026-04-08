@@ -51,45 +51,6 @@ Supported locales: `en`, `de`, `fr`, `es`, `pt`, `ar`, `ja`, `ko`, `zh`, `it`, `
 
 ## Localizing Validation Messages
 
-### Using Built-in Localization
-
-```razor
-@page "/form/{culture}"
-@inject CultureInfo Culture
-
-<SfDataForm Model="@form" Locale="@Culture.TwoLetterISOLanguageName">
-    <FormValidator>
-        <DataAnnotationsValidator></DataAnnotationsValidator>
-    </FormValidator>
-    <FormItems>
-        <FormItem Field="@nameof(form.Email)" 
-                  LabelText="Email">
-        </FormItem>
-    </FormItems>
-</SfDataForm>
-
-@code {
-    public class Form
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-    }
-
-    private Form form = new();
-
-    [Parameter]
-    public string Culture { get; set; } = "en";
-
-    protected override void OnInitialized()
-    {
-        CultureInfo.CurrentCulture = new CultureInfo(Culture);
-    }
-}
-```
-
-Validation messages automatically display in the specified language.
-
 ### Localizing Field Labels
 
 Use `[Display]` with `ResourceType` for label localization:
@@ -309,7 +270,6 @@ For Arabic and other RTL languages:
 
 ```razor
 <SfDataForm Model="@employee" 
-            Locale="ar"
             EnableRtl="true">
     <FormValidator>
         <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -335,105 +295,6 @@ RTL automatically adjusts:
 - Text direction
 - Button order
 - Layout flow
-
-## Multi-Language Form Example
-
-Complete example with language switching:
-
-```razor
-@page "/multilingual-form"
-@inject CultureInfo Culture
-
-<div class="language-menu">
-    <button @onclick="() => SelectLanguage('en')" 
-            class="@(CurrentLanguage == "en" ? "active" : "")">
-        English
-    </button>
-    <button @onclick="() => SelectLanguage('de')" 
-            class="@(CurrentLanguage == "de" ? "active" : "")">
-        Deutsch
-    </button>
-    <button @onclick="() => SelectLanguage('es')" 
-            class="@(CurrentLanguage == "es" ? "active" : "")">
-        Español
-    </button>
-    <button @onclick="() => SelectLanguage('ar')" 
-            class="@(CurrentLanguage == "ar" ? "active" : "")">
-        العربية
-    </button>
-</div>
-
-<SfDataForm Model="@employee" 
-            Locale="@CurrentLanguage"
-            EnableRtl="@IsRTL">
-    <FormValidator>
-        <DataAnnotationsValidator></DataAnnotationsValidator>
-    </FormValidator>
-    <FormItems>
-        <FormItem Field="@nameof(employee.FirstName)" 
-                  LabelText="@GetLabel('FirstName')">
-        </FormItem>
-        <FormItem Field="@nameof(employee.LastName)" 
-                  LabelText="@GetLabel('LastName')">
-        </FormItem>
-        <FormItem Field="@nameof(employee.Email)" 
-                  LabelText="@GetLabel('Email')">
-        </FormItem>
-    </FormItems>
-</SfDataForm>
-
-<style>
-    .language-menu {
-        margin-bottom: 20px;
-    }
-
-    .language-menu button {
-        margin-right: 10px;
-        padding: 8px 16px;
-        border: 1px solid #ccc;
-        background: white;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-
-    .language-menu button.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-</style>
-
-@code {
-    public class Employee
-    {
-        [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
-
-        [EmailAddress]
-        public string Email { get; set; }
-    }
-
-    private Employee employee = new();
-    private string CurrentLanguage = "en";
-
-    private bool IsRTL => CurrentLanguage == "ar";
-
-    private string GetLabel(string key)
-    {
-        return LocalizationStrings.GetString(key, CurrentLanguage);
-    }
-
-    private void SelectLanguage(string language)
-    {
-        CurrentLanguage = language;
-        CultureInfo.CurrentCulture = new CultureInfo(language);
-        CultureInfo.CurrentUICulture = new CultureInfo(language);
-    }
-}
-```
 
 ## Best Practices
 

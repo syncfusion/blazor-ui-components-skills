@@ -504,14 +504,14 @@ Templates receive data through `context` parameter. Access properties directly:
             Name = "Alice Johnson", 
             Email = "alice@company.com", 
             Role = "Lead",
-            AvatarUrl = "https://i.pravatar.cc/150?u=alice"
+            AvatarUrl = "YOUR_AVATAR_IMAGE_URL"
         },
         new() 
         { 
             Name = "Bob Smith", 
             Email = "bob@company.com", 
             Role = "Developer",
-            AvatarUrl = "https://i.pravatar.cc/150?u=bob"
+            AvatarUrl = "YOUR_AVATAR_IMAGE_URL"
         }
     };
 }

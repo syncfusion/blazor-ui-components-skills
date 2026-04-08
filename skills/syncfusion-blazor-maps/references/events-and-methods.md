@@ -1,5 +1,7 @@
 # Events and Methods
 
+> **MANDATORY SECURITY NOTICE:** Event-driven examples may reference external GeoJSON, ShapeData, or tile sources for illustration only. In production you MUST not fetch untrusted geodata directly in the client. Instead, host assets locally or serve them via a server-side ingestion pipeline that validates domains, requires HTTPS, validates GeoJSON schema, enforces size/feature limits, sanitizes/HTML-encodes properties, and records an audit with human review before any automated processing. NEVER forward raw ShapeData, tooltip, or annotation content to automated agents or LLM prompts without strict validation and sign-off. See [readme-security](readme-security.md) for required validation templates.
+
 ## Table of Contents
 
 - [Mouse Events](#mouse-events)
@@ -57,7 +59,8 @@ Triggered as user moves mouse over the map:
 <SfMaps @ref="mapInstance">
     <MapsEvents MouseMove="MouseMoveHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -80,7 +83,8 @@ Triggered when user clicks a marker:
 <SfMaps>
     <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City"
                     Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -147,7 +151,8 @@ Triggered on double-click anywhere on map:
 <SfMaps>
     <MapsEvents OnDoubleClick="DoubleClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -179,7 +184,8 @@ private void MouseMoveHandler(MapClickEventArgs args) // WRONG CLASS!
 <SfMaps>
     <MapsEvents OnMouseMove="MouseMoveHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -208,7 +214,8 @@ Triggered when mouse leaves a marker (NEW - Previously Missing):
 <SfMaps>
     <MapsEvents OnMarkerMouseLeave="MarkerMouseLeaveHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@Markers" TValue="MarkerData"
                             Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -246,7 +253,8 @@ Triggered when user clicks a cluster of markers (NEW - Previously Missing):
 <SfMaps>
     <MapsEvents MarkerClusterClick="ClusterClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@LargeMarkerSet" TValue="City"
                             Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -300,7 +308,8 @@ Triggered when mouse moves over a cluster (NEW - Previously Missing):
 <SfMaps>
     <MapsEvents MarkerClusterMouseMove="ClusterMoveHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@LargeMarkerSet" TValue="City"
                             Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -356,7 +365,8 @@ Triggered when zoom level changes (user zoom, programmatic zoom):
     <MapsEvents OnZoom="ZoomChangeHandler"/>
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -386,7 +396,8 @@ Triggered when map is panned:
     <MapsEvents OnPan="PanHandler" />
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -415,7 +426,8 @@ Triggered before each shape/polygon is rendered (NEW - Previously Underdocumente
 <SfMaps>
     <MapsEvents ShapeRendering="@ShapeRenderingEvent"></MapsEvents>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -443,8 +455,8 @@ Triggered before each layer is rendered (NEW - Previously Underdocumented):
 <SfMaps>
     <MapsEvents OnLayerRendering="OnLayerRendering">
     </MapsEvents>
-    <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayers>
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
         <MapsLayer TValue="string" ShapeDataSource="@ShapeData">
         </MapsLayer>
@@ -481,7 +493,7 @@ Triggered before each annotation is rendered (NEW - Previously Underdocumented):
         </MapsAnnotation>
     </MapsAnnotations>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -537,7 +549,7 @@ Zoom the map to fit specific geographic coordinates:
     <MapsZoomSettings Enable="true">
     </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -565,7 +577,7 @@ Zoom the map from a specific center position with a zoom factor:
     <MapsZoomSettings Enable="true">
     </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -609,7 +621,8 @@ Get the minimum and maximum coordinates of the visible map area:
     <MapsZoomSettings Enable="true" ZoomFactor="@ZoomFactor"></MapsZoomSettings>
     <MapsCenterPosition Latitude="@CenterLat" Longitude="@CenterLong"></MapsCenterPosition>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <!-- Use local or validated GeoJSON in production -->
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="MarkerDataSource" Height="25" Width="25" TValue="MarkerData" Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" AnimationDuration="1500">
                 </MapsMarker>
@@ -662,7 +675,7 @@ Programmatically select or unselect shapes in the map:
     <MapsZoomSettings Enable="true" EnablePanning="true">
     </MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsLayerSelectionSettings Enable="true" Fill="Green"></MapsLayerSelectionSettings>
         </MapsLayer>
     </MapsLayers>
@@ -702,7 +715,7 @@ Access full event data in handlers:
     OnMarkerClick="MarkerClickHandler"
     ShapeSelected="ShapeSelectHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City">
                 </MapsMarker>
@@ -753,7 +766,7 @@ Only process specific events:
 <SfMaps>
     <MapsEvents OnMarkerClick="MarkerClickHandler" />
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@MarkerData" TValue="City">
                 </MapsMarker>

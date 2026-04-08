@@ -263,28 +263,6 @@ Enable RTL for languages like Arabic, Hebrew:
 }
 ```
 
-### Localization
-
-Set component text in different languages:
-
-```blazor
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Data
-
-<SfAutoComplete TValue="string" TItem="string" 
-                DataSource="@Countries"
-                AllowFiltering="true"
-                Locale="es">
-</SfAutoComplete>
-
-@code {
-    private List<string> Countries = new() 
-    { 
-        "Austria", "Brazil", "Canada" 
-    };
-}
-```
-
 **Common Locales:** `en` (English), `es` (Spanish), `fr` (French), `de` (German), `ar` (Arabic)
 
 ## Event Handling
@@ -483,7 +461,7 @@ Execute logic when user selects an item:
         try
         {
             using var client = new HttpClient();
-            var response = await client.GetAsync($"https://api.github.com/search/users?q={args.Text}&per_page=5");
+            var response = await client.GetAsync($"YOUR_API_ENDPOINT/search/users?q={args.Text}&per_page=5");
             // Parse response and populate args.FilteredData
         }
         catch { }

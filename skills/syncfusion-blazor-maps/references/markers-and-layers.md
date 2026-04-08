@@ -1,5 +1,7 @@
 # Markers and Layers
 
+> **MANDATORY SECURITY NOTICE:** Examples may reference third-party GeoJSON, tiles, or image resources for illustration only. In production you MUST host such assets locally or serve them through a server-side proxy that validates domains, enforces HTTPS, checks content-type, validates GeoJSON schema, strips/encodes HTML in properties, enforces size/complexity limits, and issues short-lived signed client URLs. NEVER forward raw ShapeData, tooltips, or annotations to automated agents or LLMs without schema validation, sanitization, and documented human review. See [readme-security](readme-security.md) for required templates and the deployment checklist.
+
 ## Table of Contents
 
 - [Understanding Markers](#understanding-markers)
@@ -55,8 +57,8 @@ Markers are point-based annotations placed on the map at specific coordinates. T
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
-                   TValue="CityData">
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }'
+               TValue="CityData">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@MarkerData" 
                             TValue="CityData"
@@ -93,7 +95,7 @@ Bind multiple markers to a data source. The recommended approach is to use **`Ma
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' 
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }' 
                    TValue="LocationData">
             <MapsMarkerSettings>
                 <!-- Use MapsMarker with TValue - NOT MapsMarkers container -->
@@ -146,7 +148,7 @@ The `Shape` property determines the marker appearance. Use multiple `<MapsMarker
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="MarkerData">
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }' TValue="MarkerData">
             <MapsMarkerSettings>
                 <!-- Circle marker -->
                 <MapsMarker Visible="true" DataSource="@CircleMarkers" 
@@ -211,7 +213,7 @@ The `Shape` property determines the marker appearance. Use multiple `<MapsMarker
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="MarkerData">
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }' TValue="MarkerData">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@StyledMarkers" 
                             TValue="MarkerData"
@@ -259,11 +261,11 @@ Use custom images for markers by setting `Shape="MarkerType.Image"`:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }' TValue="string">
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="@ImageMarkers" TValue="MarkerData"
                             Shape="Syncfusion.Blazor.Maps.MarkerType.Image"
-                            ImageUrl="https://blazor.syncfusion.com/demos/_content/blazor_server_common_net8/images/maps/ballon.png"
+                            ImageUrl="/images/ballon.png"
                             Width="32" Height="32">
                 </MapsMarker>
             </MapsMarkerSettings>
@@ -302,7 +304,7 @@ Automatically group nearby markers for cleaner visualization at low zoom levels.
 <SfMaps>
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="string">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="string">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" DataSource="LargestCities" Height="25" Width="15" TValue="City">
                 </MapsMarker>
@@ -404,12 +406,12 @@ A layer is an ordered collection of visual elements rendered at a specific depth
 <SfMaps>
     <MapsLayers>
         <!-- Base tile layer (renders first, appears underneath) -->
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
 
         <!-- Shape layer (renders second, on top of tiles) -->
         <MapsLayer TValue="CountryData" Type="Syncfusion.Blazor.Maps.Type.SubLayer"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   ShapeData='new { dataOptions = "/data/world-map.json" }'
                    DataSource="@CountryDataSource"
                    ShapePropertyPath='new string[] { "name" }'>
             <MapsShapeSettings Fill="lightblue">
@@ -417,7 +419,7 @@ A layer is an ordered collection of visual elements rendered at a specific depth
         </MapsLayer>
 
         <!-- Marker layer (renders third, on top) -->
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }' TValue="MarkerData" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
+        <MapsLayer ShapeData='new { dataOptions = "/data/usa-map.json" }' TValue="MarkerData" Type="Syncfusion.Blazor.Maps.Type.SubLayer">
             <MapsMarkerSettings>
                 <MapsMarker Visible="true" Datasource="@MarkerDataSource" TValue="MarkerData"
                     Shape="Syncfusion.Blazor.Maps.MarkerType.Circle" Width="15" Height="15">
@@ -452,7 +454,7 @@ Each layer can have independent styling:
 
 ```csharp
 <MapsLayers>
-    <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+    <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         <MapsLayerOpacity>0.8</MapsLayerOpacity>
     </MapsLayer>
 
@@ -479,14 +481,14 @@ Control which layers are visible:
 <SfMaps BaseLayerIndex="@BaseLayerIndex">
     <MapsLayers>
         <MapsLayer TValue="CountryData"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+                   ShapeData='new { dataOptions = "/data/world-map.json" }'
                    DataSource="@CountryDataSource"
                    ShapePropertyPath='new string[] { "name" }'>
             <MapsShapeSettings Fill="lightblue" />
         </MapsLayer>
 
         <MapsLayer TValue="MarkerData"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/usa.json" }'>
+                   ShapeData='new { dataOptions = "/data/usa-map.json" }'>
             <MapsMarkerSettings>
                 <MapsMarker Visible="true"
                             Datasource="@MarkerDataSource"
@@ -546,7 +548,7 @@ Control which layers are visible:
 <SfMaps @ref="mapInstance">
     <MapsLayers>
         <MapsLayer TValue="MarkerData"
-                   ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'>
+                   ShapeData='new { dataOptions = "/data/world-map.json" }'>
             <MapsMarkerSettings>
                 <MapsMarker TValue="MarkerData"
                             Visible="true"
@@ -696,7 +698,7 @@ Generic layer component for rendering geographic data.
 ### Key Properties
 
 ```csharp
-<MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="dataSourceType"
+<MapsLayer UrlTemplate="@TileUrl" TValue="dataSourceType"
            ShapeDataSource="@shapeData"
            DataSource="@dataSource"
            ShapePropertyPath="name">

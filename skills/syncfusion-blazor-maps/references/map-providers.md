@@ -1,5 +1,16 @@
 # Map Providers and Configuration
 
+> **MANDATORY SECURITY NOTICE:** Provider examples may show tile and metadata templates that reference third-party services for illustration only. In production you MUST either host tiles/GeoJSON locally or serve them through a server-side proxy that:
+>
+> - validates provider hosts against an allow‑list and requires HTTPS,
+> - verifies content-type and schema (strict GeoJSON validation),
+> - enforces maximum file size and feature-count limits,
+> - strips or HTML-encodes properties (tooltips/annotations) to remove markup and scripts,
+> - issues short-lived signed URLs/tokens for client consumption (do NOT embed API keys in client code), and
+> - logs ingestion events and requires documented human review before automated processing.
+>
+> NEVER forward raw ShapeData, tooltips, or annotations to automated agents or LLM prompts without schema validation, sanitization, and human sign-off. See [readme-security](readme-security.md) for required validation templates and deployment checklist.
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -46,9 +57,23 @@
 
 Map providers supply the base tile layer (streets, satellite, terrain) that forms the foundation of your visualization. Syncfusion Maps supports multiple providers, each with different coverage, styling, and configuration requirements.
 
+### External Asset Downloads (Expected Behavior)
+
+This skill references external map tiles and data from **known, trusted vendor services**:
+- **tile.openstreetmap.org** - OpenStreetMap tile provider (free, community-maintained)
+- **cdn.syncfusion.com** - Syncfusion CDN for component resources
+- **maps.googleapis.com** - Google Maps tile and metadata provider (requires API key)
+- **dev.virtualearth.net** - Bing Maps provider (requires API key)
+- **atlas.microsoft.com** - Azure Maps provider (requires API key)
+
+These downloads are **expected and necessary behaviors** for map visualization. In production, you should either:
+1. **Host tiles locally** (recommended for security-sensitive applications)
+2. **Cache tiles on your server** with periodic refresh
+3. **Use a validated proxy** that fetches tiles with domain/HTTPS verification
+
 **Common UrlTemplate format:**
 ```
-https://tile-provider.com/{level}/{tileX}/{tileY}.{extension}
+/tiles/{level}/{tileX}/{tileY}.{extension}
 ```
 
 Where:
@@ -65,7 +90,8 @@ Where:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <!-- Use a validated TileUrl variable or local tiles in production -->
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -77,20 +103,23 @@ Different tile providers with OpenStreetMap data:
 
 **Stamen Terrain (landscape focus):**
 ```csharp
-<MapsLayer UrlTemplate="https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{level}/{tileX}/{tileY}.png" TValue="string">
-</MapsLayer>
+// Example provider template; validate provider terms and domain before use
+// <MapsLayer UrlTemplate="/tiles/terrain/{level}/{tileX}/{tileY}.png" TValue="string">
+// </MapsLayer>
 ```
 
 **CartoDB Positron (clean, minimal):**
 ```csharp
-<MapsLayer UrlTemplate="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{level}/{tileX}/{tileY}.png" TValue="string">
-</MapsLayer>
+// Example provider template; validate provider terms and domain before use
+// <MapsLayer UrlTemplate="/tiles/light_all/{level}/{tileX}/{tileY}.png" TValue="string">
+// </MapsLayer>
 ```
 
 **USGS Topo (US topographic map):**
 ```csharp
-<MapsLayer UrlTemplate="https://basemap.nationalmap.gov/arcrest/services/USGSTopo/MapServer/tile/{level}/{tileY}/{tileX}" TValue="string">
-</MapsLayer>
+// Example provider template; validate provider terms and domain before use
+// <MapsLayer UrlTemplate="/tiles/usgs/topo/{level}/{tileY}/{tileX}" TValue="string">
+// </MapsLayer>
 ```
 
 ### Attribution Requirements
@@ -100,7 +129,8 @@ Always display attribution for OpenStreetMap:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png" TValue="string">
+        <!-- Use a validated TileUrl variable or local tiles in production -->
+        <MapsLayer UrlTemplate="@TileUrl" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -131,14 +161,33 @@ Always display attribution for OpenStreetMap:
 
 ### Implementation
 
+**⚠️ SECURITY WARNING:** Never hardcode API keys in source code. Always load from secure configuration.
+
 ```csharp
+@inject IConfiguration Configuration
+
 <SfMaps>
     <MapsLayers>
-        <MapsLayer Type="LayerType.GoogleStaticMap" Key="YOUR_API_KEY" 
+        <!-- Load API key from secure configuration, NOT hardcoded -->
+        <MapsLayer Type="LayerType.GoogleStaticMap" Key="@GoogleApiKey" 
                    GoogleStaticMapType="GoogleMapType.Roadmap">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
+
+@code {
+    private string GoogleApiKey;
+
+    protected override void OnInitialized()
+    {
+        // Load from appsettings.json or environment variables (never hardcode)
+        GoogleApiKey = Configuration["MapProviders:GoogleKey"];
+        if (string.IsNullOrEmpty(GoogleApiKey))
+        {
+            throw new InvalidOperationException("Google Maps API key not configured. See 'Managing API Keys Securely' section.");
+        }
+    }
+}
 ```
 
 ### Google Map Types
@@ -155,7 +204,7 @@ Always display attribution for OpenStreetMap:
 ```csharp
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://tile.googleapis.com/v1/2dtiles/level/tileX/tileY?session={sessionToken}&key={apiKey}">
+        <MapsLayer UrlTemplate="/tiles/google/{level}/{tileX}/{tileY}.png">
         </MapsLayer>
     </MapsLayers>
     <MapsZoomSettings Enable="true"></MapsZoomSettings>
@@ -208,7 +257,7 @@ Always display attribution for OpenStreetMap:
 
     protected override async Task OnInitializedAsync()
     {
-        UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/RoadOnDemand?output=json&uriScheme=https&key=");
+        UrlTemplate = await SfMaps.GetBingUrlTemplate("SERVER_VALIDATED_BING_METADATA_URL");
     }
 }
 ```
@@ -239,7 +288,7 @@ Always display attribution for OpenStreetMap:
 
     protected override async Task OnInitializedAsync()
     {
-        UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/Aerial?output=json&uriScheme=https&key=");
+        UrlTemplate = await SfMaps.GetBingUrlTemplate("SERVER_VALIDATED_BING_METADATA_URL");
     }
 }
 
@@ -273,7 +322,7 @@ Always display attribution for OpenStreetMap:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer UrlTemplate="https://atlas.microsoft.com/map/imagery/png?subscription-key=Your-Key &api-version=1.0&style=satellite&zoom=level&x=tileX&y=tileY" TValue="string">
+        <MapsLayer UrlTemplate="SERVER_VALIDATED_AZURE_TILE_URL" TValue="string">
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
@@ -364,14 +413,17 @@ Store provider config and update dynamically:
 
 @code {
     private SfMaps mapInstance;
-    private UrlTemplate = "https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png";
+    // Default to a local/cached tile path; production: validate or restrict provider domains
+    private string TileUrl = "/tiles/{level}/{tileX}/{tileY}.png";
+    private string UrlTemplate = TileUrl;
     private string CurrentProvider = "osm";
     private async Task ChangeProvider(string provider)
     {
         if (provider == "osm") {
-            UrlTemplate="https://tile.openstreetmap.org/{level}/{tileX}/{tileY}.png";
+            UrlTemplate = TileUrl; // prefer local/cached tiles or validated provider
         } else if(provider == "google") {
-            UrlTemplate="https://tile.googleapis.com/v1/2dtiles/level/tileX/tileY?session={sessionToken}&key={apiKey}"
+            // Set via configuration and validate API usage; do NOT hardcode keys
+            UrlTemplate="/tiles/google/{level}/{tileX}/{tileY}.png";
         } else{
             UrlTemplate = await SfMaps.GetBingUrlTemplate("https://dev.virtualearth.net/REST/V1/Imagery/Metadata/Aerial?output=json&uriScheme=https&key=");
         }
@@ -456,7 +508,8 @@ When handling external data sources:
     private async Task<object> LoadExternalGeoJson(string url)
     {
         // Validate URL is from trusted domain
-        var trustedDomains = new[] { "cdn.syncfusion.com", "yourdomain.com" };
+        // Replace with your validated allow-list entries (do not include untrusted domains)
+        var trustedDomains = new[] { "{trusted_geojson_domain}", "yourdomain.com" };
         var uri = new Uri(url);
         
         if (!trustedDomains.Any(d => uri.Host.EndsWith(d)))
@@ -480,7 +533,7 @@ app.Use(async (context, next) =>
 {
     context.Response.Headers.Add("Content-Security-Policy", 
         "default-src 'self'; " +
-        "img-src 'self' https://tile.openstreetmap.org https://*.google.com; " +
+        "img-src 'self' https://{trusted_tile_provider} https://{trusted_satellite_provider}; " +
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
         "style-src 'self' 'unsafe-inline';");
     await next();

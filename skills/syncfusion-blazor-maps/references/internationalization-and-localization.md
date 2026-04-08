@@ -1,3 +1,5 @@
+> **MANDATORY SECURITY NOTICE:** Do NOT load GeoJSON, ShapeData, tile, or image resources directly from untrusted third‑party URLs at runtime. Host assets locally or return server-validated, signed URLs; validate GeoJSON/ShapeData against a strict schema, sanitize/HTML-encode properties, enforce size/complexity limits, and require human review before automated processing or forwarding to agents.
+
 ## Table of Contents
 
 - [Multi-Language Support](#multi-language-support)
@@ -16,6 +18,8 @@
 - [Accessibility with Localization](#accessibility-with-localization)
 
 # Internationalization and Localization
+
+> **W011 Security Note:** Localization examples still rely on external map data. If translated labels or region names originate outside the trusted boundary, validate and encode them before display.
 
 ## Multi-Language Support
 
@@ -40,7 +44,7 @@
 
 <SfMaps @ref="mapInstance">
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/world-map.json"}' TValue="StateData" DataSource="@StateDataLabel">
+        <MapsLayer ShapeData='new {dataOptions= "/data/world-map.json"}' TValue="StateData" DataSource="@StateDataLabel">
             <MapsDataLabelSettings Visible="true" LabelPath="Name"></MapsDataLabelSettings>
         </MapsLayer>
     </MapsLayers>
@@ -83,7 +87,7 @@ Translate geographic labels and place names:
 
 <SfMaps>
     <MapsLayers>
-        <MapsLayer ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="LocalizedRegion" DataSource="@LocalizedData">
+        <MapsLayer ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="LocalizedRegion" DataSource="@LocalizedData">
             <MapsDataLabelSettings Visible="true" LabelPath="LocalizedName">
             </MapsDataLabelSettings>
         </MapsLayer>
@@ -138,7 +142,7 @@ Translate geographic labels and place names:
 
 <SfMaps >
     <MapsLayers>
-        <MapsLayer ShapeDataPath="@ShapeDataPath" ShapePropertyPath="@ShapePropertyPath" ShapeData='new {dataOptions= "https://cdn.syncfusion.com/maps/map-data/usa.json"}' TValue="RegionData" DataSource="@FormattedData">
+        <MapsLayer ShapeDataPath="@ShapeDataPath" ShapePropertyPath="@ShapePropertyPath" ShapeData='new {dataOptions= "/data/usa-map.json"}' TValue="RegionData" DataSource="@FormattedData">
             <MapsDataLabelSettings Visible="true" 
                 LabelPath="FormattedValue">
             </MapsDataLabelSettings>
@@ -224,7 +228,7 @@ Display different map boundaries based on region/country:
     </MapsCenterPosition>
     <MapsZoomSettings Enable="false" ZoomFactor="5"></MapsZoomSettings>
     <MapsLayers>
-        <MapsLayer ShapeData='new { dataOptions = "https://cdn.syncfusion.com/maps/map-data/world-map.json" }'
+        <MapsLayer ShapeData='new { dataOptions = "/data/world-map.json" }'
                    TValue="string">
         </MapsLayer>
     </MapsLayers>
