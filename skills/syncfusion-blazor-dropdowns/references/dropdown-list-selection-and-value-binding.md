@@ -217,7 +217,6 @@ Access detailed information from the change event:
     private void OnSelectionChanged(ChangeEventArgs<int> args)
     {
         Console.WriteLine($"New value: {args.Value}");           // The new selected value
-        Console.WriteLine($"Previous value: {args.PreviousValue}"); // The previous value
         Console.WriteLine($"Item object: {args.ItemData}");      // The selected item
         Console.WriteLine($"IsInteracted: {args.IsInteracted}"); // User action vs programmatic
     }

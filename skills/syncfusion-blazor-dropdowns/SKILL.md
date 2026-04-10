@@ -1289,7 +1289,7 @@ Choose your topic below to get started:
 
 #### Pattern 1: Comment Section with User Mentions
 ```razor
-<SfMention TItem="UserData" DataSource="@AllUsers" MentionChar="@">
+<SfMention TItem="UserData" DataSource="@AllUsers" MentionChar="@MentionCharAt">
     <TargetComponent>
         <div id="comments" contenteditable="true" placeholder="Type @ to mention..."></div>
     </TargetComponent>
@@ -1297,11 +1297,15 @@ Choose your topic below to get started:
         <MentionFieldSettings Text="UserName"></MentionFieldSettings>
     </ChildContent>
 </SfMention>
+
+@code {
+    private char MentionCharAt = '@';
+}
 ```
 
 #### Pattern 2: Filtered Suggestions with Remote Data
 ```razor
-<SfMention TItem="EmployeeData" MinLength="2" FilterType="FilterType.StartsWith">
+<SfMention TItem="EmployeeData" MentionChar="@MentionCharAt" MinLength="2" FilterType="FilterType.StartsWith">
     <TargetComponent>
         <input id="employeeInput" type="text" placeholder="Search employees..." />
     </TargetComponent>
@@ -1310,11 +1314,15 @@ Choose your topic below to get started:
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
     </ChildContent>
 </SfMention>
+
+@code {
+    private char MentionCharAt = '@';
+}
 ```
 
 #### Pattern 3: Custom Display with Templates
 ```razor
-<SfMention TItem="PersonData" DataSource="@TeamMembers">
+<SfMention TItem="PersonData" DataSource="@TeamMembers" MentionChar="@MentionCharAt">
     <TargetComponent>
         <div id="mentionDiv" contenteditable="true"></div>
     </TargetComponent>
@@ -1331,6 +1339,10 @@ Choose your topic below to get started:
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
     </ChildContent>
 </SfMention>
+
+@code {
+    private char MentionCharAt = '@';
+}
 ```
 
 ---
@@ -1341,7 +1353,7 @@ Choose your topic below to get started:
 |----------|------|---------|---------|
 | `TItem` | Generic | - | Data source item type |
 | `DataSource` | IEnumerable<TItem> | - | Local data collection |
-| `MentionChar` | string | `@` | Trigger character for suggestions |
+| `MentionChar` | char | `'@'` | Trigger character for suggestions |
 | `Target` | string | - | CSS selector for target element |
 | `MinLength` | int | 0 | Minimum characters to show suggestions |
 | `FilterType` | FilterType | Contains | Search filter mode (StartsWith, Contains, EndsWith) |

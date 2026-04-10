@@ -80,7 +80,7 @@ Triggers when the input field receives focus:
 @code {
     private List<string> Languages = new() { "C#", "JavaScript", "Python" };
 
-    private void OnFocus(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
+    private void OnFocus(object args)
     {
         Console.WriteLine("ComboBox received focus");
     }
@@ -106,14 +106,12 @@ Triggers when the selected value changes:
 </SfComboBox>
 
 <div style="margin-top: 20px;">
-    <p><strong>Previous:</strong> @PreviousValue</p>
     <p><strong>Current:</strong> @SelectedValue</p>
     <p><strong>Item Data:</strong> @SelectedValueText</p>
 </div>
 
 @code {
     private string SelectedValue;
-    private string PreviousValue;
     private string SelectedValueText;
 
     public class Country
@@ -130,7 +128,6 @@ Triggers when the selected value changes:
 
     private void OnValueChange(ChangeEventArgs<string, Country> args)
     {
-        PreviousValue = args.PreviousValue;
         SelectedValue = args.Value;
         SelectedValueText = args.ItemData?.Name;
         Console.WriteLine($"Value changed from {PreviousValue} to {SelectedValue}");

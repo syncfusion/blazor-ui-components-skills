@@ -320,10 +320,9 @@ The Syncfusion Blazor Scheduler is a comprehensive calendar component that allow
 
 ### Localization
 📄 **Read:** [references/localization.md](references/localization.md)
-- Supported languages and cultures
-- Localized date/time formats
-- Localized UI elements
-- Custom localization resources
+- Setting date format (DateFormat property)
+- Time mode configuration (TimeFormat property)
+- Right-to-left (RTL) support (EnableRtl property)
 
 ### Virtual Scrolling
 📄 **Read:** [references/virtual-scrolling.md](references/virtual-scrolling.md)
@@ -401,20 +400,14 @@ The Syncfusion Blazor Scheduler is a comprehensive calendar component that allow
 
 ### Performance and WebAssembly
 📄 **Read:** [references/webassembly-performance.md](references/webassembly-performance.md)
-- Performance optimization techniques
-- WebAssembly-specific considerations
-- Large dataset optimization
-- Memory management
-- Rendering optimization
+- Avoid unnecessary component renders using `@key` directive
+- Use PreventRender to reduce re-renders after scheduler events
 
 ### Accessibility
 📄 **Read:** [references/accessibility.md](references/accessibility.md)
-- WCAG 2.2 compliance
+- WCAG 2.2 Level A & AA compliance
+- WAI-ARIA attributes and roles
 - Keyboard navigation shortcuts
-- Screen reader support
-- ARIA attributes
-- Right-to-left (RTL) support
-- Color contrast and accessibility standards
 
 ---
 

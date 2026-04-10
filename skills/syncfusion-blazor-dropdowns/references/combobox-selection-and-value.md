@@ -361,7 +361,6 @@ Triggered when the value changes:
 
     private void OnValueChange(ChangeEventArgs<string, Country> args)
     {
-        Console.WriteLine($"Previous: {args.PreviousValue}");
         Console.WriteLine($"Current: {args.Value}");
         Console.WriteLine($"Item: {args.ItemData?.Name}");
     }

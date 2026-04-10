@@ -245,28 +245,6 @@ Fires when selection changes (user selects/deselects item):
     }
 }
 ```
-
-### Select Event
-
-Fires when specific item is selected:
-
-```razor
-<SfListBox TValue="string[]" DataSource="@Vehicles" TItem="VehicleData" ItemSelected="@OnItemSelected">
-    <ListBoxFieldSettings Text="Text" Value="Id" />
-</SfListBox>
-
-<p>Selected Item: @SelectedItem</p>
-
-@code {
-    private string SelectedItem = "";
-
-    private void OnItemSelected(SelectEventArgs args)
-    {
-        SelectedItem = args?.Data?.Text ?? "";
-    }
-}
-```
-
 ### Event Handler with Logging
 
 ```razor

@@ -129,8 +129,8 @@ The ListBox automatically includes:
 <div>
     <SfListBox TValue="string[]" 
                DataSource="@Items" 
-               TItem="string"
-               ValueChange="@OnSelectionChanged">
+               TItem="string">
+        <ListBoxEvents ValueChange="@OnSelectionChanged"></ListBoxEvents>
     </SfListBox>
     
     <div aria-live="polite" aria-atomic="true" role="status">
@@ -229,8 +229,8 @@ The ListBox automatically includes:
     <SfListBox TValue="string[]" 
                DataSource="@Items" 
                TItem="string"
-               @bind-Value="@SelectedValues"
-               ValueChange="@ValidateSelection">
+               @bind-Value="@SelectedValues">
+        <ListBoxEvents ValueChange="@ValidateSelection"></ListBoxEvents>
     </SfListBox>
     
     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -276,8 +276,8 @@ Fires when the selected values change:
 
 <SfListBox TValue="string[]" 
            DataSource="@Items" 
-           TItem="string"
-           ValueChange="@OnValueChanged">
+           TItem="string">
+    <ListBoxEvents ValueChange="@OnValueChanged"></ListBoxEvents>
 </SfListBox>
 
 <p>@EventLog</p>
@@ -297,110 +297,6 @@ Fires when the selected values change:
 }
 ```
 
-### Change Event
-
-Similar to ValueChange, fires on selection change:
-
-```razor
-@using Syncfusion.Blazor.DropDowns
-
-<SfListBox TValue="string[]" 
-           DataSource="@Items" 
-           TItem="ItemData"
-           Change="@OnChange">
-    <ListBoxFieldSettings Text="Name" Value="Id" />
-</SfListBox>
-
-@code {
-    private void OnChange(ChangeEventArgs args)
-    {
-        Console.WriteLine($"Selection changed: {args.Value}");
-    }
-
-    public List<ItemData> Items = new List<ItemData>
-    {
-        new ItemData { Id = "1", Name = "Item 1" },
-        new ItemData { Id = "2", Name = "Item 2" }
-    };
-
-    public class ItemData
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-}
-```
-
-### ItemSelected Event
-
-Fires when a specific item is selected:
-
-```razor
-@using Syncfusion.Blazor.DropDowns
-
-<SfListBox TValue="string[]" 
-           DataSource="@Items" 
-           TItem="ItemData"
-           ItemSelected="@OnItemSelected">
-    <ListBoxFieldSettings Text="Name" Value="Id" />
-</SfListBox>
-
-<p>Last selected: @SelectedItem</p>
-
-@code {
-    private string SelectedItem = "";
-
-    private void OnItemSelected(SelectEventArgs args)
-    {
-        SelectedItem = args?.Data?.Name ?? "";
-        Console.WriteLine($"Item selected: {SelectedItem}");
-    }
-
-    public List<ItemData> Items = new List<ItemData>
-    {
-        new ItemData { Id = "1", Name = "Item 1" },
-        new ItemData { Id = "2", Name = "Item 2" }
-    };
-
-    public class ItemData
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-}
-```
-
-### Focus and Blur Events
-
-```razor
-@using Syncfusion.Blazor.DropDowns
-
-<SfListBox TValue="string[]" 
-           DataSource="@Items" 
-           TItem="string"
-           Focus="@OnFocus"
-           Blur="@OnBlur">
-</SfListBox>
-
-<p>Status: @FocusStatus</p>
-
-@code {
-    private string FocusStatus = "ListBox not focused";
-
-    private void OnFocus(FocusEventArgs args)
-    {
-        FocusStatus = $"Focused at {DateTime.Now:HH:mm:ss}";
-    }
-
-    private void OnBlur(BlurEventArgs args)
-    {
-        FocusStatus = $"Blurred at {DateTime.Now:HH:mm:ss}";
-    }
-
-    public string[] Items = new string[] { "Item 1", "Item 2", "Item 3" };
-}
-```
-
 ## Event Handling Patterns
 
 ### Multi-Event Handler
@@ -410,10 +306,8 @@ Fires when a specific item is selected:
 
 <SfListBox TValue="string[]" 
            DataSource="@Items" 
-           TItem="string"
-           ValueChange="@HandleEvent"
-           Change="@HandleEvent"
-           ItemSelected="@HandleItemEvent">
+           TItem="string">
+    <ListBoxEvents ValueChange="@HandleEvent" ></ListBoxEvents>
 </SfListBox>
 
 <div style="margin-top: 20px;">
@@ -429,14 +323,10 @@ Fires when a specific item is selected:
 
     private void HandleEvent(ChangeEventArgs args)
     {
-        AddLog($"[Change] Values: {string.Join(", ", args.Value as string[] ?? new string[] { })}");
+        AddLog($"[ValueChange] Values: {string.Join(", ", args.Value as string[] ?? new string[] { })}");
     }
 
-    private void HandleItemEvent(SelectEventArgs args)
-    {
-        AddLog($"[ItemSelected] Item: {args?.Data?.ToString() ?? "N/A"}");
-    }
-
+    
     private void AddLog(string message)
     {
         EventLogs.Add($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
@@ -453,9 +343,9 @@ Fires when a specific item is selected:
 
 <SfListBox TValue="string[]" 
            DataSource="@Items" 
-           TItem="ItemData"
-           ValueChange="@OnSelectionChangedAsync">
+           TItem="ItemData">
     <ListBoxFieldSettings Text="Name" Value="Id" />
+    <ListBoxEvents ValueChange="@OnSelectionChangedAsync"></ListBoxEvents>
 </SfListBox>
 
 <p>Status: @LoadingStatus</p>
@@ -498,9 +388,9 @@ Fires when a specific item is selected:
 
 <SfListBox TValue="string[]" 
            DataSource="@Items" 
-           TItem="ItemData"
-           ValueChange="@OnSelectionChanged">
+           TItem="ItemData">
     <ListBoxFieldSettings Text="Name" Value="Id" />
+    <ListBoxEvents ValueChange="@OnSelectionChanged"></ListBoxEvents>
 </SfListBox>
 
 @code {
@@ -553,9 +443,8 @@ Fires when a specific item is selected:
         <h4>ListBox</h4>
         <SfListBox TValue="string[]" 
                    DataSource="@Items" 
-                   TItem="string"
-                   ValueChange="@LogEvent"
-                   Change="@LogEvent">
+                   TItem="string">
+            <ListBoxEvents ValueChange="@LogEvent"></ListBoxEvents>
         </SfListBox>
     </div>
     

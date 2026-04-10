@@ -32,7 +32,7 @@ By default, `@` triggers the mention. Change it for different use cases:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@TeamMembers"
-           MentionChar="#">
+           MentionChar="@MentionCharHash">
     <TargetComponent>
         <div id="hashMention" contenteditable="true" placeholder="Type # to mention..."></div>
     </TargetComponent>
@@ -42,6 +42,8 @@ By default, `@` triggers the mention. Change it for different use cases:
 </SfMention>
 
 @code {
+    private char MentionCharHash = '#';
+    
     List<PersonData> TeamMembers = new()
     {
         new() { Name = "Alice" },
@@ -71,7 +73,7 @@ By default, `@` triggers the mention. Change it for different use cases:
 
 ```razor
 <!-- Users with @ -->
-<SfMention TItem="PersonData" DataSource="@Users" MentionChar="@">
+<SfMention TItem="PersonData" DataSource="@Users" MentionChar="@MentionCharAt">
     <TargetComponent>
         <div id="users" contenteditable="true"></div>
     </TargetComponent>
@@ -81,7 +83,7 @@ By default, `@` triggers the mention. Change it for different use cases:
 </SfMention>
 
 <!-- Topics with # -->
-<SfMention TItem="TopicData" DataSource="@Topics" MentionChar="#">
+<SfMention TItem="TopicData" DataSource="@Topics" MentionChar="@MentionCharHash">
     <TargetComponent>
         <div id="users" contenteditable="true"></div>
     </TargetComponent>
@@ -91,6 +93,9 @@ By default, `@` triggers the mention. Change it for different use cases:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    private char MentionCharHash = '#';
+    
     List<PersonData> Users = new();
     List<TopicData> Topics = new();
     
@@ -114,6 +119,7 @@ Controls whether the trigger character appears in the selected mention:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@Employees"
+           MentionChar="@MentionCharAt"
            ShowMentionChar="false">
     <TargetComponent>
         <div id="hideMention" contenteditable="true" placeholder="Type @..."></div>
@@ -124,6 +130,8 @@ Controls whether the trigger character appears in the selected mention:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     List<PersonData> Employees = new()
     {
         new() { Name = "Alice Johnson" },
@@ -144,6 +152,7 @@ Controls whether the trigger character appears in the selected mention:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@Employees"
+           MentionChar="@MentionCharAt"
            ShowMentionChar="true">
     <TargetComponent>
         <div id="showMention" contenteditable="true"></div>
@@ -152,6 +161,10 @@ Controls whether the trigger character appears in the selected mention:
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
     </ChildContent>
 </SfMention>
+
+@code {
+    private char MentionCharAt = '@';
+}
 ```
 
 **Result:** Select "Alice Johnson" → Text shows "@Alice Johnson"
@@ -171,6 +184,7 @@ Controls whether a space must precede the mention character:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@TeamMembers"
+           MentionChar="@MentionCharAt"
            RequireLeadingSpace="true">
     <TargetComponent>
         <div id="spaceRequired" contenteditable="true" placeholder="Type SPACE then @..."></div>
@@ -181,6 +195,8 @@ Controls whether a space must precede the mention character:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     List<PersonData> TeamMembers = new();
     
     public class PersonData
@@ -202,6 +218,7 @@ Controls whether a space must precede the mention character:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@TeamMembers"
+           MentionChar="@MentionCharAt"
            RequireLeadingSpace="false">
     <TargetComponent>
         <div id="noSpaceRequired" contenteditable="true"></div>
@@ -210,6 +227,10 @@ Controls whether a space must precede the mention character:
         <MentionFieldSettings Text="Name"></MentionFieldSettings>
     </ChildContent>
 </SfMention>
+
+@code {
+    private char MentionCharAt = '@';
+}
 ```
 
 **Behavior:**
@@ -230,6 +251,7 @@ Controls suggestion list height:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@LargeDataset"
+           MentionChar="@MentionCharAt"
            PopupHeight="250px">
     <TargetComponent>
         <div id="compactPopup" contenteditable="true"></div>
@@ -240,6 +262,8 @@ Controls suggestion list height:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     List<PersonData> LargeDataset = new(); // 100+ items
     
     public class PersonData
@@ -264,6 +288,7 @@ Controls suggestion list width:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@ComplexData"
+           MentionChar="@MentionCharAt"
            PopupWidth="350px">
     <TargetComponent>
         <div id="widePopup" contenteditable="true"></div>
@@ -274,6 +299,8 @@ Controls suggestion list width:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     List<PersonData> ComplexData = new();
     
     public class PersonData
@@ -296,6 +323,7 @@ Controls suggestion list width:
 ```razor
 <SfMention TItem="PersonData" 
            DataSource="@TeamMembers"
+           MentionChar="@MentionCharAt"
            PopupHeight="@GetPopupHeight()"
            PopupWidth="@GetPopupWidth()">
     <TargetComponent>
@@ -307,6 +335,8 @@ Controls suggestion list width:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     private string GetPopupHeight()
     {
         // Adjust based on screen size
@@ -408,7 +438,7 @@ Appends text after selected mention:
 ```razor
 <SfMention TItem="UserData" 
            DataSource="@TeamUsers"
-           MentionChar="@"
+           MentionChar="@MentionCharAt"
            ShowMentionChar="false"
            SuffixText=" "
            RequireLeadingSpace="false"
@@ -431,6 +461,8 @@ Appends text after selected mention:
 </SfMention>
 
 @code {
+    private char MentionCharAt = '@';
+    
     public class UserData
     {
         public int UserId { get; set; }
