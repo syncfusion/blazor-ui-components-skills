@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor Linear Gauges
 
+**NuGet:** `Syncfusion.Blazor.LinearGauge` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.LinearGauge`
+
 ## When to Use This Skill
 
 Use this skill when the user needs to:

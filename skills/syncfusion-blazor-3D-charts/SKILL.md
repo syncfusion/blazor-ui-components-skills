@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor 3D Charts
 
+**NuGet:** `Syncfusion.Blazor.Chart3D` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.Chart3D`
+
 A comprehensive skill for implementing and customizing Syncfusion's Blazor 3D Chart component. The 3D Chart provides stunning three-dimensional visualization for column, bar, and stacked chart types with rich customization options including rotation, tilt, depth, and various axis types.
 
 ## When to Use This Skill

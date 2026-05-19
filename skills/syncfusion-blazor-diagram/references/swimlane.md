@@ -73,8 +73,6 @@ new Swimlane
     Header = new SwimlaneHeader
     {
         Annotation = new ShapeAnnotation { Content = "Order Process" },
-        Width = 30,    // header width (vertical swimlane)
-        Height = 50,   // header height (horizontal swimlane)
         Style = new TextStyle { Fill = "#5b9bd5", StrokeColor = "#5b9bd5", Color = "white", Bold = true }
     }
 }

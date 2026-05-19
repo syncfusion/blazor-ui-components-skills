@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor CircularGauge
 
+**NuGet:** `Syncfusion.Blazor.CircularGauge` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.CircularGauge`
+
 A comprehensive guide for implementing circular gauge components in Blazor applications. CircularGauge provides radial data visualization with customizable axes, pointers, ranges, annotations, and interactive features.
 
 ## When to Use This Skill

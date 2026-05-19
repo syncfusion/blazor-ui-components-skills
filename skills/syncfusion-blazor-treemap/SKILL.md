@@ -9,6 +9,9 @@ metadata:
 
 # Implementing TreeMap
 
+**NuGet:** `Syncfusion.Blazor.TreeMap` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.TreeMap`
+
 This skill collects all guidance for implementing the Syncfusion Blazor `TreeMap` component. Use the navigation guide below to open the specific reference topic you need; each reference file is self-contained and includes examples, edge cases, and troubleshooting.
 
 ## Official API Surface

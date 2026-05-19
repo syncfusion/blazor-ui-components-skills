@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Sparkline Charts
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes` (or `Syncfusion.Blazor.Sparkline` for individual package)
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 ## When to Use This Skill
 
 Use this skill when you need to guide the user to implement **Syncfusion Blazor Sparkline Charts** in their application. Sparklines are small, word-sized charts designed to show trends in data at a glance - perfect for inline visualization within text, tables, or dashboards.

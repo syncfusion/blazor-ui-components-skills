@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Range Selectors
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes` (or `Syncfusion.Blazor.RangeNavigator` for individual package)  
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 A comprehensive skill for implementing Syncfusion Blazor Range Selector (RangeNavigator) components for data range selection and chart navigation. The Range Selector enables users to select a specific range from a large data collection using draggable thumbs, providing an intuitive way to filter and navigate through time-series or numeric data.
 
 ## When to Use This Skill

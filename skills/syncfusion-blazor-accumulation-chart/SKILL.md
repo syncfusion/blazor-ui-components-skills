@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor Accumulation Charts
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 A comprehensive guide for implementing the Syncfusion Blazor Accumulation Chart component to create interactive pie, doughnut, funnel, and pyramid charts that visualize proportional and hierarchical data in Blazor applications.
 
 ## When to Use This Skill

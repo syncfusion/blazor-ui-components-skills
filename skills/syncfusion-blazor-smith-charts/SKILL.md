@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Smith Charts
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes` (or `Syncfusion.Blazor.SmithChart` for individual package)
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 The Syncfusion Blazor Smith Chart (`SfSmithChart`) is a specialized charting component designed for visualizing transmission line impedance, RF circuit parameters, and antenna tuning data. It displays complex impedance or admittance on a circular grid, making it essential for RF/microwave engineering applications. The component lives in the `Syncfusion.Blazor.Charts` namespace and exposes the Smith Chart API surface for series, axes, legends, titles, subtitles, tooltips, export/print, and rendering events.
 
 ## When to Use This Skill

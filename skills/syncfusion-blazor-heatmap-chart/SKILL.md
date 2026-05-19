@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor HeatMap Chart
 
+**NuGet:** `Syncfusion.Blazor.HeatMap` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.HeatMap`
+
 A comprehensive guide for implementing the Syncfusion Blazor HeatMap Chart component to visualize multi-dimensional data using color-coded cells in a matrix layout.
 
 ## When to Use This Skill

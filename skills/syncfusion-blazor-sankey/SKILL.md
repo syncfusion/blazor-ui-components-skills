@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor Sankey Diagram
 
+**NuGet:** `Syncfusion.Blazor.Sankey` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.Sankey`
+
 A comprehensive skill for implementing the Syncfusion Blazor Sankey Diagram component. The Sankey diagram is a powerful visualization tool for displaying flows and relationships between categories, showing the magnitude and direction of flows using proportionally-sized links.
 
 ## When to Use This Skill

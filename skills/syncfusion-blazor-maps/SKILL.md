@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Maps for Blazor
 
+**NuGet:** `Syncfusion.Blazor.Maps` + `Syncfusion.Blazor.Themes`
+**Namespace:** `Syncfusion.Blazor.Maps`
+
 A comprehensive guide to implementing Syncfusion Maps component in Blazor applications. Syncfusion Maps provides powerful spatial visualization capabilities including marker management, polygon overlays, layer support, event handling, and integration with multiple map providers.
 
 > **🚨 CRITICAL SECURITY NOTICE - READ BEFORE USE:**

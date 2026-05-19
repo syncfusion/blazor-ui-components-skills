@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Syncfusion Blazor Charts
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes`  
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 A comprehensive guide for implementing the Syncfusion Blazor Chart component to create interactive, feature-rich data visualizations in Blazor applications. The Chart component supports 33+ chart types, multiple axes, advanced interactivity, and extensive customization options.
 
 ## When to Use This Skill

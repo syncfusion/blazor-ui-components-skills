@@ -14,6 +14,8 @@
   - [SegmentCollectionChange](#segmentcollectionchange)
   - [PropertyChanged](#propertychanged)
 - [Drag-and-Drop Events](#drag-and-drop-events)
+- [User Handle Events](#user-handle-events)
+  - [FixedUserHandleClick](#fixedusershandleclick)
 - [History (Undo/Redo) Events](#history-undoredo-events)
 - [Auto-Scroll Events](#auto-scroll-events)
 - [Events Quick-Reference Table](#events-quick-reference-table)
@@ -98,7 +100,7 @@ Fires for each node or connector as it is initialised. Use these events to apply
 
 ### MouseEnter / MouseLeave / MouseHover
 
-Fire when the mouse pointer **enters**, **leaves**, or **hovers** over a node or connector. All three share the same `DiagramElementMouseEventArgs` argument type:
+Fire when the mouse pointer **enters**, **leaves**, or **hovers** over a node or connector. All three share the same `DiagramElementMouseEventArgs` argument type with `IDiagramObject?` elements:
 
 ```razor
 <SfDiagramComponent MouseEnter="OnMouseEnter"
@@ -108,25 +110,47 @@ Fire when the mouse pointer **enters**, **leaves**, or **hovers** over a node or
 @code {
     private void OnMouseEnter(DiagramElementMouseEventArgs args)
     {
-        // args.Element — IDiagramObject — the node or connector the pointer entered
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — IDiagramObject? — the node or connector the pointer entered
+        // args.ActualObject — IDiagramObject? — the actual object being hovered
+        
         if (args.Element is Node node)
+        {
+            // ✅ Now you can access Node-specific properties
             Console.WriteLine($"Mouse entered node: {node.ID}");
+            Console.WriteLine($"  Label: {node.Annotations?[0]?.Content}");
+            Console.WriteLine($"  Position: ({node.OffsetX}, {node.OffsetY})");
+        }
         else if (args.Element is Connector conn)
+        {
+            // ✅ Now you can access Connector-specific properties
             Console.WriteLine($"Mouse entered connector: {conn.ID}");
+            Console.WriteLine($"  From {conn.SourceID} to {conn.TargetID}");
+        }
     }
 
     private void OnMouseLeave(DiagramElementMouseEventArgs args)
     {
-        // args.Element — IDiagramObject — the element the pointer left
+        // ⚠️ args.Element is IDiagramObject? — cast to access type-specific properties
         if (args.Element is Node node)
+        {
             Console.WriteLine($"Mouse left node: {node.ID}");
+        }
+        else if (args.Element is Connector conn)
+        {
+            Console.WriteLine($"Mouse left connector: {conn.ID}");
+        }
     }
 
     private void OnMouseHover(DiagramElementMouseEventArgs args)
     {
-        // args.Element — IDiagramObject — the element currently being hovered
+        // ⚠️ args.Element is IDiagramObject? — cast to access type-specific properties
         if (args.Element is Node node)
+        {
             Console.WriteLine($"Hovering over node: {node.ID}");
+            // Change appearance on hover
+            node.Style.Opacity = 0.8;
+        }
     }
 }
 ```
@@ -136,6 +160,10 @@ Fire when the mouse pointer **enters**, **leaves**, or **hovers** over a node or
 | `MouseEnter` | Mouse pointer enters the boundary of a node or connector |
 | `MouseLeave` | Mouse pointer exits the boundary of a node or connector |
 | `MouseHover` | Mouse pointer is hovering over a node or connector |
+
+> **⚠️ Critical:** All mouse event arguments contain `IDiagramObject?` elements.  
+> You **must cast** to `Node` or `Connector` to access properties like `ID`, `Annotations`, or connector-specific properties.  
+> Attempting to access type-specific properties without casting causes `CS1061` (member not found).
 
 ---
 
@@ -151,13 +179,40 @@ Fires when a user clicks a node, connector, or the canvas:
 @code {
     private void OnClick(Syncfusion.Blazor.Diagram.ClickEventArgs args)
     {
-        // args.Element  — the clicked IDiagramObject (null if canvas clicked)
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — IDiagramObject? — the clicked element (null if canvas clicked)
+        // args.ActualObject — IDiagramObject? — the actual object under the cursor
         // args.Position — DiagramPoint with click coordinates
-        // args.Count    — method returning int: 1 for single click, 2 for double click
+        // args.Count — method returning int: 1 for single click, 2 for double click
+        
         int count = args.Count;   // ✅ call Count as a property/method, assign to int first
+        
+        if (count == 1)
+        {
+            // Single click
+            if (args.Element is Node node)
+            {
+                // ✅ Now you can access Node-specific properties
+                Console.WriteLine($"Clicked node: {node.ID}");
+                Console.WriteLine($"  Label: {node.Annotations?[0]?.Content}");
+            }
+            else if (args.Element is Connector conn)
+            {
+                // ✅ Now you can access Connector-specific properties
+                Console.WriteLine($"Clicked connector: {conn.ID}");
+                Console.WriteLine($"  Connects {conn.SourceID} to {conn.TargetID}");
+            }
+            else
+            {
+                Console.WriteLine($"Clicked canvas at ({args.Position?.X}, {args.Position?.Y})");
+            }
+        }
     }
 }
 ```
+
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not `Node` or `Connector` directly.  
+> You **must cast** to access type-specific properties. Attempting to access properties without casting causes `CS1061` (member not found).
 
 > **⚠️ `ClickEventArgs` name collision:** If your page also uses `@using Syncfusion.Blazor.Navigations` (or Buttons),  
 > `ClickEventArgs` becomes ambiguous. Always qualify it:
@@ -211,13 +266,43 @@ Fires when a key is pressed/released while the diagram has focus:
 @code {
     private void OnKeyDown(KeyEventArgs args)
     {
-        // args.Key — key name (e.g., "Delete", "Enter")
-        // args.CtrlKey, args.ShiftKey, args.AltKey — modifier flags
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Key — string — key name (e.g., "Delete", "Enter")
+        // args.KeyCode — int — the actual key code pressed
+        // args.KeyModifiers — ModifierKeys — modifier flags (Control, Shift, Alt)
+        // args.Element — IDiagramObject? — the currently selected element (if any)
+        
+        if (args.Key == "Delete")
+        {
+            // Custom delete handling
+            if (args.Element is Node node)
+            {
+                // ✅ Now you can access Node-specific properties
+                Console.WriteLine($"Delete key pressed on node: {node.ID}");
+            }
+            else if (args.Element is Connector conn)
+            {
+                // ✅ Now you can access Connector-specific properties
+                Console.WriteLine($"Delete key pressed on connector: {conn.ID}");
+            }
+        }
+        else if (args.Key == "c" && args.KeyModifiers == ModifierKeys.Control)
+        {
+            // Custom copy handling
+            Console.WriteLine("Ctrl+C pressed");
+        }
     }
 
-    private void OnKeyUp(KeyEventArgs args) { }
+    private void OnKeyUp(KeyEventArgs args)
+    {
+        // Similar structure — args.Element must be cast to access type-specific properties
+    }
 }
 ```
+
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not `Node` or `Connector` directly.  
+> You **must cast** to access type-specific properties like `ID`, `Annotations`, or `SourceID`.  
+> Attempting to access properties without casting causes `CS1061` (member not found).
 
 ---
 
@@ -232,33 +317,45 @@ Fire when a node or connector is moved:
                     PositionChanged="OnPositionChanged" />
 
 @code {
-    private void OnPositionChanging(PositionChangingEventArgs args)
+    private void OnPositionChanging(Syncfusion.Blazor.Diagram.PositionChangingEventArgs args)
     {
         args.Cancel = true; // block the move
     }
 
-    private void OnPositionChanged(PositionChangedEventArgs args)
+    private void OnPositionChanged(Syncfusion.Blazor.Diagram.PositionChangedEventArgs args)
     {
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
         // args.Element  — IDiagramObject? — the node or connector being dragged
         // args.NewValue — DiagramSelectionSettings? — selector state after the move
         // args.OldValue — DiagramSelectionSettings? — selector state before the move
 
         if (args.Element is Node node)
         {
-            // Read new position from the node directly
-            Console.WriteLine($"Node [{node.ID}] moved to ({node.OffsetX}, {node.OffsetY})");
+            // ✅ Now you can access Node-specific properties
+            Console.WriteLine($"Node [{node.ID}] moved");
+            Console.WriteLine($"  New position: ({node.OffsetX}, {node.OffsetY})");
+            Console.WriteLine($"  Size: {node.Width} x {node.Height}");
+            Console.WriteLine($"  Label: {node.Annotations?[0]?.Content}");
+        }
+        else if (args.Element is Connector connector)
+        {
+            // ✅ Now you can access Connector-specific properties
+            Console.WriteLine($"Connector [{connector.ID}] moved");
+            Console.WriteLine($"  Source: {connector.SourceID}, Target: {connector.TargetID}");
         }
 
-        // Or read position from the selector's bounding box
+        // Alternative: read position from the selector's bounding box
         if (args.NewValue != null)
         {
-            Console.WriteLine($"New OffsetX: {args.NewValue.OffsetX}  OffsetY: {args.NewValue.OffsetY}");
-            Console.WriteLine($"New Width:   {args.NewValue.Width}    Height:  {args.NewValue.Height}");
+            Console.WriteLine($"Selection box after move:");
+            Console.WriteLine($"  OffsetX: {args.NewValue.OffsetX}  OffsetY: {args.NewValue.OffsetY}");
+            Console.WriteLine($"  Width: {args.NewValue.Width}    Height: {args.NewValue.Height}");
         }
 
         if (args.OldValue != null)
         {
-            Console.WriteLine($"Old OffsetX: {args.OldValue.OffsetX}  OffsetY: {args.OldValue.OffsetY}");
+            Console.WriteLine($"Selection box before move:");
+            Console.WriteLine($"  OffsetX: {args.OldValue.OffsetX}  OffsetY: {args.OldValue.OffsetY}");
         }
     }
 }
@@ -308,12 +405,12 @@ Fire when a node is resized:
 <SfDiagramComponent SizeChanging="OnSizeChanging" SizeChanged="OnSizeChanged" />
 
 @code {
-    private void OnSizeChanging(SizeChangingEventArgs args)
+    private void OnSizeChanging(Syncfusion.Blazor.Diagram.SizeChangingEventArgs args)
     {
         args.Cancel = true; // block resize
     }
 
-    private void OnSizeChanged(SizeChangedEventArgs args)
+    private void OnSizeChanged(Syncfusion.Blazor.Diagram.SizeChangedEventArgs args)
     {
         // ✅ args.Element is DiagramSelectionSettings — NOT Node.
         // Cast it and read the first resized node from its .Nodes collection.
@@ -363,12 +460,12 @@ Fire when a node is rotated:
                     RotationChanged="OnRotationChanged" />
 
 @code {
-    private void OnRotationChanging(RotationChangingEventArgs args)
+    private void OnRotationChanging(Syncfusion.Blazor.Diagram.RotationChangingEventArgs args)
     {
         args.Cancel = true; // block rotation
     }
 
-    private void OnRotationChanged(RotationChangedEventArgs args)
+    private void OnRotationChanged(Syncfusion.Blazor.Diagram.RotationChangedEventArgs args)
     {
     }
 }
@@ -383,7 +480,7 @@ Fire when the selection set changes:
                     SelectionChanged="OnSelectionChanged" />
 
 @code {
-    private void OnSelectionChanging(SelectionChangingEventArgs args)
+    private void OnSelectionChanging(Syncfusion.Blazor.Diagram.SelectionChangingEventArgs args)
     {
         args.Cancel = true; // prevent selection change
     }
@@ -437,6 +534,73 @@ Fire when the selection set changes:
 | `Type` | `CollectionChangedAction` | Whether items were **added** (`ObjectAdded`) or **removed** (`ObjectRemoved`) from the selection |
 | `ActionTrigger` | `DiagramAction` | The actual cause of the selection change (e.g., user interaction, programmatic call) |
 
+### Understanding IDiagramObject and Casting
+
+> **⚠️ Critical:** `args.NewValue` contains **`IDiagramObject` items**, not `Node` or `Connector` directly.  
+> `IDiagramObject` is an interface that both `Node` and `Connector` implement. To access element-specific properties like `ID`, `Annotations`, or connector-specific properties, you **must cast** to `Node` or `Connector`.
+
+**Why casting is required:**
+- `IDiagramObject` is a common interface for all diagram elements
+- It provides only basic properties shared across all element types
+- `Node` and `Connector` have type-specific properties not available on `IDiagramObject`
+- Attempting to access these properties without casting causes `CS1061` (member not found) errors
+
+**Complete working example with proper casting:**
+```razor
+<SfDiagramComponent SelectionChanged="OnSelectionChanged" />
+
+@code {
+    private void OnSelectionChanged(Syncfusion.Blazor.Diagram.SelectionChangedEventArgs args)
+    {
+        if (args?.NewValue?.Count > 0)
+        {
+            foreach (var item in args.NewValue)
+            {
+                if (item is Node selectedNode)
+                {
+                    // ✅ Now you can access Node-specific properties
+                    var nodeId = selectedNode.ID;
+                    var label = selectedNode.Annotations?[0]?.Content;
+                    var offsetX = selectedNode.OffsetX;
+                    var offsetY = selectedNode.OffsetY;
+                    
+                    Console.WriteLine($"Selected Node: ID={nodeId}, Label={label}, Position=({offsetX}, {offsetY})");
+                }
+                else if (item is Connector selectedConnector)
+                {
+                    // ✅ Now you can access Connector-specific properties
+                    var connectorId = selectedConnector.ID;
+                    var sourceNode = selectedConnector.SourceID;
+                    var targetNode = selectedConnector.TargetID;
+                    
+                    Console.WriteLine($"Selected Connector: ID={connectorId}, From={sourceNode} To={targetNode}");
+                }
+            }
+        }
+    }
+}
+```
+
+**Common pitfalls:**
+```csharp
+// ❌ Wrong — IDiagramObject has no ID property (well, it does via interface, but shows confusion)
+// More importantly, you can't access Node/Connector-specific props like Annotations
+foreach (var item in args.NewValue)
+{
+    Console.WriteLine(item.ID); // May compile but incorrect intent
+    var label = item.Annotations[0].Content; // ❌ CS1061 — Annotations not on IDiagramObject
+}
+
+// ✅ Correct — always cast first
+foreach (var item in args.NewValue)
+{
+    if (item is Node node)
+        Console.WriteLine($"Node {node.ID}: {node.Annotations?[0]?.Content}");
+    else if (item is Connector conn)
+        Console.WriteLine($"Connector {conn.ID}");
+}
+```
+
 ```csharp
 // ✅ Iterate args.NewValue directly — it is ObservableCollection<IDiagramObject>
 if (args.NewValue != null)
@@ -463,7 +627,7 @@ Console.WriteLine($"Trigger: {args.ActionTrigger}");    // DiagramAction enum va
                     CollectionChanged="OnCollectionChanged" />
 
 @code {
-    private void OnCollectionChanging(CollectionChangingEventArgs args)
+    private void OnCollectionChanging(Syncfusion.Blazor.Diagram.CollectionChangingEventArgs args)
     {
         // args.Cancel = true — prevent the add/remove
         args.Cancel = true;
@@ -481,7 +645,7 @@ Fires when a node or connector is **added to or removed from** the diagram at ru
 <SfDiagramComponent CollectionChanged="OnCollectionChanged" />
 
 @code {
-    private void OnCollectionChanged(CollectionChangedEventArgs args)
+    private void OnCollectionChanged(Syncfusion.Blazor.Diagram.CollectionChangedEventArgs args)
     {
         // args.Action        — CollectionChangedAction — whether the element was added or removed
         // args.ActionTrigger — DiagramAction           — what caused the change (interaction, tool, etc.)
@@ -619,16 +783,44 @@ Fires when a **node or connector property** is modified at runtime (e.g. style, 
 <SfDiagramComponent PropertyChanged="OnPropertyChanged" />
 
 @code {
-    private void OnPropertyChanged(PropertyChangedEventArgs args)
+    private void OnPropertyChanged(Syncfusion.Blazor.Diagram.PropertyChangedEventArgs args)
     {
-        // args.Element — IDiagramObject — the node or connector whose property changed
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — IDiagramObject? — the node or connector whose property changed
+        // args.PropertyName — string — the name of the property that changed
+        // args.NewValue — object? — the new value of the property
+        // args.OldValue — object? — the old value of the property
+        
         if (args.Element is Node node)
-            Console.WriteLine($"Node property changed: {node.ID}");
+        {
+            Console.WriteLine($"Node [{node.ID}] property changed: {args.PropertyName}");
+            Console.WriteLine($"  Old value: {args.OldValue}");
+            Console.WriteLine($"  New value: {args.NewValue}");
+            
+            // Now you can access Node-specific properties
+            if (args.PropertyName == "Style")
+            {
+                var fill = node.Style?.Fill;
+                var stroke = node.Style?.StrokeColor;
+                Console.WriteLine($"  Fill: {fill}, Stroke: {stroke}");
+            }
+        }
         else if (args.Element is Connector conn)
-            Console.WriteLine($"Connector property changed: {conn.ID}");
+        {
+            Console.WriteLine($"Connector [{conn.ID}] property changed: {args.PropertyName}");
+            
+            // Now you can access Connector-specific properties
+            if (args.PropertyName == "TargetID")
+            {
+                Console.WriteLine($"  Connector now targets: {conn.TargetID}");
+            }
+        }
     }
 }
 ```
+
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not `Node` or `Connector` directly.  
+> You **must cast** to access type-specific properties. Attempting to access properties like `Annotations` or `Style` on `IDiagramObject` causes `CS1061` (member not found).
 
 ---
 
@@ -641,12 +833,12 @@ Fire when a connector's source or target endpoint is dragged to a new node or po
                     ConnectionChanged="OnConnectionChanged" />
 
 @code {
-    private void OnConnectionChanging(ConnectionChangingEventArgs args)
+    private void OnConnectionChanging(Syncfusion.Blazor.Diagram.ConnectionChangingEventArgs args)
     {
         args.Cancel = true; // prevent the connection change
     }
 
-    private void OnConnectionChanged(ConnectionChangedEventArgs args)
+    private void OnConnectionChanged(Syncfusion.Blazor.Diagram.ConnectionChangedEventArgs args)
     {
         // args.Connector       — Connector?              — the connector whose endpoint changed
         // args.ConnectorAction — DiagramElementAction    — whether the source or target end moved
@@ -722,9 +914,27 @@ Fires after inline text editing completes:
 @code {
     private void OnTextChanged(TextChangeEventArgs args)
     {
-        // args.Element — node or connector
-        // args.NewValue — updated text
-        // args.OldValue — previous text
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — IDiagramObject? — the node or connector being edited
+        // args.Annotation — Annotation? — the specific annotation being edited
+        // args.NewValue — string? — updated text
+        // args.OldValue — string? — previous text
+        
+        if (args.Element is Node node)
+        {
+            // ✅ Now you can access Node-specific properties
+            Console.WriteLine($"Node [{node.ID}] text changed");
+            Console.WriteLine($"  Old text: '{args.OldValue}'");
+            Console.WriteLine($"  New text: '{args.NewValue}'");
+            Console.WriteLine($"  Annotation ID: {args.Annotation?.ID}");
+        }
+        else if (args.Element is Connector connector)
+        {
+            // ✅ Now you can access Connector-specific properties
+            Console.WriteLine($"Connector [{connector.ID}] text changed");
+            Console.WriteLine($"  From '{args.OldValue}' to '{args.NewValue}'");
+            Console.WriteLine($"  Source: {connector.SourceID}, Target: {connector.TargetID}");
+        }
     }
 }
 ```
@@ -739,11 +949,14 @@ Fires after inline text editing completes:
 > private void OnTextChanged(TextChangeEventArgs args) { }
 > ```
 
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not `Node` or `Connector` directly.  
+> You **must cast** to access type-specific properties. Attempting to access properties without casting causes `CS1061` (member not found).
+
 ---
 
 ## Drag-and-Drop Events
 
-These fire when symbols are dragged from the **SymbolPalette** into the diagram:
+These fire when symbols are dragged from the **SymbolPalette** into the diagram. All use `IDiagramObject` elements that must be cast:
 
 ```razor
 <SfDiagramComponent DragStart="OnDragStart"
@@ -752,17 +965,59 @@ These fire when symbols are dragged from the **SymbolPalette** into the diagram:
                     DragDrop="OnDragDrop" />
 
 @code {
-    private void OnDragStart(Syncfusion.Blazor.Diagram.DragStartEventArgs args) { }
-    private void OnDragging(DraggingEventArgs args) { }
-    private void OnDragLeave(DragLeaveEventArgs args) { }
+    private void OnDragStart(Syncfusion.Blazor.Diagram.DragStartEventArgs args)
+    {
+        // ⚠️ args.Element is IDiagramObject? — cast to Node or Connector
+        if (args.Element is Node node)
+        {
+            // Modify the node before it's added
+            node.Width = 300;
+            node.Height = 300;
+            node.Style.Fill = "#FF5722";
+        }
+        else if (args.Element is Connector conn)
+        {
+            conn.Style.StrokeWidth = 3;
+        }
+    }
+
+    private void OnDragging(DraggingEventArgs args)
+    {
+        // ⚠️ args.Element is IDiagramObject? — the element being dragged
+        if (args.Element is DiagramSelectionSettings selector)
+        {
+            Console.WriteLine($"Dragging at position: ({args.Position?.X}, {args.Position?.Y})");
+        }
+    }
+
+    private void OnDragLeave(DragLeaveEventArgs args)
+    {
+        // ⚠️ args.Element is IDiagramObject? — element leaving the diagram
+        if (args.Element is Node node)
+            Console.WriteLine($"Node [{node.ID}] left the diagram");
+    }
+
     private void OnDragDrop(DropEventArgs args)
     {
-        // args.Element — the dropped node
+        // ⚠️ args.Element is IDiagramObject? — the dropped node
+        // args.Target is IDiagramObject? — the target node/connector if dropped on one
         // args.Position — drop location
         // args.Cancel = true — reject the drop
+        
+        if (args.Element is Node droppedNode)
+        {
+            Console.WriteLine($"Dropped node: {droppedNode.ID}");
+            
+            if (args.Target is Node targetNode)
+                Console.WriteLine($"  Dropped on node: {targetNode.ID}");
+        }
     }
 }
 ```
+
+> **⚠️ Critical:** All drag-drop event arguments contain `IDiagramObject?` elements.  
+> You **must cast** to `Node` or `Connector` to access properties like `ID`, `Width`, `Height`, `Style`, or connector-specific properties.
+> Attempting to access type-specific properties without casting causes `CS1061` (member not found).
 
 > **⚠️ `DragStartEventArgs` is ambiguous** when `Syncfusion.Blazor.Popups` (or other packages that expose `DragStartEventArgs`) is also referenced.  
 > Always qualify it as `Syncfusion.Blazor.Diagram.DragStartEventArgs`:
@@ -795,6 +1050,62 @@ private void OnPositionChanged(PositionChangedEventArgs args)
         Console.WriteLine($"Node {n.ID} moved to ({n.OffsetX}, {n.OffsetY})");
 }
 ```
+
+---
+
+## User Handle Events
+
+### FixedUserHandleClick
+
+Fires when a fixed user handle (custom action button) on a selected element is clicked. The event argument contains the clicked handle and the element it belongs to:
+
+```razor
+<SfDiagramComponent FixedUserHandleClick="OnFixedUserHandleClick">
+    <DiagramSelectionSettings>
+        <!-- User handles configured here -->
+    </DiagramSelectionSettings>
+</SfDiagramComponent>
+
+@code {
+    private void OnFixedUserHandleClick(FixedUserHandleClickEventArgs args)
+    {
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — IDiagramObject? — the node or connector with the clicked handle
+        // args.FixedUserHandle — FixedUserHandle? — the handle that was clicked
+        
+        if (args.Element is Node node)
+        {
+            // ✅ Now you can access Node-specific properties
+            Console.WriteLine($"User handle clicked on node: {node.ID}");
+            Console.WriteLine($"  Handle name: {args.FixedUserHandle?.Name}");
+            Console.WriteLine($"  Node label: {node.Annotations?[0]?.Content}");
+            
+            // Perform custom action based on handle name
+            if (args.FixedUserHandle?.Name == "clone")
+            {
+                // Clone the node
+                Console.WriteLine("  Cloning node...");
+            }
+            else if (args.FixedUserHandle?.Name == "delete")
+            {
+                // Delete the node
+                Console.WriteLine("  Deleting node...");
+            }
+        }
+        else if (args.Element is Connector connector)
+        {
+            // ✅ Now you can access Connector-specific properties
+            Console.WriteLine($"User handle clicked on connector: {connector.ID}");
+            Console.WriteLine($"  Handle name: {args.FixedUserHandle?.Name}");
+            Console.WriteLine($"  Connects {connector.SourceID} to {connector.TargetID}");
+        }
+    }
+}
+```
+
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not `Node` or `Connector` directly.  
+> You **must cast** to access type-specific properties like `ID`, `Annotations`, or `SourceID`.  
+> Attempting to access type-specific properties without casting causes `CS1061` (member not found).
 
 ---
 
@@ -864,6 +1175,7 @@ Fires when auto-scroll activates as an element is dragged near the canvas edge:
 | `PropertyChanged` | Node or connector property modified at runtime | `PropertyChangedEventArgs` | No |
 | `TextChanged` | Inline annotation editing completed | `TextChangeEventArgs` | No |
 | `DragStart` / `Dragging` / `DragLeave` / `DragDrop` | Symbol palette drag operations | Various | Yes (DragDrop) |
+| `FixedUserHandleClick` | Fixed user handle clicked | `FixedUserHandleClickEventArgs` | No |
 | `HistoryChanged` | Undo/Redo action | `HistoryChangedEventArgs` | No |
 | `OnAutoScrollChange` | Auto-scroll during drag | `AutoScrollChangeEventArgs` | Yes |
 
@@ -871,6 +1183,7 @@ Fires when auto-scroll activates as an element is dragged near the canvas edge:
 
 ## Common Gotchas
 
+- **⚠️ `IDiagramObject` casting is required in MOST events** — Many event arguments (PropertyChanged, DragStart, Dragging, DragLeave, DragDrop, PositionChanged, TextChanged, MouseEnter, MouseLeave, MouseHover, Click, KeyDown, KeyUp, FixedUserHandleClick) expose `Element`, `Target`, or `Targets` as `IDiagramObject?`, which is an **interface**, not a concrete type. To access type-specific properties like `Node.Annotations`, `Node.OffsetX`, or `Connector.SourceID`, **you MUST cast** using pattern matching: `if (args.Element is Node node) { var ann = node.Annotations; }`. Attempting to access type-specific properties directly on `IDiagramObject` causes `CS1061` ("member not found on interface type"). See each event section for complete casting examples.
 - **`Created` fires once** — do not register one-time initialization logic in `OnAfterRenderAsync` if it depends on fully rendered nodes; use `Created` instead
 - **`Changing` events with `Cancel = true`** block the action without triggering the corresponding `Changed` event
 - **There is NO `OnDoubleClick` event** — double-clicks are detected via the `Click` event by reading `args.Count` as an `int` and comparing it: `int c = args.Count; if (c == 2) { ... }`
@@ -880,6 +1193,7 @@ Fires when auto-scroll activates as an element is dragged near the canvas edge:
 - **`ClickEventArgs` is ambiguous** when multiple Syncfusion packages are used — qualify it as `Syncfusion.Blazor.Diagram.ClickEventArgs`
 - **`SelectionChangedEventArgs` is ambiguous** when `Syncfusion.Blazor.Buttons` is referenced — qualify it as `Syncfusion.Blazor.Diagram.SelectionChangedEventArgs`
 - **`SelectionChangedEventArgs.NewValue` is `ObservableCollection<IDiagramObject>?`** — it is a nullable collection of `IDiagramObject`, NOT a `DiagramSelectionSettings`. Iterate it with `foreach` and pattern-match each element as `Node` or `Connector`. Also available: `OldValue` (previously selected items), `Type` (`CollectionChangedAction` — `ObjectAdded`/`ObjectRemoved`), and `ActionTrigger` (`DiagramAction` — the cause of the change)
+- **`IDiagramObject` items in `SelectionChangedEventArgs.NewValue` MUST be cast to access type-specific properties** — `IDiagramObject` is an interface; to access `Node` properties like `Annotations`, `OffsetX`, or `Connector` properties like `SourceID`, pattern-match first: `if (item is Node node) { var annotations = node.Annotations; }`. Attempting to access type-specific properties without casting causes `CS1061` (member not found)
 - **`SizeChangedEventArgs.Element` is also `DiagramSelectionSettings`**, not `Node` — `args.Element is Node n` causes `CS8121`. Cast it correctly: `if (args.Element is DiagramSelectionSettings sel && sel.Nodes.Count > 0) { var node = sel.Nodes[0]; }`
 - **`CollectionChangedEventArgs.Element` is typed as `NodeBase?`** — never cast it directly to `Node`; use `is Node n` / `is Connector c` pattern matching. `Action` (`CollectionChangedAction`) tells you whether the element was added or removed; `ActionTrigger` (`DiagramAction`) tells you what caused the change
 - **`DragEnterEventArgs` does NOT exist** — there is no `DragEnter` event on `SfDiagramComponent`; use `PositionChanged` to track node movement

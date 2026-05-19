@@ -9,6 +9,9 @@ metadata:
 
 # Implementing Stock Charts
 
+**NuGet:** `Syncfusion.Blazor.Charts` + `Syncfusion.Blazor.Themes` (or `Syncfusion.Blazor.StockChart` for individual package)
+**Namespace:** `Syncfusion.Blazor.Charts`
+
 A comprehensive skill for implementing Syncfusion Blazor Stock Chart components for financial data visualization. The Stock Chart is specifically designed for visualizing stock market data with built-in features for technical analysis, time-based navigation, and financial indicators.
 
 ## When to Use This Skill

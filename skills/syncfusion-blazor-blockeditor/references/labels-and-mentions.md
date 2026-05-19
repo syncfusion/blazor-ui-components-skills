@@ -22,22 +22,32 @@ Represents a user that can be mentioned in the editor. Users are displayed in me
 
 ```csharp
 public class UserModel
-{
-    /// <summary>
-    /// Unique identifier for the user
-    /// </summary>
-    public string Id { get; set; }
+    {
+        /// <summary>
+        /// Unique identifier for the user.
+        /// </summary>
+        public string ID { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Display name of the user (shown in mention popup)
-    /// </summary>
-    public string Name { get; set; }
+        /// <summary>
+        /// Display name of the user.
+        /// </summary>
+        public string User { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Optional avatar URL (displayed in mention popup)
-    /// </summary>
-    public string Avatar { get; set; }
-}
+        /// <summary>
+        /// URL of the user's avatar image.
+        /// </summary>
+        public string AvatarUrl { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Background color for the avatar or collaborative cursor.
+        /// </summary>
+        public string AvatarBackgroundColor { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Custom CSS class for styling the mention block.
+        /// </summary>
+        public string CssClass { get; set; } = string.Empty;
+    }
 ```
 
 ### Properties Explained
@@ -55,21 +65,21 @@ private List<UserModel> users = new()
 {
     new UserModel 
     { 
-        Id = "user-001", 
-        Name = "John Doe", 
-        Avatar = "https://example.com/avatars/john.jpg" 
+        ID = "user-001", 
+        User = "John Doe", 
+        AvatarUrl = "https://example.com/avatars/john.jpg" 
     },
     new UserModel 
     { 
-        Id = "user-002", 
-        Name = "Jane Smith", 
-        Avatar = "https://example.com/avatars/jane.jpg" 
+        ID = "user-002", 
+        User = "Jane Smith", 
+        AvatarUrl = "https://example.com/avatars/jane.jpg" 
     },
     new UserModel 
     { 
-        Id = "user-003", 
-        Name = "Bob Johnson", 
-        Avatar = "https://example.com/avatars/bob.jpg" 
+        ID = "user-003", 
+        User = "Bob Johnson", 
+        AvatarUrl = "https://example.com/avatars/bob.jpg" 
     }
 };
 ```

@@ -53,13 +53,36 @@ _diagram.ClearSelection();
         args.Cancel = true; // prevent selection
     }
 
-    private void OnSelectionChanged(SelectionChangedEventArgs args)
+    private void OnSelectionChanged(Syncfusion.Blazor.Diagram.SelectionChangedEventArgs args)
     {
-        // args.NewValue — newly selected elements
-        // args.OldValue — previously selected elements
+        // ⚠️ args.NewValue contains IDiagramObject items — you must cast to Node or Connector
+        // args.NewValue — ObservableCollection<IDiagramObject>? — newly selected elements
+        // args.OldValue — ObservableCollection<IDiagramObject>? — previously selected elements
+        
+        if (args?.NewValue?.Count > 0)
+        {
+            foreach (var item in args.NewValue)
+            {
+                if (item is Node selectedNode)
+                {
+                    var nodeId = selectedNode.ID;
+                    var label = selectedNode.Annotations?[0]?.Content;
+                    Console.WriteLine($"Selected Node: {nodeId} - {label}");
+                }
+                else if (item is Connector selectedConnector)
+                {
+                    var connectorId = selectedConnector.ID;
+                    Console.WriteLine($"Selected Connector: {connectorId}");
+                }
+            }
+        }
     }
 }
 ```
+
+> **⚠️ Critical:** `args.NewValue` is `ObservableCollection<IDiagramObject>?`, not `ObservableCollection<Node>` or `ObservableCollection<Connector>`.  
+> You **must cast each item** to `Node` or `Connector` to access type-specific properties like `Annotations`, `OffsetX`, or connector-specific properties.  
+> See the [SelectionChanged event section](./events.md#selectionchanging--selectionchanged) in Events documentation for the complete reference and more examples.
 
 ---
 
@@ -86,7 +109,23 @@ new Node
 
     private void OnPositionChanged(PositionChangedEventArgs args)
     {
-        // args.NewValue.OffsetX / OffsetY — new position
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.NewValue — DiagramSelectionSettings? — bounding box of selector (not individual element position)
+        // args.OldValue — DiagramSelectionSettings? — previous bounding box
+        
+        if (args?.Element is Node node)
+        {
+            // Moved node — access node properties directly
+            Console.WriteLine($"Node moved: {node.ID}");
+            Console.WriteLine($"  New position: ({node.OffsetX}, {node.OffsetY})");
+            Console.WriteLine($"  Label: {node.Annotations?[0]?.Content}");
+        }
+        else if (args?.Element is Connector connector)
+        {
+            // Moved connector
+            Console.WriteLine($"Connector moved: {connector.ID}");
+            Console.WriteLine($"  Connects {connector.SourceID} to {connector.TargetID}");
+        }
     }
 }
 ```
@@ -352,9 +391,28 @@ Built-in keyboard shortcuts (active when diagram has focus):
 @code {
     private void OnKeyDown(KeyEventArgs args)
     {
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — the element with keyboard focus (selected element)
+        // args.Key — the key that was pressed
+        
         if (args.Key == "Delete")
         {
-            // custom delete logic
+            // Handle delete for specific element types
+            if (args.Element is Node node)
+            {
+                Console.WriteLine($"Delete key pressed on node: {node.ID}");
+                // custom delete logic for nodes
+            }
+            else if (args.Element is Connector connector)
+            {
+                Console.WriteLine($"Delete key pressed on connector: {connector.ID}");
+                // custom delete logic for connectors
+            }
+        }
+        else if (args.Key == "F2" && args.Element is Node focusedNode)
+        {
+            // F2 key to edit node label
+            Console.WriteLine($"Edit node: {focusedNode.ID}");
         }
     }
 }
@@ -364,8 +422,58 @@ Built-in keyboard shortcuts (active when diagram has focus):
 
 ## Snapping
 
-Snap nodes to grid or to other elements for precise alignment:
+Snap nodes to grid lines or to other elements for precise alignment. Use `SnapConstraints` to control which snapping features are active.
 
+### SnapConstraints Overview
+
+There are two types of snapping controls:
+
+1. **Show*** flags — display grid lines on the canvas:
+   - `ShowHorizontalLines` — show horizontal grid lines
+   - `ShowVerticalLines` — show vertical grid lines
+   - `ShowLines` — show both horizontal and vertical grid lines (equivalent to `ShowHorizontalLines | ShowVerticalLines`)
+
+2. **SnapTo*** flags — enable snapping behavior to grid:
+   - `SnapToHorizontalLines` — snap objects to horizontal grid lines
+   - `SnapToVerticalLines` — snap objects to vertical grid lines
+   - `SnapToLines` — snap objects to both grid line types (equivalent to `SnapToHorizontalLines | SnapToVerticalLines`)
+   - `SnapToObject` — snap objects to other objects on the diagram
+
+3. **Convenience flags:**
+   - `None` — disable all snapping and hide grid lines
+   - `All` — enable all snapping and display all grid lines
+
+### SnapConstraints Reference Table
+
+| Constraint | Purpose | Display | Snap Behavior |
+|-----------|---------|---------|---------------|
+| `None` | Disable all snapping | No grid lines | No snapping |
+| `ShowHorizontalLines` | Display horizontal grid | Horizontal lines | No snapping |
+| `ShowVerticalLines` | Display vertical grid | Vertical lines | No snapping |
+| `ShowLines` | Display all grid lines | Horizontal + vertical | No snapping |
+| `SnapToHorizontalLines` | Snap to horizontal grid | No lines (hidden) | Horizontal snapping |
+| `SnapToVerticalLines` | Snap to vertical grid | No lines (hidden) | Vertical snapping |
+| `SnapToLines` | Snap to all grid lines | No lines (hidden) | Horizontal + vertical snapping |
+| `SnapToObject` | Snap to other elements | No grid lines | Object-to-object snapping |
+| `All` | Snap to all targets | All grid lines | Horizontal + vertical + objects |
+
+### Common Configurations
+
+**Show grid but don't snap (guide mode):**
+```razor
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.ShowLines">
+        <HorizontalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+        <VerticalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
+```
+
+**Snap to grid AND show grid lines:**
 ```razor
 <SfDiagramComponent>
     <SnapSettings Constraints="SnapConstraints.ShowLines | SnapConstraints.SnapToLines">
@@ -379,30 +487,129 @@ Snap nodes to grid or to other elements for precise alignment:
 }
 ```
 
+**Snap to horizontal grid lines only:**
+```razor
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.ShowHorizontalLines | SnapConstraints.SnapToHorizontalLines">
+        <HorizontalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
+```
+
+**Snap to vertical grid lines only:**
+```razor
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.ShowVerticalLines | SnapConstraints.SnapToVerticalLines">
+        <VerticalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
+```
+
 **Snap to objects only (no grid):**
 ```razor
-<SnapSettings Constraints="SnapConstraints.SnapToObject" />
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.SnapToObject" />
+</SfDiagramComponent>
 ```
 
-**Disable snapping:**
+**Snap to both grid AND objects with grid visible:**
 ```razor
-<SnapSettings Constraints="SnapConstraints.None" />
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.ShowLines | SnapConstraints.SnapToLines | SnapConstraints.SnapToObject">
+        <HorizontalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+        <VerticalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
 ```
 
-**Object snap distance (how close before snapping kicks in):**
+**Enable all snapping features (convenience flag):**
 ```razor
-<SnapSettings Constraints="SnapConstraints.SnapToObject" SnapDistance="5" />
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.All">
+        <HorizontalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+        <VerticalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
 ```
 
-> **⚠️ `SnapObjectDistance` does NOT exist** on `SnapSettings` — using it causes `InvalidOperationException: does not have a property matching the name 'SnapObjectDistance'`.  
-> The correct property name is **`SnapDistance`**:
-> ```razor
-> @* ❌ Wrong — SnapObjectDistance does not exist *@
-> <SnapSettings SnapObjectDistance="5" />
->
-> @* ✅ Correct *@
-> <SnapSettings SnapDistance="5" />
-> ```
+**Disable all snapping:**
+```razor
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.None" />
+</SfDiagramComponent>
+```
+
+### Snap Distance
+
+Configure how close an object must be to a grid line or another object before snapping is triggered:
+
+```razor
+<SfDiagramComponent>
+    <SnapSettings Constraints="SnapConstraints.ShowLines | SnapConstraints.SnapToLines" 
+                  SnapDistance="10">
+        <HorizontalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+        <VerticalGridLines LineColor="#e0e0e0" LineDashArray="2,2" LineIntervals="@lineIntervals" />
+    </SnapSettings>
+</SfDiagramComponent>
+
+@code {
+    double[] lineIntervals = { 1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75 };
+}
+```
+
+> **Default:** `SnapDistance = 5` pixels — when an object is within 5 pixels of a snap target, it snaps into place.
+
+### Combining Constraints
+
+Use the bitwise OR operator (`|`) to combine multiple constraints:
+
+```csharp
+// Show grid lines AND snap to grid AND snap to objects
+var constraints = SnapConstraints.ShowLines 
+                | SnapConstraints.SnapToLines 
+                | SnapConstraints.SnapToObject;
+
+// Equivalent to:
+var constraints = SnapConstraints.All;
+
+// Show only horizontal grid and snap only horizontally
+var constraints = SnapConstraints.ShowHorizontalLines 
+                | SnapConstraints.SnapToHorizontalLines;
+```
+
+### Common Gotchas
+
+- **⚠️ `SnapObjectDistance` does NOT exist** on `SnapSettings` — causes `InvalidOperationException: does not have a property matching the name 'SnapObjectDistance'`.  
+  The correct property name is **`SnapDistance`**:
+  ```razor
+  @* ❌ Wrong — SnapObjectDistance does not exist *@
+  <SnapSettings SnapObjectDistance="5" />
+
+  @* ✅ Correct *@
+  <SnapSettings SnapDistance="5" />
+  ```
+
+- **Grid lines don't display without `ShowLines` or `ShowHorizontalLines`/`ShowVerticalLines`** — snapping works invisibly if you omit the `Show*` flags. Include them to visualize the grid.
+
+- **`SnapToLines` alone doesn't show grid lines** — it enables snapping but hides the grid visual. Pair it with `ShowLines` to display the grid: `ShowLines | SnapToLines`.
+
+- **Grid line configuration is optional** — you can enable snapping without configuring `HorizontalGridLines` and `VerticalGridLines`; the component uses default grid intervals. Customize them to match your design requirements.
 
 ---
 
@@ -586,6 +793,61 @@ Custom action buttons that appear on selected elements:
 }
 ```
 
+**FixedUserHandleClick event:**
+
+Handle user handle clicks with type-safe Node/Connector casting:
+
+```razor
+<SfDiagramComponent @ref="_diagram" Height="500px"
+                    Nodes="@_nodes"
+                    SelectionSettings="@_selectedModel"
+                    FixedUserHandleClick="OnFixedUserHandleClick">
+</SfDiagramComponent>
+
+@code {
+    private void OnFixedUserHandleClick(FixedUserHandleClickEventArgs args)
+    {
+        // ⚠️ args.Element is IDiagramObject? — you must cast to Node or Connector
+        // args.Element — the element (node or connector) whose user handle was clicked
+        // args.FixedUserHandle — details of the handle that was clicked
+        
+        if (args?.Element is Node node)
+        {
+            Console.WriteLine($"User handle clicked on Node: {node.ID}");
+            Console.WriteLine($"  Handle name: {args.FixedUserHandle?.Name}");
+            Console.WriteLine($"  Node label: {node.Annotations?[0]?.Content}");
+            
+            // Perform action based on handle name
+            if (args.FixedUserHandle?.Name == "clone")
+            {
+                _diagram.Copy();
+                _diagram.Paste();
+            }
+            else if (args.FixedUserHandle?.Name == "delete")
+            {
+                _diagram.Delete();
+            }
+        }
+        else if (args?.Element is Connector connector)
+        {
+            Console.WriteLine($"User handle clicked on Connector: {connector.ID}");
+            Console.WriteLine($"  Handle name: {args.FixedUserHandle?.Name}");
+            Console.WriteLine($"  Connects {connector.SourceID} to {connector.TargetID}");
+            
+            // Perform connector-specific actions
+            if (args.FixedUserHandle?.Name == "delete")
+            {
+                _diagram.Delete();
+            }
+        }
+    }
+}
+```
+
+> **⚠️ Critical:** `args.Element` is `IDiagramObject?`, not a concrete `Node` or `Connector`.  
+> Always cast using pattern matching: `if (args.Element is Node node) { ... }`.  
+> Attempting to access type-specific properties without casting causes `CS1061` (member not found).
+
 ---
 
 ## Drawing Tool
@@ -616,6 +878,7 @@ Let users draw nodes or connectors by clicking and dragging:
 
 ## Common Gotchas
 
+- **⚠️ Event args with `IDiagramObject` properties require casting** — Many events expose `Element`, `Target`, or other properties as `IDiagramObject?` (interface type, not concrete). To access type-specific properties like `Node.Annotations` or `Connector.SourceID`, **you must cast** using pattern matching: `if (args.Element is Node node)`. See [Events documentation](./events.md#common-gotchas) for comprehensive coverage of all events with complete casting examples.
 - **Selection is enabled by default** — use `NodeConstraints` to restrict it per node
 - **Rubber-band selection** requires clicking and dragging on the empty canvas (not on a node)
 - **`FitToPage()`** must be called after the diagram renders — use `OnAfterRenderAsync` or the `Created` event; it is **synchronous** (no `await`)
