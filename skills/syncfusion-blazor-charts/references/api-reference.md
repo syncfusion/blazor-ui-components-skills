@@ -22,7 +22,7 @@
    - [TechnicalIndicators](#technicalindicators)
    - [ZoomMode](#zoommode)
    - [ToolbarItems](#toolbaritems)
-   - [ChartTheme](#charttheme)
+   - [Theme](#theme)
 - [Key Classes and Components](#key-classes-and-components)
    - [ChartSeries](#chartseries)
    - [ChartPrimaryXAxis / ChartPrimaryYAxis](#chartprimaryxaxis-chartprimaryyaxis)
@@ -777,9 +777,11 @@ public enum ToolbarItems
 
 ---
 
-### ChartTheme  
+### Theme  
 
-Specifies chart themes.
+Specifies chart themes. Use `Syncfusion.Blazor.Theme` enum for setting the `Theme` property of `SfChart`.
+
+**IMPORTANT:** The enum name is `Theme`, not `ChartTheme`. Use it as `Theme="Syncfusion.Blazor.Theme.Material"` or `Theme="Theme.Material"` (with proper using directive).
 
 ```csharp
 public enum Theme
@@ -803,6 +805,13 @@ public enum Theme
     Material3,
     Material3Dark
 }
+```
+
+**Usage Example:**
+```razor
+<SfChart Title="Sales Chart" Theme="Syncfusion.Blazor.Theme.Bootstrap5">
+    <!-- chart content -->
+</SfChart>
 ```
 
 ---

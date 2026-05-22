@@ -47,6 +47,43 @@ Notes: When specifying enum values in markup, use fully-qualified names if neces
 - `AccumulationChartLegendSettings.Visible` (bool) — Show/hide legend.
 - `AccumulationChartTooltipSettings.Enable` (bool) — Enable/disable tooltips.
 
+## Theme Enum
+
+The `SfAccumulationChart` component supports the `Theme` property which uses the `Syncfusion.Blazor.Theme` enum.
+
+**IMPORTANT:** The enum name is `Theme`, NOT `AccumulationChartTheme`. Use it as `Theme="Syncfusion.Blazor.Theme.Material"` or `Theme="Theme.Material"` (with proper using directive).
+
+```csharp
+public enum Theme
+{
+    Material,
+    Fabric,
+    Bootstrap,
+    Bootstrap4,
+    HighContrastLight,
+    MaterialDark,
+    FabricDark,
+    BootstrapDark,
+    Bootstrap4Dark,
+    HighContrast,
+    Tailwind,
+    TailwindDark,
+    Bootstrap5,
+    Bootstrap5Dark,
+    Fluent,
+    FluentDark,
+    Material3,
+    Material3Dark
+}
+```
+
+**Usage Example:**
+```razor
+<SfAccumulationChart Title="Sales Distribution" Theme="Syncfusion.Blazor.Theme.Bootstrap5">
+    <!-- chart content -->
+</SfAccumulationChart>
+```
+
 ## Public Methods
 
 The `SfAccumulationChart` component exposes a small set of useful public methods. Typical usage calls these from code-behind or event handlers.
