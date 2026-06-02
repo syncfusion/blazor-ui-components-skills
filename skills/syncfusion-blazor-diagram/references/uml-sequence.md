@@ -167,6 +167,44 @@ _model = new UmlSequenceDiagramModel
 
 ---
 
+## Updating the Diagram After Model Changes (UpdateFromModelAsync)
+
+After programmatically modifying the `UmlSequenceDiagramModel` (adding participants, messages, or fragments) at runtime, call `UpdateFromModelAsync()` to synchronize the diagram UI with the updated model:
+
+```csharp
+private async Task AddNewMessage()
+{
+    // Modify the model — add a new message
+    _model.Messages.Add(new UmlSequenceMessage
+    {
+        ID = "MSG4",
+        Content = "New interaction",
+        FromParticipantID = "Client",
+        ToParticipantID = "Server",
+        MessageType = UmlSequenceMessageType.Synchronous
+    });
+
+    // Tell the diagram to refresh its visual representation
+    await _diagram.UpdateFromModelAsync();
+}
+
+private async Task AddNewParticipant()
+{
+    _model.Participants.Add(new UmlSequenceParticipant
+    {
+        ID = "Database",
+        Content = "Database",
+        IsActor = false
+    });
+
+    await _diagram.UpdateFromModelAsync();
+}
+```
+
+> **Note:** `UpdateFromModelAsync()` is required any time the `UmlSequenceDiagramModel` is changed at runtime — the diagram does NOT automatically re-render when you mutate the model object. Always `await` it.
+
+---
+
 ## Common Gotchas
 
 - **Set `Model` property** on `SfDiagramComponent` — do not use `Nodes`/`Connectors` for sequence diagrams

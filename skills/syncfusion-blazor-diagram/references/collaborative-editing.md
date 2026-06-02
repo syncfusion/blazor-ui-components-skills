@@ -9,6 +9,8 @@ Collaborative editing enables multiple users to edit the same diagram simultaneo
 - **SignalR** handles real-time communication between the browser and server
 - **Redis** (optional) acts as a shared temporary store for multi-server deployments
 - Changes that trigger `HistoryChanged` are propagated to all connected clients
+- **`GetDiagramUpdates(HistoryChangedEventArgs)`** — serializes the diagram change from `HistoryChangedEventArgs` into a `List<string>` for transmission
+- **`SetDiagramUpdatesAsync(List<string>)`** — applies received serialized changes from other clients to the local diagram
 
 ---
 
@@ -112,6 +114,65 @@ app.MapHub<DiagramHub>("/diagramhub");
     }
 }
 ```
+
+---
+
+## Optimized Sync with GetDiagramUpdates / SetDiagramUpdatesAsync
+
+Instead of sending the full `SaveDiagram()` JSON on every change, use the optimized delta-based API:
+
+- **`GetDiagramUpdates(HistoryChangedEventArgs)`** — serializes only the change described by the history event into a compact `List<string>`
+- **`SetDiagramUpdatesAsync(List<string>)`** — applies a received delta update to the local diagram without a full reload
+
+This approach is more efficient for real-time collaboration because it transmits only what changed, not the entire diagram state.
+
+```razor
+<SfDiagramComponent @ref="_diagram"
+                    @bind-Nodes="_nodes"
+                    @bind-Connectors="_connectors"
+                    HistoryChanged="OnHistoryChanged" />
+
+@code {
+    private SfDiagramComponent _diagram;
+    private HubConnection _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/diagramhub"))
+            .Build();
+
+        // Receive delta updates from other clients and apply them
+        _hubConnection.On<List<string>>("ReceiveDiagramUpdates", async (updates) =>
+        {
+            await _diagram.SetDiagramUpdatesAsync(updates);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    private async void OnHistoryChanged(HistoryChangedEventArgs args)
+    {
+        // Serialize only the delta change (not the whole diagram)
+        List<string> updates = _diagram.GetDiagramUpdates(args);
+
+        // Broadcast the compact delta to other clients
+        await _hubConnection.SendAsync("BroadcastDiagramUpdates", updates);
+    }
+}
+```
+
+**Hub method for delta broadcast:**
+```csharp
+public async Task BroadcastDiagramUpdates(List<string> updates)
+{
+    // Forward delta to all other connected clients
+    await Clients.Others.SendAsync("ReceiveDiagramUpdates", updates);
+}
+```
+
+> **Tip:** Use the delta-based `GetDiagramUpdates`/`SetDiagramUpdatesAsync` pattern for production collaboration. The full `SaveDiagram`/`LoadDiagramAsync` approach is simpler but sends much larger payloads, causing higher latency for complex diagrams.
 
 ---
 

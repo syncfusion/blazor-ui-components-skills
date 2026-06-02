@@ -14,6 +14,7 @@
 - [Layout with Data Source](#layout-with-data-source)
 - [NodeCreating and ConnectorCreating Callbacks](#nodecreating-and-connectorcreating-callbacks)
 - [Layout Events](#layout-events)
+- [Refresh Layout at Runtime (DoLayoutAsync)](#refresh-layout-at-runtime-dolayoutasync)
 - [Common Gotchas](#common-gotchas)
 
 ---
@@ -301,6 +302,89 @@ private void OnConnectorCreating(IDiagramObject obj)
     }
 }
 ```
+
+---
+
+## Refresh Layout at Runtime (DoLayoutAsync)
+
+Call `DoLayoutAsync()` to recalculate and reapply the current layout algorithm after programmatically adding nodes and connectors at runtime. This method updates the positions and arrangements of **all** diagram elements based on the configured layout settings.
+
+### Example — Add nodes and connectors at runtime, then refresh layout
+
+```razor
+@using Syncfusion.Blazor.Diagram
+@using Syncfusion.Blazor.Buttons
+
+<SfDiagramComponent @ref="_diagram" Height="600px"
+                    @bind-Nodes="@_nodes"
+                    @bind-Connectors="@_connectors">
+    <Layout Type="LayoutType.HierarchicalTree"
+            HorizontalSpacing="40" VerticalSpacing="40">
+        <LayoutMargin Top="20" Left="20" />
+    </Layout>
+</SfDiagramComponent>
+
+<SfButton Content="Add Node" OnClick="@AddNodeAtRuntime" />
+
+@code {
+    private SfDiagramComponent _diagram;
+    private DiagramObjectCollection<Node> _nodes = new();
+    private DiagramObjectCollection<Connector> _connectors = new();
+    private int _nodeCounter = 1;
+
+    protected override void OnInitialized()
+    {
+        _nodes.Add(new Node
+        {
+            ID = "node1",
+            Width = 120, Height = 50,
+            Style = new ShapeStyle { Fill = "#6BA5D7", StrokeColor = "white" },
+            Annotations = new DiagramObjectCollection<ShapeAnnotation>
+            {
+                new ShapeAnnotation { Content = "Root" }
+            }
+        });
+    }
+
+    private async Task AddNodeAtRuntime()
+    {
+        _nodeCounter++;
+        string newId = $"node{_nodeCounter}";
+
+        // Add a new node to the collection
+        _nodes.Add(new Node
+        {
+            ID = newId,
+            Width = 120, Height = 50,
+            Style = new ShapeStyle { Fill = "#6BA5D7", StrokeColor = "white" },
+            Annotations = new DiagramObjectCollection<ShapeAnnotation>
+            {
+                new ShapeAnnotation { Content = $"Node {_nodeCounter}" }
+            }
+        });
+
+        // Connect the new node to its parent
+        _connectors.Add(new Connector
+        {
+            ID = $"conn{_nodeCounter}",
+            SourceID = "node1",
+            TargetID = newId,
+            Type = ConnectorSegmentType.Orthogonal
+        });
+
+        // Recalculate and apply the layout for all elements
+        await _diagram.DoLayoutAsync();
+    }
+}
+```
+
+**Common use cases:**
+- Adding or removing nodes at runtime when using automatic layouts (hierarchical, org chart, mind map, etc.)
+- After programmatically updating parent-child relationships in the node/connector collections
+- After bulk changes that affect the tree or graph structure
+
+> **Note:** `DoLayoutAsync()` is async — always `await` it. It recalculates positions for **all** elements based on the current layout configuration.  
+> When using **data binding** (`DataSourceSettings`) instead of manual node/connector collections, use `RefreshDataSourceAsync()` instead — see [data-binding.md](./data-binding.md#refresh-data-source).
 
 ---
 

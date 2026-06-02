@@ -6,6 +6,7 @@
 - [Hierarchical Data Binding](#hierarchical-data-binding)
 - [Accessing Custom Data in NodeCreating](#accessing-custom-data-in-nodecreating)
 - [Remote Data Binding](#remote-data-binding)
+- [Runtime Data CRUD Operations](#runtime-data-crud-operations)
 - [Common Gotchas](#common-gotchas)
 
 ---
@@ -158,6 +159,184 @@ Fetch data from an API and bind after loading:
     }
 }
 ```
+
+---
+
+## Runtime Data CRUD Operations
+
+When using a remote data source (`SfDataManager`), use these async methods to perform CRUD operations on the bound data source. The diagram automatically refreshes its layout after each operation.
+
+### Setup — Remote Data with WebAPI
+
+```razor
+<SfDiagramComponent ID="diagram" @ref="@_diagram" Width="100%" Height="690px"
+                    ConnectorCreating="@ConnectorCreating"
+                    NodeCreating="@NodeCreating">
+    <DataSourceSettings ID="EmployeeID" ParentID="ReportsTo">
+        <SfDataManager Url="api/Data" Adaptor="Syncfusion.Blazor.Adaptors.WebApiAdaptor" />
+    </DataSourceSettings>
+    <Layout Type="LayoutType.HierarchicalTree" VerticalSpacing="75" HorizontalSpacing="75" />
+</SfDiagramComponent>
+```
+
+### Read Data
+
+Fetch records from the data source based on an optional query:
+
+```csharp
+// Read all data
+List<object> records = (List<object>)await _diagram.ReadDataAsync();
+
+// Read with a query filter
+Query query = new Query().Where("ReportsTo", "equal", "1");
+List<object> filtered = (List<object>)await _diagram.ReadDataAsync(query);
+```
+
+### Insert Data
+
+Add a new record to the data source. The diagram layout updates automatically:
+
+```csharp
+var newEmployee = new EmployeeDetails
+{
+    EmployeeID = 10,
+    Name = "Alice",
+    Designation = "Developer",
+    ReportsTo = "3",
+    Colour = "Blue"
+};
+await _diagram.InsertDataAsync(newEmployee);
+
+// Insert with explicit table name and position
+await _diagram.InsertDataAsync(newEmployee, tableName: "Employees", position: 0);
+```
+
+### Update Data
+
+Modify an existing record identified by a key field:
+
+```csharp
+var updatedEmployee = new EmployeeDetails
+{
+    EmployeeID = 6,
+    Name = "Michael",
+    Designation = "Product Manager",
+    ReportsTo = "1",
+    Colour = "Green"
+};
+await _diagram.UpdateDataAsync("EmployeeID", updatedEmployee);
+
+// Update with table name and original data (for delta updates)
+await _diagram.UpdateDataAsync("EmployeeID", updatedEmployee, tableName: "Employees", original: originalEmployee);
+```
+
+### Delete Data
+
+Remove a record by key field and value:
+
+```csharp
+// Delete the record where EmployeeID = 6
+await _diagram.DeleteDataAsync("EmployeeID", 6);
+
+// Delete with explicit table name
+await _diagram.DeleteDataAsync("EmployeeID", 6, tableName: "Employees");
+```
+
+### Refresh Data Source
+
+`RefreshDataSourceAsync()` dynamically updates the diagram layout to reflect changes made to the underlying `DataSource` object. It rebuilds the entire diagram from the new data — use it when you replace or mutate the data collection bound to `DataSourceSettings.DataSource`.
+
+**Example — MindMap with runtime data refresh:**
+
+```razor
+@using Syncfusion.Blazor.Diagram
+@using Syncfusion.Blazor.Buttons
+
+<SfDiagramComponent @ref="_diagram" Height="600px"
+                    NodeCreating="@OnNodeCreating"
+                    ConnectorCreating="@OnConnectorCreating">
+    <DataSourceSettings ID="Id" ParentID="ParentId" DataSource="@_dataSource" />
+    <Layout Type="LayoutType.MindMap">
+        <LayoutMargin Top="20" Left="20" />
+    </Layout>
+</SfDiagramComponent>
+
+<SfButton Content="Refresh Data Source" OnClick="@RefreshData" />
+
+@code {
+    private SfDiagramComponent _diagram;
+
+    private void OnNodeCreating(IDiagramObject obj)
+    {
+        Node node = obj as Node;
+        node.Height = 25;
+        node.Width = 25;
+        node.Style = new ShapeStyle { Fill = "#6495ED", StrokeWidth = 1, StrokeColor = "white" };
+        node.Shape = new BasicShape { Type = NodeShapes.Basic };
+    }
+
+    private void OnConnectorCreating(IDiagramObject obj)
+    {
+        Connector connector = obj as Connector;
+        connector.Type = ConnectorSegmentType.Bezier;
+        connector.Style = new ShapeStyle { StrokeColor = "#6495ED", StrokeWidth = 2 };
+        connector.TargetDecorator = new DecoratorSettings { Shape = DecoratorShape.None };
+    }
+
+    public class MindMapDetails
+    {
+        public string Id      { get; set; }
+        public string Label   { get; set; }
+        public string ParentId { get; set; }
+        public string Branch  { get; set; }
+    }
+
+    // Initial data source — full tree
+    public object _dataSource = new List<object>()
+    {
+        new MindMapDetails { Id = "1",  Label = "Creativity",     ParentId = "",  Branch = "Root" },
+        new MindMapDetails { Id = "2",  Label = "Brainstorming",  ParentId = "1", Branch = "Right" },
+        new MindMapDetails { Id = "3",  Label = "Complementing",  ParentId = "1", Branch = "Left" },
+        new MindMapDetails { Id = "4",  Label = "Sessions",       ParentId = "2", Branch = "subRight" },
+        new MindMapDetails { Id = "5",  Label = "Complementing",  ParentId = "2", Branch = "subRight" },
+        new MindMapDetails { Id = "6",  Label = "Local",          ParentId = "3", Branch = "subRight" },
+        new MindMapDetails { Id = "7",  Label = "Remote",         ParentId = "3", Branch = "subRight" },
+        new MindMapDetails { Id = "8",  Label = "Individual",     ParentId = "3", Branch = "subRight" },
+        new MindMapDetails { Id = "9",  Label = "Teams",          ParentId = "3", Branch = "subRight" },
+        new MindMapDetails { Id = "10", Label = "Ideas",          ParentId = "5", Branch = "subRight" },
+        new MindMapDetails { Id = "11", Label = "Engagement",     ParentId = "5", Branch = "subRight" },
+    };
+
+    // Replace the data source with a trimmed set, then call RefreshDataSourceAsync
+    private async Task RefreshData()
+    {
+        _dataSource = new List<object>()
+        {
+            new MindMapDetails { Id = "1", Label = "Creativity",    ParentId = "",  Branch = "Root" },
+            new MindMapDetails { Id = "2", Label = "Brainstorming", ParentId = "1", Branch = "Right" },
+            new MindMapDetails { Id = "3", Label = "Complementing", ParentId = "1", Branch = "Left" },
+            new MindMapDetails { Id = "4", Label = "Sessions",      ParentId = "2", Branch = "subRight" },
+            new MindMapDetails { Id = "5", Label = "Complementing", ParentId = "2", Branch = "subRight" },
+        };
+
+        // Rebuild the diagram layout from the new data
+        await _diagram.RefreshDataSourceAsync();
+    }
+}
+```
+
+> **Note:** `RefreshDataSourceAsync()` rebuilds the entire diagram from the current `DataSource` value. Always assign the new data to the field **before** calling this method so the diagram reads the updated collection.  
+> Use `DoLayoutAsync()` instead when working with manual node/connector collections (without `DataSourceSettings`).
+
+### Method Signatures Reference
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `ReadDataAsync` | `Task<IEnumerable<object>> ReadDataAsync(Query? query = null)` | Read records from data source |
+| `InsertDataAsync` | `Task InsertDataAsync(object data, string? tableName = null, Query? query = null, int position = 0)` | Add a new record |
+| `UpdateDataAsync` | `Task UpdateDataAsync(string keyField, object data, string? tableName = null, Query? query = null, object? original = null, IDictionary<string, object>? updateProperties = null)` | Modify an existing record |
+| `DeleteDataAsync` | `Task DeleteDataAsync(string keyField, object value, string? tableName = null, Query? query = null)` | Remove a record |
+| `RefreshDataSourceAsync` | `Task RefreshDataSourceAsync()` | Reload all data and rebuild layout |
 
 ---
 

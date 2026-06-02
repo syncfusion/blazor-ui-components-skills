@@ -15,6 +15,14 @@
 - [Snapping](#snapping)
 - [Alignment, Spacing, and Sizing Commands](#alignment-spacing-and-sizing-commands)
 - [Undo and Redo](#undo-and-redo)
+- [Clipboard Operations](#clipboard-operations)
+- [Programmatic Transform (Drag, Rotate, Scale)](#programmatic-transform-drag-rotate-scale)
+- [Group and Ungroup](#group-and-ungroup)
+- [Inline Text Editing](#inline-text-editing)
+- [Pan (Programmatic Scroll)](#pan-programmatic-scroll)
+- [Utility Methods](#utility-methods)
+- [Batch Updates (BeginUpdate / EndUpdateAsync)](#batch-updates-beginupdate--endupdateasync)
+- [Adding Multiple Elements (AddDiagramElementsAsync)](#adding-multiple-elements-adddiagramelementsasync)
 - [User Handles](#user-handles)
 - [Drawing Tool](#drawing-tool)
 - [Common Gotchas](#common-gotchas)
@@ -656,6 +664,9 @@ _diagram.Redo();
 // Check state
 bool canUndo = _diagram.HistoryManager.CanUndo;
 bool canRedo = _diagram.HistoryManager.CanRedo;
+
+// Clear entire undo/redo history
+_diagram.ClearHistory();
 ```
 
 **History change event:**
@@ -669,6 +680,210 @@ bool canRedo = _diagram.HistoryManager.CanRedo;
     }
 }
 ```
+
+**Custom history entries:**
+```csharp
+// Add a custom entry to the undo/redo history
+_diagram.AddHistoryEntry(new HistoryEntryBase { /* custom data */ });
+```
+
+**Grouped undo/redo (treat multiple actions as one unit):**
+```csharp
+// Start grouping — all actions between Start and End are undone/redone together
+_diagram.StartGroupAction();
+
+_diagram.Delete(selectedNodes);
+nodes.Add(new Node { ID = "newNode", OffsetX = 200, OffsetY = 200 });
+
+// End grouping — completes the transaction
+_diagram.EndGroupAction();
+
+// Now a single Undo() reverts ALL operations above as one step
+_diagram.Undo();
+```
+
+> ⚠️ Always pair `StartGroupAction()` with `EndGroupAction()`. An unmatched start will leave the history in an inconsistent state.
+
+---
+
+## Clipboard Operations
+
+**Copy, Cut, Paste, Delete** operate on the currently selected elements:
+
+```csharp
+// Copy selected elements to clipboard
+_diagram.Copy();
+
+// Cut selected elements (removes from diagram, places in clipboard)
+_diagram.Cut();
+
+// Paste from clipboard (offset from original position)
+_diagram.Paste();
+
+// Paste from a specific collection of cloned elements
+DiagramObjectCollection<NodeBase> clones = new DiagramObjectCollection<NodeBase>();
+clones.Add((Node)_diagram.Nodes[0].Clone());
+_diagram.Paste(clones);
+
+// Delete selected elements
+_diagram.Delete();
+
+// Delete specific elements
+var toDelete = new DiagramObjectCollection<NodeBase> { _diagram.Nodes[0], _diagram.Connectors[0] };
+_diagram.Delete(toDelete);
+```
+
+---
+
+## Programmatic Transform (Drag, Rotate, Scale)
+
+Move, rotate, and scale diagram objects programmatically without user interaction:
+
+```csharp
+// Drag a node 50px right and 30px down
+Node node = _diagram.Nodes[0] as Node;
+_diagram.Drag(node, 50, 30);
+
+// Rotate a node 45 degrees clockwise around its center
+bool success = _diagram.Rotate(node, 45);
+
+// Rotate around a custom pivot point
+bool rotated = _diagram.Rotate(node, 90, new DiagramPoint { X = 100, Y = 100 });
+
+// Scale a node to double its size around its center
+DiagramPoint center = new DiagramPoint { X = node.OffsetX, Y = node.OffsetY };
+bool scaled = _diagram.Scale(node, 2.0, 2.0, center);
+```
+
+> ⚠️ `Rotate()` and `Scale()` return `bool` — `true` if boundary constraints are satisfied, `false` otherwise.
+
+---
+
+## Group and Ungroup
+
+```csharp
+// Group currently selected nodes and connectors into a NodeGroup
+_diagram.Group();
+
+// Ungroup the selected NodeGroup (disperses its children)
+_diagram.Ungroup();
+
+// Add a child to an existing group programmatically
+NodeGroup parentGroup = _diagram.Nodes[0] as NodeGroup;
+Node newChild = new Node { ID = "child1", Width = 80, Height = 50 };
+await _diagram.AddChildAsync(parentGroup, newChild);
+
+// Remove a child from a group
+_diagram.RemoveChild(parentGroup, newChild);
+```
+
+---
+
+## Inline Text Editing
+
+Start text editing mode programmatically for an annotation:
+
+```csharp
+// Edit the first annotation of a node
+_diagram.StartTextEdit(_diagram.Nodes[0]);
+
+// Edit a specific annotation by its ID
+_diagram.StartTextEdit(_diagram.Nodes[0], "annotationId");
+```
+
+> ⚠️ `StartTextEdit()` is synchronous. The annotation must not have `AnnotationConstraints.ReadOnly` set.
+
+---
+
+## Pan (Programmatic Scroll)
+
+```csharp
+// Pan 100px to the right and 50px down
+_diagram.Pan(100, 50);
+
+// Pan with a focused point (center of the pan movement)
+_diagram.Pan(100, 50, new DiagramPoint { X = 400, Y = 300 });
+```
+
+---
+
+## Utility Methods
+
+```csharp
+// Retrieve a node or connector by its ID
+IDiagramObject obj = _diagram.GetObject("node1");
+if (obj is Node node) { /* ... */ }
+
+// Get the bounding rectangle of all diagram content
+DiagramRect bounds = _diagram.GetPageBounds();
+
+// Get bounds with a custom origin offset
+DiagramRect customBounds = _diagram.GetPageBounds(100, 50);
+
+// Clear ALL diagram elements (nodes, connectors, swimlanes)
+_diagram.Clear();
+```
+
+---
+
+## Batch Updates (BeginUpdate / EndUpdateAsync)
+
+Use `BeginUpdate()` / `EndUpdateAsync()` to batch multiple property changes and apply them in a single render pass for better performance. While locked, the diagram suspends visual updates until `EndUpdateAsync()` is awaited.
+
+```csharp
+// Lock diagram rendering
+_diagram.BeginUpdate();
+
+// Make multiple changes without intermediate re-renders
+_diagram.Nodes[0].OffsetX = 300;
+_diagram.Nodes[0].OffsetY = 200;
+_diagram.Nodes[1].Style.Fill = "#FF0000";
+_diagram.Connectors[0].Style.StrokeColor = "blue";
+
+// Unlock and apply all changes at once
+await _diagram.EndUpdateAsync();
+```
+
+> ⚠️ `EndUpdate()` (synchronous, no Async suffix) does **NOT** exist — always use `await _diagram.EndUpdateAsync()`.  
+> Always pair every `BeginUpdate()` with an `EndUpdateAsync()`. Unmatched calls leave the diagram locked.
+
+---
+
+## Adding Multiple Elements (AddDiagramElementsAsync)
+
+Add a collection of nodes, connectors, and groups to the diagram in a single async operation. This is more efficient than adding elements one by one.
+
+```csharp
+// Build a collection of nodes and connectors
+var elements = new DiagramObjectCollection<NodeBase>();
+
+elements.Add(new Node
+{
+    ID = "node1",
+    OffsetX = 100, OffsetY = 100,
+    Width = 120, Height = 60,
+    Style = new ShapeStyle { Fill = "#6BA5D7", StrokeColor = "white" }
+});
+elements.Add(new Node
+{
+    ID = "node2",
+    OffsetX = 300, OffsetY = 100,
+    Width = 120, Height = 60,
+    Style = new ShapeStyle { Fill = "#6BA5D7", StrokeColor = "white" }
+});
+elements.Add(new Connector
+{
+    ID = "connector1",
+    SourceID = "node1",
+    TargetID = "node2",
+    Type = ConnectorSegmentType.Orthogonal
+});
+
+// Add all elements at once
+await _diagram.AddDiagramElementsAsync(elements);
+```
+
+> **Note:** `AddDiagramElementsAsync` accepts `DiagramObjectCollection<NodeBase>` — both `Node` and `Connector` inherit from `NodeBase`. Passing `null` performs no operation.
 
 ---
 

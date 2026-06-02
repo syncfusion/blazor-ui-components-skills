@@ -155,6 +155,7 @@ Use this skill when you need to:
 - Complex hierarchical layout
 - Layout spacing, margin, and orientation settings
 - Layout events and callbacks
+- `await DoLayoutAsync()` — refresh layout at runtime after adding/removing nodes
 
 ### Swimlane
 📄 **Read:** [references/swimlane.md](references/swimlane.md)
@@ -232,25 +233,34 @@ nodes.Add(new Node
 - Binding diagram from a flat list or IEnumerable
 - Hierarchical data binding (parent-child relationships)
 - Remote data source integration
-- CRUD operations on bound data
+- Runtime CRUD: `await ReadDataAsync(query?)`, `await InsertDataAsync(data)`, `await UpdateDataAsync(keyField, data)`, `await DeleteDataAsync(keyField, value)`
+- `await RefreshDataSourceAsync()` — reload all data and rebuild layout
 - Mapping data fields to node/connector properties
 
 ### Interaction & Commands
 📄 **Read:** [references/interaction.md](references/interaction.md)
-- Selection modes (single, multiple, rubber-band)
-- Drag, resize, and rotate elements
-- Zoom and pan (mouse wheel, toolbar, programmatic)
+- Selection: `Select(collection, multipleSelection?)`, `SelectAll()`, `UnSelect(obj)`, `ClearSelection()`
+- Drag, resize, and rotate elements (user interaction + programmatic)
+- Programmatic transforms: `Drag(obj, tx, ty)`, `Rotate(obj, angle, pivot?)`, `Scale(obj, sx, sy, pivot)`
+- Zoom and pan: mouse wheel, toolbar, `Zoom(factor, focusPoint)`, `ResetZoom()`, `Pan(hOffset, vOffset, focusPoint?)`
 - `BringIntoView(DiagramRect)` — scroll viewport to show a region
 - `BringIntoCenter(DiagramRect)` — scroll viewport to center a region
 - `FitToPage(FitOptions?)` — fit content to viewport (sync; `FitMode.Width/Height/Both`, `DiagramRegion.Content/PageSettings`)
 - `Nudge(Direction, int?)` — move selected elements by pixels; default 1px; `Direction.Top/Bottom/Left/Right`
 - Z-Order: `BringToFront()`, `BringForward()`, `SendBackward()`, `SendToBack()` — must `Select()` first
+- Clipboard: `Copy()`, `Cut()`, `Paste(collection?)`, `Delete(collection?)`
+- Group/Ungroup: `Group()`, `Ungroup()`, `AddChildAsync(group, child)`, `RemoveChild(group, child)`
+- Inline text editing: `StartTextEdit(obj, annotationId?)`
 - Keyboard shortcuts (built-in table) and `CommandManager` (custom/override shortcuts via child component)
 - `CommandManager` uses `KeyboardCommand` + `KeyGesture` (`DiagramKeys` + `ModifierKeys`) + `CommandKeyArgs`
 - Snapping to grid or objects
 - Alignment, spacing, and sizing commands (`SetAlign`, `SetDistribute`, `SetSameSize` — all sync)
 - User handles (custom action buttons on selection)
-- Undo/redo (`Undo()`, `Redo()` — sync)
+- Undo/redo: `Undo()`, `Redo()` (sync); `StartGroupAction()` / `EndGroupAction()` for batched undo steps
+- History: `AddHistoryEntry(entry)`, `ClearHistory()`
+- Utility: `GetObject(id)`, `GetPageBounds(x?, y?)`, `Clear()` (removes all elements)
+- Batch updates: `BeginUpdate()` + `await EndUpdateAsync()` — group multiple changes into one render pass
+- Add multiple elements: `await AddDiagramElementsAsync(DiagramObjectCollection<NodeBase>)`
 
 ### Events
 📄 **Read:** [references/events.md](references/events.md)
@@ -292,6 +302,7 @@ nodes.Add(new Node
 - Lifelines and activation boxes
 - Message types (synchronous, asynchronous, return, create, destroy)
 - UML interaction shapes and connectors
+- `await UpdateFromModelAsync()` — refresh diagram after programmatic model changes
 
 ### Collaborative Editing
 📄 **Read:** [references/collaborative-editing.md](references/collaborative-editing.md)
@@ -299,6 +310,7 @@ nodes.Add(new Node
 - SignalR hub configuration
 - Blazor Server and WASM app integration
 - Handling real-time sync and conflict resolution
+- Delta sync: `GetDiagramUpdates(HistoryChangedEventArgs)` + `await SetDiagramUpdatesAsync(updates)` — efficient change propagation
 
 ### Overview Component
 📄 **Read:** [references/overview-component.md](references/overview-component.md)
@@ -327,6 +339,7 @@ nodes.Add(new Node
 📄 **Read:** [references/advanced-features.md](references/advanced-features.md)
 - Context menu (built-in and custom items)
 - Tooltips for nodes, connectors, ports, user handles
+- Programmatic tooltips: `await ShowTooltipAsync(obj)` / `await HideTooltipAsync(obj)` — requires `OpensOn = "Custom"`
 - Gridlines and rulers
 - Scroll settings and page settings
 - Container and group nodes

@@ -120,6 +120,29 @@ new Node
 <SfDiagramComponent Constraints="DiagramConstraints.Default | DiagramConstraints.Tooltip" />
 ```
 
+### Programmatic tooltip control (Custom open mode)
+
+Use `ShowTooltipAsync` and `HideTooltipAsync` to show/hide tooltips programmatically. The element's tooltip must have `OpensOn = "Custom"` — tooltips configured with automatic open modes are not affected.
+
+```csharp
+// Node configured with custom tooltip open mode
+new Node
+{
+    ID = "node2",
+    OffsetX = 240, OffsetY = 100,
+    Tooltip = new DiagramTooltip { Content = "Custom tooltip", OpensOn = "Custom" },
+    Constraints = NodeConstraints.Default | NodeConstraints.Tooltip
+}
+
+// Show tooltip programmatically
+await _diagram.ShowTooltipAsync(_diagram.Nodes[1] as NodeBase);
+
+// Hide tooltip programmatically
+await _diagram.HideTooltipAsync(_diagram.Nodes[1] as NodeBase);
+```
+
+> **Note:** `ShowTooltipAsync` and `HideTooltipAsync` only work for elements with `OpensOn = "Custom"`. Elements with `OpensOn = "Auto"` or `OpensOn = "Hover"` are controlled by the browser and are not affected.
+
 ---
 
 ## Undo and Redo
