@@ -235,32 +235,6 @@ This skill has been hardened against the following identified security warnings:
 ### [COMMAND_EXECUTION] IJSRuntime Browser API Usage
 **Status:** ✅ RESOLVED WITH SAFEGUARDS
 
-**Finding:** Skill uses IJSRuntime for localStorage access and dynamic CSS/script injection.
-
-**Safeguards Implemented:**
-- Never allow user-controlled or external data in JavaScript interop
-- All CSS theme URLs must come from allow-listed set of known themes
-- No dynamic script loading from untrusted sources
-- Input validation required before any JS invocation
-- Content Security Policy headers block unauthorized script execution
-
-**Secure Pattern:**
-```csharp
-// SAFE: Only pre-defined themes allowed
-private readonly Dictionary<string, string> AllowedThemes = new()
-{
-    { "bootstrap5", "_content/Syncfusion.Blazor/styles/bootstrap5.css" },
-    { "material", "_content/Syncfusion.Blazor/styles/material.css" }
-};
-
-private async Task SwitchThemeSafely(string themeName)
-{
-    if (!AllowedThemes.ContainsKey(themeName))
-        throw new SecurityException($"Theme not allowed");
-    await JS.InvokeVoidAsync("loadThemeSafely", AllowedThemes[themeName]);
-}
-```
-
 **Reference:** [state-persistence.md](references/state-persistence.md) | [customization-and-styling.md](references/customization-and-styling.md)
 
 ### [PROMPT_INJECTION] Untrusted Data to Automated Agents

@@ -387,21 +387,6 @@ Style tooltips globally.
 
 ## Theme Studio Integration
 
-### Using Default Themes
-
-Syncfusion provides pre-built themes. Import in your layout:
-
-```html
-<!-- Bootstrap 5 theme (default) -->
-<link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
-
-<!-- Alternative themes -->
-<!-- <link href="_content/Syncfusion.Blazor/styles/material.css" rel="stylesheet" /> -->
-<!-- <link href="_content/Syncfusion.Blazor/styles/fabric.css" rel="stylesheet" /> -->
-<!-- <link href="_content/Syncfusion.Blazor/styles/tailwind.css" rel="stylesheet" /> -->
-<!-- <link href="_content/Syncfusion.Blazor/styles/bootstrap4.css" rel="stylesheet" /> -->
-```
-
 ### Switching Themes Dynamically
 
 ```csharp

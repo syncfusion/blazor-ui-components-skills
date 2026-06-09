@@ -76,22 +76,6 @@ For older Blazor WASM apps, register in `Main.cs` or `Program.cs`:
 builder.Services.AddSyncfusionBlazor();
 ```
 
-### Step 3: Add CSS Theme Reference
-
-In your `App.razor` or main layout file, add the Syncfusion CSS reference:
-
-```html
-<link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
-```
-
-Common theme options:
-- `bootstrap5.css` - Bootstrap 5 theme (default)
-- `material.css` - Material Design theme
-- `fabric.css` - Fabric theme
-- `tailwind.css` - Tailwind CSS theme
-
-Choose the theme that matches your application's design system.
-
 ## Basic Map Component
 
 ### Minimal Map Setup
@@ -212,26 +196,6 @@ A layer is a collection of visual elements (tiles, shapes, markers) displayed on
 ```
 
 Each layer renders independently and can be toggled on/off.
-
-## CSS and Theme Configuration
-
-### Import via CSS File
-
-In your `index.html` or layout, add the Syncfusion theme link:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Blazor Maps App</title>
-    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
-</head>
-<body>
-    <!-- Your content -->
-</body>
-</html>
-```
 
 ### Dynamic Theme Switching
 
