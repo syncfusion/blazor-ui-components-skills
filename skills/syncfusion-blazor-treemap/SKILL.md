@@ -3,7 +3,7 @@ name: syncfusion-blazor-treemap
 description: Implement and configure the Syncfusion Blazor TreeMap component (SfTreeMap) for hierarchical data visualization. Use this when working with treemaps, area-proportional visualizations, or heat-map-like block displays. This skill covers TreeMap setup, layout configuration, data binding, color mapping, drill-down navigation, and accessibility features.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "data-visualization"
 ---
 

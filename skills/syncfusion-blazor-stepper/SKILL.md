@@ -3,7 +3,7 @@ name: syncfusion-blazor-stepper
 description: Implement the Syncfusion Blazor Stepper component for multi-step workflows. Use this skill when creating step-by-step navigation UI, wizards, form workflows, or progress tracking. This skill covers step-based navigation, wizard interfaces, step validation, animations, templates, and stepper customization in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation"
 ---
 

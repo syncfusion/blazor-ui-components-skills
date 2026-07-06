@@ -3,7 +3,7 @@ name: syncfusion-blazor-image-editor
 description: Implement comprehensive image editing capabilities in Blazor applications using the Syncfusion Image Editor component. Use this skill when implementing image editing, annotations, transformations, cropping, filtering, zooming, and panning features. Supports annotations (text, shapes, freehand), transformations (crop, rotate, flip, resize), effects (filters, fine-tuning), toolbar customization, and keyboard shortcuts.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "File Editors"
 ---
 

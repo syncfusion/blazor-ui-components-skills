@@ -3,7 +3,7 @@ name: syncfusion-blazor-dataform
 description: Implement Syncfusion Blazor DataForm component for creating dynamic, data-bound forms with validation and field management. Use this when building forms in Blazor with Syncfusion components, handling form validation, binding models, creating editable fields, or managing form events. This skill covers form layout customization, data binding, FormItems configuration, FormAutoGenerateItems setup, templates, events, and data annotation validation.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Blazor Form Components"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-maps
 description: Implement interactive spatial data visualization with Syncfusion Maps component for Blazor. Use this skill when user needs to display geographic data, add markers/polygons to maps, integrate map providers (Google Maps, Bing Maps, Azure Maps, OpenStreetMap), create choropleth visualizations, handle user interactions with maps, export/print maps, support internationalization, implement accessibility features, or customize map styling and appearance.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

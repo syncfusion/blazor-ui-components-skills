@@ -3,7 +3,7 @@ name: syncfusion-blazor-ribbon
 description: Implement the Syncfusion Blazor Ribbon component. Use this skill when creating ribbon interfaces, implementing ribbon tabs/groups/items, adding file menus, handling ribbon events, or customizing ribbon styling in Syncfusion Blazor projects. Supports all ribbon item types (Button, Checkbox, DropDown, SplitButton, ComboBox, ColorPicker, GroupButton, Template), file menu operations, gallery items, contextual tabs, backstage view, keyboard navigation with KeyTips, events, theming, and accessibility features.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Ribbon Component

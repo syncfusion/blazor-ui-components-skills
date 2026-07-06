@@ -3,7 +3,7 @@ name: syncfusion-blazor-dropdowns
 description: Comprehensive guide for implementing Syncfusion Blazor dropdown components including AutoComplete, ComboBox, DropDown List, MultiSelect Dropdown, and ListBox. Use this when building selection interfaces, data binding, filtering, cascading dropdowns, custom templates, and accessible dropdown experiences in Blazor applications. Covers all dropdown components from Syncfusion.Blazor.DropDowns package.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Dropdowns"
 ---
 

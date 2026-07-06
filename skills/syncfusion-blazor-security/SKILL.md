@@ -3,7 +3,7 @@ name: syncfusion-blazor-security
 description: Configure Content Security Policy (CSP) for Syncfusion Blazor components across Blazor Server, WebAssembly, and Auto render modes � self-hosted and CDN scenarios
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Security

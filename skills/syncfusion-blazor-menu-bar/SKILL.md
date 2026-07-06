@@ -3,7 +3,7 @@ name: syncfusion-blazor-menu-bar
 description: Implement navigation menus using Syncfusion Blazor Menu Bar component. Use this skill to create horizontal or vertical menus with submenus, icons, events, animations, and data binding. Essential for building professional menu bars in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

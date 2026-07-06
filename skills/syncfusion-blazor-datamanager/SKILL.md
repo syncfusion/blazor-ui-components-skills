@@ -3,7 +3,7 @@ name: syncfusion-blazor-datamanager
 description: Implements Syncfusion Blazor SfDataManager for data access, data binding, and adaptor configuration in Blazor Server, WebAssembly, and Web App. Used when binding components like SfGrid and SfDropDownList to local or remote data sources, choosing adaptors (UrlAdaptor, ODataAdaptor, WebApiAdaptor, GraphQLAdaptor), or performing CRUD. Includes custom binding using DataAdaptor, DataManagerRequest, DataOperations, and the Syncfusion.Blazor.Data package.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor DataManager

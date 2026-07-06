@@ -3,7 +3,7 @@ name: syncfusion-blazor-circular-gauge
 description: Implement Syncfusion Blazor Circular Gauge (SfCircularGauge) for radial data visualization. Use this when creating speedometers, tachometers, KPI dashboards, or circular progress indicators. This skill covers needle pointers, gauge ranges, annotations, and circular metric visualization in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

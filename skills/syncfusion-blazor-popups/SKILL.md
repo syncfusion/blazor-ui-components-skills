@@ -3,7 +3,7 @@ name: syncfusion-blazor-popups
 description: Implement modal and modeless dialogs using Syncfusion Blazor Dialog component. Use this skill when creating dialogs, popup windows, modal confirmations, custom forms, or interactive overlay windows. Covers templates, events, positioning, animations, accessibility, and advanced customization.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Popups"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-sankey
 description: Comprehensive guide for implementing Syncfusion Blazor Sankey Diagram (SfSankey) component for flow visualization in Blazor applications. Use this when working with Sankey diagrams, flow visualization, or process flows. This skill covers node and link configuration, data binding, flow magnitude representation, and diagram customization. Ideal for visualizing energy flows, supply chain relationships, user journey maps, traffic analysis, and any scenario involving flows between categories or stages.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

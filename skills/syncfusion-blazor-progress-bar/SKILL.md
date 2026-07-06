@@ -3,7 +3,7 @@ name: syncfusion-blazor-progress-bar
 description: Guide for implementing Syncfusion Blazor ProgressBar components in Blazor applications. Use this when displaying progress indicators, loading states, task completion status, or file upload progress. This skill covers linear and circular progress bars, indeterminate loaders, buffer states, and progress tracking. Ideal for visual feedback during operations, showing completion percentages, and any scenario requiring visual progress indicators.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

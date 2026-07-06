@@ -3,7 +3,7 @@ name: syncfusion-blazor-splitter
 description: Implement Blazor Splitter layouts with pane configuration, resizing, and state management. Use when creating split pane layouts, handling user interactions, managing pane states, and applying custom styling to Syncfusion Blazor Splitter components.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Layout Components"
 ---
 

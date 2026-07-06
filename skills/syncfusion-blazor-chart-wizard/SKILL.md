@@ -3,7 +3,7 @@ name: syncfusion-blazor-chart-wizard
 description: "Implements the Syncfusion Blazor Chart Wizard for guided chart creation. Use this when building interactive chart builders that require step-by-step configuration, data binding, and export features. Covers chart customization, theming, and accessibility."
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-datagrid
 description: Implements the Syncfusion Blazor DataGrid (SfGrid) for efficient tabular operations such as sorting, filtering, paging, grouping, editing, aggregates, virtualization, lazy‑load grouping, and row or column spanning. Use this skill when building data‑grid workflows in Blazor Server, WebAssembly, Web App, or MAUI applications. Supports Excel/PDF export, virtual or infinite scrolling, customizable templates, and grid state persistence for consistent and optimized data‑grid behavior.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 ***

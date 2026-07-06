@@ -3,7 +3,7 @@ name: syncfusion-blazor-smart-paste
 description: Set up and use the Syncfusion Blazor Smart Paste Button — AI-powered clipboard-to-form filling with OpenAI, Azure OpenAI, Ollama, or custom AI backends. Covers NuGet setup, service configuration, field annotations, button customization, and troubleshooting.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Smart Paste Button

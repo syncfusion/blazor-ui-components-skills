@@ -6,7 +6,7 @@ metadata:
   platform: blazor
   package: Syncfusion.Blazor.Kanban
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: data-visualization
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-sidebar
 description: Guide to implementing Syncfusion Blazor Sidebar component for responsive navigation sidebars. Use this when building Blazor WebAssembly and .NET 8 Web Apps that need sidebars. Covers setup, open/close control, docking, state persistence, multiple sidebars, and complete styling. Includes ListView and TreeView integration.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

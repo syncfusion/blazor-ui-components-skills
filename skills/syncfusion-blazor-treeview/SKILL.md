@@ -4,7 +4,7 @@ description: |
   Implement Syncfusion Blazor TreeView component for hierarchical data display with single/multi-selection, editing, expand-collapse, checkboxes, drag-drop, and virtualization. Use this skill whenever the user needs to display tree-structured data, enable node selection and editing, implement checkboxes for multi-selection, load data on demand, filter and search nodes, customize node appearance, or handle tree interaction events.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-barcode
 description: "Build and troubleshoot barcode generation in Blazor using SfBarcodeGenerator, SfQRCodeGenerator, and SfDataMatrixGenerator. Trigger for 1D barcodes (Code39, Code128, Codabar), QR codes with logo and error correction, Data Matrix, checksum validation, and exporting barcodes to images in Syncfusion Blazor apps."
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

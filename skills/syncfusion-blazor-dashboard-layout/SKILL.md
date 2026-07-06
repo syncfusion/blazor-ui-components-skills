@@ -3,7 +3,7 @@ name: syncfusion-blazor-dashboard-layout
 description: Guide for implementing Syncfusion Blazor Dashboard Layout component. Use this when building dashboard interfaces with draggable/resizable panels, state persistence, or responsive grid arrangements. Covers panel positioning, sizing constraints, drag-drop rearrangement, and adaptive layouts.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Layouts"
 ---
 

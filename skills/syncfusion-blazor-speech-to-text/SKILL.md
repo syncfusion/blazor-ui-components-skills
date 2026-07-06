@@ -3,7 +3,7 @@ name: syncfusion-blazor-speech-to-text
 description: Implement speech-to-text voice input in Blazor applications using Syncfusion SpeechToText component. ALWAYS use this when users need voice input, speech recognition, audio transcription, or implementing the SpeechToText component in Blazor. Trigger for Syncfusion.Blazor.Inputs, microphone input, voice-to-text conversion, language support, transcript binding, listening states, error handling, browser speech API, or any speech recognition requirements.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Speech To Text

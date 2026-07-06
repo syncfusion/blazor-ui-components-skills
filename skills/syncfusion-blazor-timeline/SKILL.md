@@ -3,7 +3,7 @@ name: syncfusion-blazor-timeline
 description: Build interactive timeline components that display events and milestones sequentially. Use SfTimeline with alignment controls, custom items, and event handlers. This skill covers timeline configuration and customization for creating visual timelines in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "layouts"
 ---
 

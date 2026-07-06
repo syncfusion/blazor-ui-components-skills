@@ -3,7 +3,7 @@ name: syncfusion-blazor-chat-ui
 description: Implement the Syncfusion Blazor Chat UI component for conversational chat interfaces in Blazor applications. Use this skill when creating chat applications, messaging interfaces, or multi-user conversations. Covers message management, user models, typing indicators, avatars, timestamps, and file attachments with customizable templates.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Chat UI

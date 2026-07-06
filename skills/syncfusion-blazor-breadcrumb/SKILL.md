@@ -3,7 +3,7 @@ name: syncfusion-blazor-breadcrumb
 description: Implement Syncfusion Blazor Breadcrumb (SfBreadcrumb) control for hierarchical navigation. Use this when building breadcrumb trails, auto-generating items from URLs, or managing dynamic navigation sequences. This skill covers overflow modes, item templates, icon customization, and responsive layout configurations.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

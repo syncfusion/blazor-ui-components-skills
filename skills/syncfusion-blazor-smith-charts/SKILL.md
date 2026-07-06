@@ -3,7 +3,7 @@ name: syncfusion-blazor-smith-charts
 description: Implement Syncfusion Blazor Smith Chart for RF circuit analysis and transmission line impedance matching. Use this when visualizing impedance/admittance data, reflection coefficients, S-parameters, or antenna tuning in Blazor applications. This skill covers circular grid representations and RF network parameter analysis.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

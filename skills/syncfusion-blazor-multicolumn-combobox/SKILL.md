@@ -3,7 +3,7 @@ name: syncfusion-blazor-multicolumn-combobox
 description: Comprehensive guide for implementing Syncfusion Blazor MultiColumn ComboBox component. Use this when displaying structured data in a dropdown with multiple columns, filtering, selection, paging, virtualization, grouping, and customization options. Perfect for complex data structures and advanced filtering scenarios in Blazor applications. Covers all MultiColumn ComboBox features from Syncfusion.Blazor.MultiColumnComboBox package.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Implementing Syncfusion Blazor MultiColumn ComboBox

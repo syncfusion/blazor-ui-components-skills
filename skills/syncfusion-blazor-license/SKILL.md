@@ -3,7 +3,7 @@ name: syncfusion-blazor-license
 description: Generate, register, secure, validate, and troubleshoot Syncfusion Blazor license keys across all Blazor project types
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor License Configuration

@@ -3,7 +3,7 @@ name: syncfusion-blazor-stock-charts
 description: Implement Syncfusion Blazor Stock Chart (SfStockChart) for financial data visualization. Use this when working with stock charts, candlestick displays, OHLC data, or technical indicators like SMA, EMA, MACD, and Bollinger Bands. This skill covers period selectors, range navigation, and financial time-series data visualization in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

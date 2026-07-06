@@ -3,7 +3,7 @@ name: syncfusion-blazor-pivot-table
 description: Use this skill when users ask how to implement Syncfusion Pivot Table/PivotView in Blazor. Trigger for Blazor components, data binding, OLAP analysis, aggregation, drill-down/drill-through, grouping, filtering, conditional formatting, exports (Excel/PDF/CSV), or pivot charts. Blazor-only, not React/Angular/Vue/JS.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Grids"
 ---
 

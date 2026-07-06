@@ -3,7 +3,7 @@ name: syncfusion-blazor-gantt-chart
 description: Implements Syncfusion Blazor Gantt for project scheduling. Covers SfGantt, GanttTaskFields, GanttColumns, GanttEditSettings, taskbar editing, dependencies, resources, timeline, critical path, baselines, and Excel/PDF export. Applicable for Blazor Gantt charts, task scheduling, WBS, and Syncfusion.Blazor.Gantt integration.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Implementing Syncfusion Blazor Gantt Chart

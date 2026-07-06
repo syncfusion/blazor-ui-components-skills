@@ -3,7 +3,7 @@ name: syncfusion-blazor-heatmap-chart
 description: Implements the Syncfusion Blazor HeatMap Chart component for multi-dimensional data visualization using color-coded grids. Use this when working with heatmaps, data matrices, correlation displays, or bubble heatmap variants. This skill covers installation, data binding, axis configuration, color palettes, legends, tooltips, and accessibility features.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

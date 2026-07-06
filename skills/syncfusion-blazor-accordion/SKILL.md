@@ -3,7 +3,7 @@ name: syncfusion-blazor-accordion
 description: Guide for implementing the Syncfusion Blazor Accordion component for creating collapsible panels with expandable content. Use this skill when users need to build accordions, implement collapsible sections, create expandable panels, organize content in navigation components, implement FAQs, build collapsible menus, add nested accordions, configure expand modes (single or multiple), handle accordion events, customize accordion styling, implement accessible accordions with WCAG compliance, integrate data binding, or work with any vertically collapsible content containers in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Accordion Component

@@ -3,7 +3,7 @@ name: syncfusion-blazor-smart-rich-text-editor
 description: "Implements Syncfusion SfSmartRichTextEditor, an AI-enhanced WYSIWYG editor extending SfRichTextEditor in Blazor. Use this when configuring AI backends (OpenAI, Azure OpenAI, Ollama, custom IChatClient), Smart Action toolbar, AI query dialog, AssistViewSettings, AI popup events and methods, or any inherited Rich Text Editor features in Blazor Server and Web App."
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Smart Rich Text Editor

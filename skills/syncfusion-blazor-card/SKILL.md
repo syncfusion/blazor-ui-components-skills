@@ -3,7 +3,7 @@ name: syncfusion-blazor-card
 description: Build responsive card layouts with Syncfusion Blazor Card component. Use this when creating reusable card containers with headers, images, content, action buttons, and custom styling. This skill covers setup, structure, layouts, interactivity, and advanced customization.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Components"
 ---
 

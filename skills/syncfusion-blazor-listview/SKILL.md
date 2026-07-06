@@ -3,7 +3,7 @@ name: syncfusion-blazor-listview
 description: Guide for implementing Syncfusion Blazor ListView component. Use this when building list-based interfaces with data binding, filtering, grouping, virtual scrolling, selection modes, and custom templates. Covers installation, templating, event handling, and advanced patterns.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

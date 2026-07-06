@@ -3,7 +3,7 @@ name: syncfusion-blazor-charts
 description: Implement Syncfusion Blazor Chart (SfChart) component for comprehensive data visualization. Use this when creating line charts, bar/column charts, area charts, financial charts, or statistical visualizations. This skill covers 30+ chart types including scatter plots, bubble charts, candlestick charts, and specialized charts like waterfall, histogram, and polar charts for Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

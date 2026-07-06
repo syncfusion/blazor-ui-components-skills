@@ -3,7 +3,7 @@ name: syncfusion-blazor-ai-assistview
 description: Implement the Syncfusion Blazor AI AssistView component for AI-powered chat interfaces in Blazor applications. Use this skill when implementing conversational AI, chatbots, AI assistants, or prompt-response interfaces. Covers AssistViewPrompt setup, PromptRequested events, markdown responses, and prompt suggestions with avatar customization.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor AI AssistView

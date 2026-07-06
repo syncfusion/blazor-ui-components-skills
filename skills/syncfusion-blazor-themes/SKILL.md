@@ -3,7 +3,7 @@ name: syncfusion-blazor-themes
 description: Customize and apply Syncfusion Blazor themes — Theme Studio color customization, CSS/SCSS integration, lightweight themes, component filtering, and Sass variable overrides
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Themes

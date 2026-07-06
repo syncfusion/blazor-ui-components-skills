@@ -3,7 +3,7 @@ name: syncfusion-blazor-common
 description: Set up Syncfusion Blazor components — project creation, NuGet packages, service registration, script loading, bUnit testing, and localization & globalization configuration
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Getting Started

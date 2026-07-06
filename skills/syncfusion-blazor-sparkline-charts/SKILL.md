@@ -3,7 +3,7 @@ name: syncfusion-blazor-sparkline-charts
 description: Implement Syncfusion Blazor Sparkline Charts for compact, inline trend visualizations in Blazor applications. Use this when creating mini charts, KPI indicators, dashboard sparklines, or word-sized data visualizations. This skill covers line, area, column, WinLoss, and pie sparklines, including data labels, markers, special points (high/low/negative), range bands, tooltips, and appearance customization. Ideal for dashboards, data tables with inline trends, email reports, and mobile data visualization scenarios requiring compact trend indicators.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-media-query
 description: Create responsive Blazor applications using Media Query component. Trigger when user needs responsive layouts, breakpoint-based rendering, screen size adaptation, multi-device support, or needs to conditionally render components based on device type. Essential for building adaptive UIs that work across mobile, tablet, and desktop devices.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Media Query

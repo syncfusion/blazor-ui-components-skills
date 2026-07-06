@@ -3,7 +3,7 @@ name: syncfusion-blazor-toolbar
 description: Implement Syncfusion Blazor Toolbar (SfToolbar) component for creating interactive command bars and toolbars. Use this when working with toolbars, command bars, or action bars with buttons and icons. This skill covers responsive toolbars with overflow handling, item configuration and alignment, keyboard navigation, accessibility features, and dynamic item management.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Toolbar Component

@@ -3,7 +3,7 @@ name: syncfusion-blazor-context-menu
 description: "Implement Syncfusion Blazor ContextMenu component for building right-click menus, context-sensitive navigation, or popup menu systems. Use this when you need hierarchical menu structures with nesting support, data binding, or custom templates. This skill covers setup, customization, events, and dynamic menu management."
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Navigation Components"
 ---
 

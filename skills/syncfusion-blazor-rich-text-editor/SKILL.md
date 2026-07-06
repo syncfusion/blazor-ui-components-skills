@@ -3,7 +3,7 @@ name: syncfusion-blazor-rich-text-editor
 description: "Implements the Syncfusion Blazor Rich Text Editor (SfRichTextEditor) from Syncfusion.Blazor.RichTextEditor. Supports HTML, Markdown, and IFrame editor modes. Use this skills for toolbar configuration, image/video/audio insertion, table management, paste cleanup, import/export Word/PDF, accessibility, globalization, RTL, and inline or custom toolbar tool scenarios in Blazor applications."
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "File Viewers & Editors"
 ---
 

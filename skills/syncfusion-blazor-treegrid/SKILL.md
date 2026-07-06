@@ -3,7 +3,7 @@ name: syncfusion-blazor-treegrid
 description: Implements the Syncfusion Blazor TreeGrid (SfTreeGrid) for hierarchical or self‑referential data with expandable nodes and nested row structures. Use this skill when building tree‑view workflows in Blazor Server, WebAssembly, Web App, or MAUI applications. Supports GraphQL binding, templates, sorting, filtering, editing, paging, aggregates, search, exporting, virtualization, clipboard actions, and state management for rich hierarchical data experiences.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Implementing Syncfusion Blazor TreeGrid

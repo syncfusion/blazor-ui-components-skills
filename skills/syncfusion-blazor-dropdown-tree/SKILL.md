@@ -4,7 +4,7 @@ description: |
   Implement Syncfusion Blazor Dropdown Tree component for hierarchical data selection with single/multi-selection, checkboxes, filtering, and advanced customization. Use this skill whenever the user needs to display tree-structured data in a dropdown, select single or multiple hierarchical items, implement checkboxes for multi-item selection, filter tree data, customize templates, bind to remote data sources, or handle tree-related events and validation.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Dropdowns"
 ---
 

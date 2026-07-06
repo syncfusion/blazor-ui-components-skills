@@ -3,7 +3,7 @@ name: syncfusion-blazor-query-builder
 description: Implement Syncfusion Blazor Query Builder component for building dynamic, customizable query interfaces with complex filtering logic. Use this when creating advanced search interfaces, implementing business rule engines, or building data filtering workflows with nested condition groups and AND/OR logic. Supports rule management, drag-drop UI, state persistence, and extensive customization options.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Form Components"
 ---
 

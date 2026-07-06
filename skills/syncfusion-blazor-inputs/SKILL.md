@@ -3,7 +3,7 @@ name: syncfusion-blazor-inputs
 description: Implement Syncfusion Blazor Input components including FileUpload, TextBox, NumericTextBox, TextArea, Signature, RangeSlider, OtpInput, Rating, InputMask, and ColorPicker. Use this when working with file uploads, text entry, numeric values, multi-line text inputs, signatures, ratings, or color selection. This skill covers input validation, events, data binding, and advanced customization options for all input-related components in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Inputs"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-buttons
 description: Implement Syncfusion Blazor button components including Button, ButtonGroup, CheckBox, Chip, DropdownMenu, FloatingActionButton, ProgressButton, SpeedDial, SplitButton, and ToggleSwitch. Use this skill when working with button-related components in Blazor applications. Covers installation, configuration, styling, accessibility, event handling, and advanced features for all button component types.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Blazor UI Components - Buttons"
 ---
 

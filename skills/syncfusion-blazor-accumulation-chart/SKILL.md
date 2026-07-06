@@ -3,7 +3,7 @@ name: syncfusion-blazor-accumulation-chart
 description: Implement Syncfusion Blazor Accumulation Chart (SfAccumulationChart) for proportional data visualization. Use this when creating pie charts, doughnut charts, funnel charts, or pyramid charts. This skill covers data labels, legends, tooltips, slice grouping, and part-to-whole visualizations in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-notifications
 description: Implement Syncfusion Blazor notification components (Toast, Message, Skeleton) for user feedback and loading states. ALWAYS use this when users need toast notifications, popup messages, alert boxes, success/error/warning/info messages, loading skeletons, shimmer effects, content placeholders, or any feedback UI. Trigger immediately when users mention notifications, toasts, alerts, messages, loading states, skeleton screens, shimmer loading, user feedback, status messages, SfToast, SfMessage, SfSkeleton, notification popups, or need to show temporary messages, form validation feedback, or loading placeholders.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Blazor UI Components - Notifications"
 ---
 

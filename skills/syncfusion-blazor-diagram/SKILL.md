@@ -3,7 +3,7 @@ name: syncfusion-blazor-diagram
 description: Build and troubleshoot Syncfusion Blazor diagrams using SfDiagramComponent. Trigger for flowcharts, org charts, mind maps, BPMN, UML sequence, swimlanes, symbol palettes, nodes/connectors/ports/annotations, layouts, data binding, serialization (load/save), export/print, and collaborative editing questions. Provide Blazor + Syncfusion setup steps, configuration patterns, and sample snippets.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

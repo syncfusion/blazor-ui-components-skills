@@ -3,7 +3,7 @@ name: syncfusion-blazor-file-manager
 description: Implement Syncfusion Blazor FileManager component for file browsing and management. Use this when creating hierarchical file systems, handling multiple file operations, implementing data binding patterns, or setting up cloud provider integration. This skill covers file operations, data binding, events handling, and customization options.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "File Management"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-calendars
 description: Comprehensive guide for implementing Syncfusion Blazor calendar components including Calendar, DatePicker, DateRangePicker, DateTimePicker, and TimePicker. Use this when building date selection interfaces, date range selection, date/time input, calendar displays, date constraints, formatting, globalization, and accessible calendar experiences in Blazor applications. Covers all calendar components from Syncfusion.Blazor.Calendars package.
 metadata:
     author: "Syncfusion Inc"
-    version: "33.1.44"
+    version: "34.1.29"
     category: "Calendars"
 ---
 

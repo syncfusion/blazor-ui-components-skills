@@ -3,7 +3,7 @@ name: syncfusion-blazor-carousel
 description: Guide for implementing Syncfusion Blazor Carousel component for image galleries, product showcases, and content sliders. Use when user mentions carousel, image slider, slideshow, content rotation, product galleries, rotating banners, slide transitions, or needs to display multiple items in a cycling presentation format.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Carousel

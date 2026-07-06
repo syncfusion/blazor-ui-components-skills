@@ -3,7 +3,7 @@ name: syncfusion-blazor-linear-gauge
 description: Implement Syncfusion Blazor Linear Gauge (SfLinearGauge) for data visualization with linear scales. Use this when creating thermometer displays, progress indicators, or measurement visualizations. This skill covers axis configuration, pointers, ranges, and gauge appearance customization in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

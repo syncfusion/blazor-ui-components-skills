@@ -3,7 +3,7 @@ name: syncfusion-blazor-scheduler
 description: Implement Syncfusion Blazor Scheduler component for comprehensive appointment and event scheduling. Use this when building calendar interfaces, managing appointments with CRUD operations, implementing multiple view modes, setting up recurring events, or handling timezone-aware scheduling. This skill covers views (day, week, month, timeline, agenda), drag-and-drop functionality, resizing, resources, localization, data binding, state persistence, and advanced customization options for scheduling applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Scheduler Components"
 ---
 

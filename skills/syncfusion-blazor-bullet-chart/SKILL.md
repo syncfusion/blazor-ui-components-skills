@@ -3,7 +3,7 @@ name: syncfusion-blazor-bullet-chart
 description: Implement Syncfusion Blazor Bullet Chart (SfBulletChart) for KPI and performance visualization. Use this when displaying target vs actual metrics, goal tracking, or performance dashboards. This skill covers actual/target bars, qualitative ranges, and comparative analysis for KPI visualization in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

@@ -3,7 +3,7 @@ name: syncfusion-blazor-blockeditor
 description: Implement Syncfusion Blazor Block Editor for modular, block-based rich content creation. ALWAYS use when building structured document editors with customizable blocks like headings, paragraphs, lists, and media. Immediately configure menus, drag-drop, undo/redo, paste cleanup, and events.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor Block Editor

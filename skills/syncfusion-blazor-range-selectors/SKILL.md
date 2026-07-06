@@ -3,7 +3,7 @@ name: syncfusion-blazor-range-selectors
 description: Implement Syncfusion Blazor RangeNavigator for interactive data range selection and chart navigation. Trigger when users mention range selector, range navigator, SfRangeNavigator, Syncfusion.Blazor.Charts.RangeNavigator, time-series filtering, date range picker for charts, data zooming, slider navigation, thumb-based range selection, period selector, or chart data range selection for large data.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
   category: "Data Visualization"
 ---
 

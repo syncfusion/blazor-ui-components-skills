@@ -3,7 +3,7 @@ name: syncfusion-blazor-appbar
 description: Guide for implementing Syncfusion Blazor AppBar component (SfAppBar) in Blazor applications. Use this when implementing navigation bars, app bars, or header toolbars with action controls. This skill covers AppBar configuration, size modes (regular, prominent, dense), color modes, positioning (top, bottom, sticky), menu integration, and responsive design patterns.
 metadata:
   author: "Syncfusion Inc"
-  version: "33.1.44"
+  version: "34.1.29"
 ---
 
 # Syncfusion Blazor AppBar Component
