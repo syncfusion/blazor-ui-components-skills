@@ -103,12 +103,7 @@ Only specified CSS styles are preserved during paste:
 
 ```razor
 <SfBlockEditor>
-    <BlockEditorPasteCleanup AllowedStyles="@(new string[] 
-    { 
-        "font-weight", 
-        "font-style", 
-        "text-decoration" 
-    })">
+    <BlockEditorPasteCleanup>
     </BlockEditorPasteCleanup>
 </SfBlockEditor>
 ```
@@ -183,8 +178,7 @@ Strip all HTML and styles, paste plain text only:
     <SfBlockEditor @bind-Blocks="blockData" 
                    Height="400px"
                    PasteCleanupCompleted="@OnPasteComplete">
-        <BlockEditorPasteCleanup AllowedStyles="@(new string[] { "text-decoration" })"
-                                 DeniedTags="@(new string[] { "script", "iframe" })">
+        <BlockEditorPasteCleanup DeniedTags="@(new string[] { "script", "iframe" })">
         </BlockEditorPasteCleanup>
     </SfBlockEditor>
 
@@ -527,8 +521,7 @@ Triggers after content is successfully pasted:
                            Height="500px"
                            BlockChanged="@OnBlockChanged"
                            PasteCleanupStarting="@OnPasteStarting">
-                <BlockEditorPasteCleanup AllowedStyles="@(new string[] { "font-weight", "font-style" })"
-                                         DeniedTags="@(new string[] { "script", "iframe" })">
+                <BlockEditorPasteCleanup DeniedTags="@(new string[] { "script", "iframe" })">
                 </BlockEditorPasteCleanup>
             </SfBlockEditor>
         </div>

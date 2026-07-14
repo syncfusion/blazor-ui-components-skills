@@ -1,6 +1,6 @@
 ---
 name: syncfusion-blazor-ai-assistview
-description: Implement the Syncfusion Blazor AI AssistView component for AI-powered chat interfaces in Blazor applications. Use this skill when implementing conversational AI, chatbots, AI assistants, or prompt-response interfaces. Covers AssistViewPrompt setup, PromptRequested events, markdown responses, and prompt suggestions with avatar customization.
+description: Implement the Syncfusion Blazor AI AssistView component for AI-powered chat interfaces in Blazor applications. Use this skill when implementing conversational AI, chatbots, AI assistants, or prompt-response interfaces. Covers AssistViewPrompt setup, PromptRequested events, markdown responses, prompt suggestions with avatar customization, and speech recognition/synthesis for voice-enabled chat interactions.
 metadata:
   author: "Syncfusion Inc"
   version: "34.1.29"
@@ -84,6 +84,7 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 📄 **Read:** [references/toolbars.md](references/toolbars.md)
 - Prompt toolbar customization
 - Response toolbar actions (copy, like, regenerate)
+- Regenerate responses with navigation and pre-loading
 - Footer toolbar configuration
 - Custom toolbar items and templates
 - Handling toolbar events
@@ -96,6 +97,14 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 - PromptSuggestionItemTemplate for custom suggestions
 - FooterTemplate and ViewTemplate customization
 - Template contexts and available properties
+
+### Speech Recognition and Synthesis
+📄 **Read:** [references/speech.md](references/speech.md)
+- TextToSpeechSettings for Text-to-Speech (TTS) configuration and speaker settings
+- Speech-to-Text (STT) voice input integration
+- Microphone access and audio input handling
+- Speech synthesis customization (pitch, rate, volume, language)
+- Error handling and browser compatibility
 
 ### Streaming Responses
 📄 **Read:** [references/streaming.md](references/streaming.md)
@@ -212,7 +221,6 @@ Personalize user and AI identities with custom icons:
 | `ResponseIconCss` | string | CSS classes for AI avatar icon (default: "e-assistview-icon") |
 | `EnableScrollToBottom` | bool | Show scroll-to-bottom indicator (default: true) |
 | `EnableStreaming` | bool | Enable streaming mode for progressive responses |
-| `AttachmentSettings` | AssistViewAttachmentSettings | File attachment configuration |
 | `ActiveView` | int | Index of currently active view (for multi-view) |
 | `ShowHeader` | bool | Show/hide component header (default: true) |
 | `Width` | string | Component width (default: "100%") |

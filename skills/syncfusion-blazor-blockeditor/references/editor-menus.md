@@ -449,6 +449,86 @@ Text selection toolbar for formatting options.
 | Text Color | Change text color |
 | Background Color | Change background color |
 
+### Optional Inline Toolbar Items
+
+The inline toolbar can handle custom items like `Transform`, `InlineCode`, and `Link` by passing an array of string values in the `Items` property of `InlineToolbarSettings`.
+
+### Transform block options
+
+The inline toolbar now includes `transform` options to quickly convert blocks between different types. You can use the `TransformSettings` property to handle customization of the transform menu in the inline toolbar. This allows you to configure available block transformations, define custom menu items with text and icons.
+
+### Built-in default transform block options
+
+Below are the built-in transform block options available:
+
+| Built-in transform Block Types |
+|--------------------------------|
+| Paragraph |
+| Heading1 to Heading4 |
+| Checklist |
+| BulletList |
+| NumberedList |
+
+> For blocks such as `code`, `callout`, `quote`, `divider`, `image`, `table`, and `collapsible`, transform options are not available. Instead, they will be added as a new block.
+### Events
+
+The following events are available for the transform toolbar item menu:
+
+| Name | Args | Description |
+|------|------|-------------|
+| ItemSelect | TransformItemSelectEventArgs | Triggers when a command item is clicked. |
+
+### Inline code support
+
+Added inline code formatting in the toolbar, with light syntax highlighting and seamless integration with other text formatting options.
+
+### Inline link support
+
+Added inline link formatting in the toolbar. By clicking the link item, a dialog opens and, after proper value input, the link can be inserted into the text.
+
+The following example demonstrates how to customize the transform, inline code, and link items.
+
+```razor
+<SfBlockEditor Blocks="@blockData">
+    <BlockEditorTransform Items="@TransformItems"></BlockEditorTransform>
+    <BlockEditorInlineToolbar Items="@InlineToolbarOptions"></BlockEditorInlineToolbar>
+</SfBlockEditor>
+
+@code {
+    private List<BlockModel> blockData = new()
+    {
+        new BlockModel
+        {
+            BlockType = BlockType.Paragraph,
+            Content = new()
+            {
+                new ContentModel
+                {
+                    ContentType = ContentType.Text,
+                    Content = "Sample text for inline toolbar demo."
+                }
+            }
+        }
+    };
+    private List<InlineToolbarItemModel> InlineToolbarOptions = new()
+    {
+            new InlineToolbarItemModel { Command = CommandName.Transform },
+            new InlineToolbarItemModel { Command = CommandName.Bold },
+            new InlineToolbarItemModel { Command = CommandName.Italic },
+            new InlineToolbarItemModel { Command = CommandName.InlineCode },
+            new InlineToolbarItemModel { Command = CommandName.Link }
+    };
+    private List<TransformItemModel> TransformItems = new()
+    {
+        new TransformItemModel { Type = BlockType.Paragraph, Label = "Paragraph", Tooltip="Paragraph block" },
+        new TransformItemModel { Type = BlockType.Heading, Label ="Heading", Tooltip="Heading block" },
+        new TransformItemModel { Type = BlockType.Checklist, Label= "CheckList", Tooltip="CheckList Block"},
+        new TransformItemModel { Type = BlockType.BulletList, Label="BulletList", Tooltip="BulletList Block"  },
+        new TransformItemModel { Type = BlockType.NumberedList, Label="NumberList",Tooltip="NumberList Block" }
+    };
+}
+```
+
 ### Enable Inline Toolbar
 
 ```razor

@@ -51,7 +51,7 @@ The Syncfusion Blazor Block Editor is a powerful, modular content creation compo
 - Slash command menu (built-in items, customization, events)
 - Context menu (right-click actions, customization, events)
 - Block action menu (drag handle actions, customization, events)
-- Inline toolbar (text formatting options, customization, events)
+- Inline toolbar (text formatting options, customization, events, optional items - transform, inline code, link)
 - Menu event handling and filtering
 - Custom command and menu item creation
 
@@ -62,7 +62,7 @@ The Syncfusion Blazor Block Editor is a powerful, modular content creation compo
 - List types (bullet, numbered, checklist)
 - Table blocks
 - Code blocks
-- Image/media blocks
+- Image/media blocks (imageSettings properties, resizing config, image upliads )
 - Quote and callout blocks
 - Toggle (collapsible) blocks
 - Divider blocks
@@ -91,7 +91,7 @@ The Syncfusion Blazor Block Editor is a powerful, modular content creation compo
 📄 **Read:** [references/content-handling.md](references/content-handling.md)
 - Getting and setting block content
 - Content model structure (BlockModel, ContentModel)
-- Paste cleanup configuration (AllowedStyles, DeniedTags, KeepFormat, PlainText)
+- Paste cleanup configuration (DeniedTags, KeepFormat, PlainText)
 - PasteCleanupStarting and PasteCleanupCompleted events
 - Security best practices (XSS prevention)
 - Content validation patterns
@@ -136,8 +136,7 @@ The Syncfusion Blazor Block Editor is a powerful, modular content creation compo
         <BlockEditorContextMenu Enable="true"></BlockEditorContextMenu>
         <BlockEditorActionMenu Enable="true"></BlockEditorActionMenu>
         <BlockEditorInlineToolbar Enable="true"></BlockEditorInlineToolbar>
-        <BlockEditorPasteCleanup AllowedStyles="@(new string[] { "font-weight", "font-style", "text-decoration" })"
-                                 DeniedTags="@(new string[] { "script", "iframe" })">
+        <BlockEditorPasteCleanup DeniedTags="@(new string[] { "script", "iframe" })">
         </BlockEditorPasteCleanup>
     </SfBlockEditor>
 </div>
@@ -217,13 +216,12 @@ Override default shortcuts for application-specific commands:
 Control paste behavior for safety and consistency:
 
 ```razor
-<BlockEditorPasteCleanup AllowedStyles="@allowedStyles"
-                         DeniedTags="@deniedTags"
-                         PlainText="false">
+<BlockEditorPasteCleanup 
+    DeniedTags="@deniedTags"
+    PlainText="false">
 </BlockEditorPasteCleanup>
 
 @code {
-    private string[] allowedStyles = { "font-weight", "font-style" };
     private string[] deniedTags = { "script", "iframe", "object" };
 }
 ```
