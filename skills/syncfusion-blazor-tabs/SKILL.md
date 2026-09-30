@@ -1,4 +1,3 @@
-````skill
 ---
 name: syncfusion-blazor-tabs
 description: Implement Syncfusion Blazor Tab component for tabbed navigation interfaces. Use this skill whenever the user needs to create tab navigation, organize content into tabs, handle tab selection, manage tab items, configure tab orientation, customize tab appearance, implement responsive tab modes, or build any tabbed interface in Blazor applications.
@@ -1048,5 +1047,3 @@ Before finalizing your tab implementation:
 - [Syncfusion Blazor Documentation](https://blazor.syncfusion.com/documentation/introduction/)
 - [Syncfusion Blazor Tabs Component](https://www.syncfusion.com/blazor-components/blazor-tabs)
 - [Syncfusion GitHub Examples](https://github.com/SyncfusionExamples/)
-
-````
