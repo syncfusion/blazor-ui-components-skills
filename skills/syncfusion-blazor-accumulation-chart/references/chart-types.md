@@ -19,6 +19,7 @@
    - [InnerRadius Property](#innerradius-property)
    - [Doughnut with Center Label](#doughnut-with-center-label)
    - [Combining with Data Labels](#combining-with-data-labels)
+   - [Multiple Doughnut Charts](#multiple-doughnut-charts)
 - [Funnel Chart](#funnel-chart)
    - [When to Use Funnel Charts](#when-to-use-funnel-charts)
    - [Basic Funnel Chart](#basic-funnel-chart)
@@ -345,6 +346,65 @@ Doughnuts work well with outside labels and connectors:
     </AccumulationChartCenterLabel>
 </AccumulationChartSeries>
 ```
+
+### Multiple Doughnut Charts
+
+You can create multiple doughnut charts within a single chart by adding multiple series with different `InnerRadius` and `Radius` values. This lets you compare multiple data sets within the same categories. Each series can carry its own data, colors, and customizations.
+
+📄 **Read:** [references/multiple-doughnut.md](multiple-doughnut.md) for full configuration, `MappingKey` legend grouping, nested ring layout, and code examples.
+
+**Key points:**
+- Add multiple `AccumulationChartSeries` entries inside one `AccumulationChartSeriesCollection`
+- Give each series a different `Radius` and `InnerRadius` to create the nested ring layout
+- Use `AccumulationChartLegendSettings.MappingKey` to group legend items by a shared field so matching points appear as a single legend entry instead of one per series
+- Outer series: larger `Radius` with a non-zero `InnerRadius` (a ring)
+- Inner series: smaller `Radius` with `InnerRadius` equal to `Radius` (a solid disc)
+
+Quick example:
+
+```razor
+@using Syncfusion.Blazor.Charts
+
+<SfAccumulationChart Title="Product Sales vs Profit Analysis">
+    <AccumulationChartSeriesCollection>
+        <AccumulationChartSeries DataSource="@TotalSalesData"
+                                 XName="@nameof(ProductData.X)"
+                                 YName="@nameof(ProductData.Y)"
+                                 Name="Total Sales"
+                                 Type="@AccumulationType.Pie"
+                                 Radius="90%"
+                                 InnerRadius="60%">
+            <AccumulationDataLabelSettings Visible="true"
+                                            Name="@nameof(ProductData.Text)"
+                                            Position="@AccumulationLabelPosition.Outside">
+                <AccumulationChartConnector Type="@ConnectorType.Curve" Color="black" Width="2" DashArray="2,1" Length="5" />
+            </AccumulationDataLabelSettings>
+            <AccumulationChartAnimation Enable="false" />
+        </AccumulationChartSeries>
+
+        <AccumulationChartSeries DataSource="@TotalProfitData"
+                                 XName="@nameof(ProductData.X)"
+                                 YName="@nameof(ProductData.Y)"
+                                 Name="Total Profit"
+                                 Type="@AccumulationType.Pie"
+                                 Radius="50%"
+                                 InnerRadius="50%">
+            <AccumulationDataLabelSettings Visible="true"
+                                            Name="@nameof(ProductData.Text)"
+                                            Position="@AccumulationLabelPosition.Inside">
+                <!-- Connectors only draw leader lines for Outside labels; omit AccumulationChartConnector for Inside labels. -->
+            </AccumulationDataLabelSettings>
+            <AccumulationChartAnimation Enable="false" />
+        </AccumulationChartSeries>
+    </AccumulationChartSeriesCollection>
+
+    <AccumulationChartLegendSettings Visible="true" MappingKey="@nameof(ProductData.X)" />
+</SfAccumulationChart>
+```
+
+See the dedicated reference file for complete configuration details and troubleshooting.
+
+> **Note on connectors:** `AccumulationChartConnector` only draws leader lines for `Outside` labels. The inner ring uses `Position="@AccumulationLabelPosition.Inside"` and therefore omits the connector — including one has no visible effect. See [multiple-doughnut.md](multiple-doughnut.md) for the full guidance.
 
 ---
 

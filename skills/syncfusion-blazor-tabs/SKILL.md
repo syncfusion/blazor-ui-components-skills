@@ -3,7 +3,7 @@ name: syncfusion-blazor-tabs
 description: Implement Syncfusion Blazor Tab component for tabbed navigation interfaces. Use this skill whenever the user needs to create tab navigation, organize content into tabs, handle tab selection, manage tab items, configure tab orientation, customize tab appearance, implement responsive tab modes, or build any tabbed interface in Blazor applications.
 metadata:
   author: "Syncfusion Inc"
-  version: "1.0.0"
+  version: "34.1.29"
   category: "Navigation"
 ---
 

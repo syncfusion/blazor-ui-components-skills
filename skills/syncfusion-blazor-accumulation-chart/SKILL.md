@@ -19,6 +19,7 @@ A comprehensive guide for implementing the Syncfusion Blazor Accumulation Chart 
 Use this skill when you need to:
 - **Create pie charts** to show proportional data distribution
 - **Build doughnut charts** with center labels or multiple series
+- **Implement multiple doughnut charts** (nested concentric rings) to compare related measures across shared categories
 - **Implement funnel charts** for stage-based data (sales pipeline, conversion rates)
 - **Create pyramid charts** for hierarchical data visualization
 - **Display percentage distributions** and part-to-whole relationships
@@ -40,6 +41,7 @@ The Syncfusion Blazor Accumulation Chart component specializes in circular and t
 - **Legends:** Customizable positioning, paging, click behavior
 - **Tooltips:** Formatted display, custom templates
 - **Center Labels:** Doughnut-specific feature with dynamic content
+- **Multiple Doughnut:** Nested concentric rings with `MappingKey` legend grouping
 - **Grouping:** Combine small slices into "Others" category
 - **Customization:** Gradients, annotations, themes, colors, borders
 - **Interactivity:** Selection, explosion, hover effects, animations
@@ -83,15 +85,39 @@ Use this when:
 - Building funnel charts for conversion visualization
 - Designing pyramid charts for hierarchical data
 - Understanding type-specific properties
+- Setting up concentric (nested) multi-ring doughnut layouts
 
 Topics covered:
 - **Pie Chart:** Default circular visualization, when to use
-- **Doughnut Chart:** Inner radius configuration, center content area
+- **Doughnut Chart:** Inner radius configuration, center content area, multiple doughnut overview
 - **Funnel Chart:** Neck dimensions, width/height ratios, data flow
 - **Pyramid Chart:** Linear vs surface mode, base positioning
 - Type property configuration
 - Visual differences and use cases
 - Code examples for each type
+
+### Multiple Doughnut Charts
+
+📄 **Read:** [references/multiple-doughnut.md](references/multiple-doughnut.md)
+
+Use this when:
+- Rendering two or more concentric doughnut rings in a single chart
+- Comparing related measures (e.g., sales vs. profit) across shared categories
+- Grouping legend entries across multiple series with `MappingKey`
+- Tuning `Radius`/`InnerRadius` per series to create a clean nested layout
+- Configuring tooltips, data labels, and animation for multi-ring charts
+- Troubleshooting overlapping rings, duplicate legend entries, or label collisions
+
+Topics covered:
+- **How nested rings work:** Outer ring vs. inner disc layout
+- **Required properties:** `Type`, `Radius`, `InnerRadius`, `MappingKey`
+- **Legend grouping with `MappingKey`:** Collapsing duplicate legend entries
+- **Per-series customization:** colors, borders, tooltips, labels
+- **Three or more rings:** Scaling guidelines and spacing
+- **Tooling tips and data labels for nested rings**
+- **Disabling animation per series**
+- **Troubleshooting table:** common pitfalls and fixes
+- **Complete production example**
 
 ---
 

@@ -53,7 +53,7 @@
 
 ### Code39
 
-**Character set:** Digits 0–9, uppercase A–Z, space, `-`, `+`, `.`, `$`, `/`, `%`  
+**Character set:** Digits 0-9, uppercase A-Z, space, `-`, `+`, `.`, `$`, `/`, `%`  
 **Checksum:** Optional (not required for common use)  
 **Length:** Variable (keep under 25 chars for practical scan width)
 
@@ -82,7 +82,7 @@ Enhanced version of Code39. Encodes all 128 ASCII characters including lowercase
 ### Code11
 
 Primarily used for labeling **telecommunications equipment**.  
-**Character set:** Digits 0–9 and dash (`-`), plus start/stop codes.
+**Character set:** Digits 0-9 and dash (`-`), plus start/stop codes.
 
 ```razor
 <SfBarcodeGenerator Width="200px" Height="150px"
@@ -111,7 +111,7 @@ Used for **Italian pharmaceutical codes** (Pharmacode). Expected input is exactl
 ### Code93
 
 Designed to complement Code39 with **denser encoding**. Represents the full ASCII set through pairs of characters.  
-**Standard mode:** Uppercase A–Z, digits 0–9, `*`, `-`, `$`, `%`, space, `.`, `/`, `+`
+**Standard mode:** Uppercase A-Z, digits 0-9, `*`, `-`, `$`, `%`, space, `.`, `/`, `+`
 
 ```razor
 <SfBarcodeGenerator Width="200px" Height="150px"
@@ -137,7 +137,7 @@ Continuous, variable-length, self-checking symbology based on Code93. Can encode
 
 ### Codabar
 
-Variable-length barcode encoding 20 characters: `0–9`, `-$:/.+ABCD`.  
+Variable-length barcode encoding 20 characters: `0-9`, `-$:/.+ABCD`.  
 Characters A, B, C, D are used as **start/stop codes** and are not part of the data.  
 **Common use:** Libraries, blood banks, package delivery.
 
@@ -156,9 +156,9 @@ The most capable 1D symbology — encodes the **full 128-character ASCII set** w
 
 | Code Set | Characters Encoded |
 |----------|--------------------|
-| Code Set A | ASCII 0–95 (uppercase + control characters) |
+| Code Set A | ASCII 0-95 (uppercase + control characters) |
 | Code Set B | ASCII 32–127 (uppercase + lowercase + punctuation) |
-| Code Set C | Digit pairs 00–99 (numeric data at double density) |
+| Code Set C | Digit pairs 00-99 (numeric data at double density) |
 
 The component automatically selects the optimal code set.
 
@@ -224,11 +224,11 @@ Fires when `Value` contains characters that are **not valid** for the selected `
 
 | BarcodeType Enum | Character Set | Checksum | Typical Use |
 |-----------------|--------------|----------|-------------|
-| `Code39` | A–Z, 0–9, symbols | Optional | Inventory, asset tracking |
+| `Code39` | A-Z, 0-9, symbols | Optional | Inventory, asset tracking |
 | `Code39Extension` | All 128 ASCII | Optional | General alphanumeric |
-| `Code11` | 0–9, dash | Built-in | Telecom equipment |
-| `Code32` | 0–9 (8 digits) | Auto-calculated | Italian pharmaceuticals |
-| `Code93` | A–Z, 0–9, symbols | Built-in | High-density alphanumeric |
+| `Code11` | 0-9, dash | Built-in | Telecom equipment |
+| `Code32` | 0-9 (8 digits) | Auto-calculated | Italian pharmaceuticals |
+| `Code93` | A-Z, 0-9, symbols | Built-in | High-density alphanumeric |
 | `Code93Extension` | All 128 ASCII | Built-in | Dense full-ASCII data |
-| `Codabar` | 0–9, -$:/.+ABCD | Optional | Libraries, blood banks |
+| `Codabar` | 0-9, -$:/.+ABCD | Optional | Libraries, blood banks |
 | `Code128` | All 128 ASCII | Mandatory | General purpose (recommended) |
