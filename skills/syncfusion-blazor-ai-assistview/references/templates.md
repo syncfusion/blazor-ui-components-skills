@@ -6,6 +6,7 @@
 - [BannerTemplate](#bannertemplate)
 - [PromptItemTemplate](#promptitemtemplate)
 - [ResponseItemTemplate](#responseitemtemplate)
+- [ResponseAnimationTemplate](#responseanimationtemplate)
 - [PromptSuggestionItemTemplate](#promptsuggestionitemtemplate)
 - [FooterTemplate](#footertemplate)
 - [ViewTemplate](#viewtemplate)
@@ -20,6 +21,7 @@ The AI AssistView component provides extensive templating support, allowing you 
 - `BannerTemplate` - Custom initial/empty state banner
 - `PromptItemTemplate` - Custom prompt message rendering
 - `ResponseItemTemplate` - Custom response message rendering
+- `ResponseAnimationTemplate` - Custom loading indicator/animation while the response is being generated
 - `PromptSuggestionItemTemplate` - Custom suggestion chip rendering
 - `FooterTemplate` - Custom footer area
 - `ViewTemplate` - Complete view customization
@@ -288,6 +290,252 @@ Customize how AI responses are displayed.
     }
 }
 ```
+
+## ResponseAnimationTemplate
+
+The `ResponseAnimationTemplate` lets you display a custom loading indicator or animation in place of the AI response while it is being generated. The template is shown until the response is added, and is then removed automatically. It does not receive a template context.
+
+### Custom Loading Animation
+
+```csharp
+@using Syncfusion.Blazor.InteractiveChat
+
+<div class="aiassist-container" style="height: 350px; width: 650px;">
+    <SfAIAssistView PromptRequested="@PromptRequest">
+                <ResponseAnimationTemplate>
+                    <div class="assistview-loading-status">
+                        <div class="assistview-grid-icon">
+                            <span></span><span></span><span></span>
+                            <span></span><span></span><span></span>
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="assistview-loading-label">Generating</span>
+                    </div>
+                </ResponseAnimationTemplate>
+    </SfAIAssistView>
+</div>
+
+@code {
+    private async Task PromptRequest(AssistViewPromptRequestedEventArgs args)
+    {
+        await Task.Delay(2000);
+        var defaultResponse = "For real-time prompt processing, connect the AI AssistView component to your preferred AI service, such as OpenAI or Azure Cognitive Services. Ensure you obtain the necessary API credentials to authenticate and enable seamless integration.";
+        args.Response = defaultResponse;
+    }
+}
+<style>
+    .assistview-loading-status {
+        display: flex;
+        gap: 10px;
+        color: #666;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .assistview-grid-icon {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    .assistview-grid-icon span {
+        width: 4px;
+        height: 4px;
+        background: #8a8a8a;
+        border-radius: 1px;
+        opacity: 0.25;
+        animation: assistview-pulse 1.8s ease-in-out infinite;
+    }
+
+    .assistview-grid-icon span:nth-child(1) { animation-delay: 0s; }
+    .assistview-grid-icon span:nth-child(2) { animation-delay: 0.1s; }
+    .assistview-grid-icon span:nth-child(3) { animation-delay: 0.2s; }
+    .assistview-grid-icon span:nth-child(4) { animation-delay: 0.3s; }
+    .assistview-grid-icon span:nth-child(5) { animation-delay: 0.4s; }
+    .assistview-grid-icon span:nth-child(6) { animation-delay: 0.5s; }
+    .assistview-grid-icon span:nth-child(7) { animation-delay: 0.6s; }
+    .assistview-grid-icon span:nth-child(8) { animation-delay: 0.7s; }
+    .assistview-grid-icon span:nth-child(9) { animation-delay: 0.8s; }
+
+    @@keyframes assistview-pulse {
+        0%,
+        100% {
+            opacity: 0.25;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+</style>
+```
+
+### Spinner-Based Animation
+
+```csharp
+<SfAIAssistView>
+    <ResponseAnimationTemplate>
+        <div class="assistview-loading-status">
+            <SfSpinner Visible="true" Size="20" Type="SpinnerType.TailSpin" />
+            <span class="assistview-loading-label">Thinking...</span>
+        </div>
+    </ResponseAnimationTemplate>
+</SfAIAssistView>
+
+<style>
+    .assistview-loading-status {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: #666;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+    }
+</style>
+```
+
+### Custom Label and Skeleton Rows
+
+```csharp
+<SfAIAssistView>
+    <ResponseAnimationTemplate>
+        <div class="assistview-skeleton">
+            <div class="assistview-skeleton-row" style="width: 90%;"></div>
+            <div class="assistview-skeleton-row" style="width: 75%;"></div>
+            <div class="assistview-skeleton-row" style="width: 60%;"></div>
+            <span class="assistview-loading-label">Composing response...</span>
+        </div>
+    </ResponseAnimationTemplate>
+</SfAIAssistView>
+
+<style>
+    .assistview-skeleton {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .assistview-skeleton-row {
+        height: 10px;
+        background: linear-gradient(90deg, #eee 0%, #f5f5f5 50%, #eee 100%);
+        background-size: 200% 100%;
+        border-radius: 4px;
+        animation: assistview-shimmer 1.4s ease-in-out infinite;
+    }
+
+    .assistview-loading-label {
+        color: #666;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    @keyframes assistview-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+```
+
+### Custom Animation with ChildContent and AssistView
+
+The `ResponseAnimationTemplate` can also be combined with a `ChildContent` block that hosts the `AssistViews` collection and per-view item templates, while still placing the loading animation at the component level.
+
+```csharp
+@using Syncfusion.Blazor.InteractiveChat
+
+<div class="aiassist-container" style="height: 350px; width: 650px;">
+    <SfAIAssistView PromptRequested="@OnPromptRequested">
+        <ChildContent>
+            <AssistViews>
+                <AssistView Header="AI Assistant">
+                    <PromptItemTemplate Context="promptContext">
+                        <div class="custom-prompt p-3 mb-2">
+                            <div class="d-flex align-items-start">
+                                <div class="prompt-avatar me-3">
+                                    <i class="e-icons e-user"></i>
+                                </div>
+                                <div class="prompt-content flex-grow-1">
+                                    <div class="prompt-header d-flex justify-content-between">
+                                        <strong>You</strong> &nbsp;
+                                        <small class="text-muted">Just now</small>
+                                    </div>
+                                    <div class="prompt-text mt-1">
+                                        @((MarkupString)promptContext.Prompt)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </PromptItemTemplate>
+                </AssistView>
+            </AssistViews>
+        </ChildContent>
+        <ResponseAnimationTemplate>
+            <div class="assistview-loading-status">
+                <div class="assistview-bounce-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <span class="assistview-loading-label">Generating response</span>
+            </div>
+        </ResponseAnimationTemplate>
+    </SfAIAssistView>
+</div>
+
+@code {
+    private async Task OnPromptRequested(AssistViewPromptRequestedEventArgs args)
+    {
+        await Task.Delay(2000);
+        args.Response = "For real-time prompt processing, connect the AI AssistView component to your preferred AI service, such as OpenAI or Azure Cognitive Services. Ensure you obtain the necessary API credentials to authenticate and enable seamless integration.";
+    }
+}
+<style>
+    .assistview-loading-status {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: #666;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .assistview-bounce-dots {
+        display: inline-flex;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+
+    .assistview-bounce-dots span {
+        width: 6px;
+        height: 6px;
+        background: #8a8a8a;
+        border-radius: 50%;
+        animation: assistview-bounce 1.2s ease-in-out infinite;
+    }
+
+    .assistview-bounce-dots span:nth-child(1) { animation-delay: 0s; }
+    .assistview-bounce-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .assistview-bounce-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes assistview-bounce {
+        0%, 80%, 100% {
+            transform: translateY(0);
+            opacity: 0.4;
+        }
+        40% {
+            transform: translateY(-6px);
+            opacity: 1;
+        }
+    }
+</style>
+```
+
+> **Note:** The `ResponseAnimationTemplate` does not expose a template context. It is purely presentational and is rendered only while a response is being generated. Once `args.Response` is set in the `PromptRequested` handler, the template is replaced by the response automatically.
 
 ## PromptSuggestionItemTemplate
 

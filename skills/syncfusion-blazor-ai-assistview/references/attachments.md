@@ -8,6 +8,7 @@
 - [File Size Limits](#file-size-limits)
 - [Upload Configuration](#upload-configuration)
 - [Attachment Events](#attachment-events)
+  - [AttachmentRemoving](#attachmentremoving)
 - [Handling Attachment Clicks](#handling-attachment-clicks)
 - [Custom Upload Logic](#custom-upload-logic)
 - [Best Practices](#best-practices)
@@ -222,7 +223,17 @@ public class AttachmentsController : ControllerBase
 
 ## Attachment Events
 
-Handle attachment-related events to customize behavior:
+Handle attachment-related events to customize behavior. The full set of available events is:
+
+- `OnAttachmentUploadReady` — raised before the file upload begins
+- `AttachmentUploadChange` — raised when the selected files change
+- `AttachmentUploadSuccess` — raised when a file upload completes successfully
+- `AttachmentUploadFailed` — raised when a file upload fails
+- `AttachmentRemoving` — raised *before* an attached file is removed (cancellable)
+- `AttachmentRemoved` — raised *after* an attached file has been removed
+- `AttachmentClick` — raised when an attached file is clicked
+
+The following overview shows all events wired up together:
 
 ```csharp
 @using Syncfusion.Blazor.InteractiveChat
@@ -297,6 +308,54 @@ Handle attachment-related events to customize behavior:
     }
 }
 ```
+
+### AttachmentRemoving
+
+The [AttachmentRemoving](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.InteractiveChat.SfAIAssistView.html#Syncfusion_Blazor_InteractiveChat_SfAIAssistView_AttachmentRemoving) event is triggered **before** an attached file is removed in the AI AssistView. Because it fires prior to removal, you can use it to confirm the action, log the removal, or cancel it. The event args are of type `AttachmentRemovingEventArgs` (from `Syncfusion.Blazor.InteractiveChat`).
+
+```cshtml
+
+@using Syncfusion.Blazor.InteractiveChat
+@using Syncfusion.Blazor.Inputs
+
+<div class="aiassist-container" style="height: 350px; width: 650px;">
+    <SfAIAssistView AttachmentRemoving="AttachmentRemoving" AttachmentSettings="attachmentSettings" PromptRequested="PromptRequest"></SfAIAssistView>
+</div>
+
+@code {
+    private void AttachmentRemoving(AttachmentRemovingEventArgs args)
+    {
+        // Your required action here
+    }
+    private AssistViewAttachmentSettings attachmentSettings = new AssistViewAttachmentSettings()
+    {
+        Enable = true,
+        SaveUrl = "https://blazor.syncfusion.com/services/production/api/FileUploader/Save",
+        RemoveUrl = "https://blazor.syncfusion.com/services/production/api/FileUploader/Remove"
+    };
+    private async Task PromptRequest(AssistViewPromptRequestedEventArgs args)
+    {
+        await Task.Delay(1000);
+        var defaultResponse = "For real-time prompt processing, connect the AI AssistView component to your preferred AI service, such as OpenAI or Azure Cognitive Services. Ensure you obtain the necessary API credentials to authenticate and enable seamless integration.";
+        args.Response = defaultResponse;
+    }
+}
+```
+
+#### Event args
+
+`AttachmentRemovingEventArgs` exposes the following members:
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `Cancel` | `bool` | Defines whether the current action can be prevented. Set to `true` to abort the removal. |
+| `CurrentRequest` | `XMLHttpRequest` | Returns the `XMLHttpRequest` instance that is associated with the remove action. |
+| `CustomFormData` | `{ [key: string]: Object }[]` | Defines the additional data with key and value pair format that will be submitted to the remove action. |
+| `Event` | `MouseEvent` \| `TouchEvent` \| `KeyboardEventArgs` | Returns the original event arguments that triggered the remove action. |
+| `FilesData` | [`FileInfo[]`](https://ej2.syncfusion.com/documentation/api/uploader/fileinfo) | Returns the list of files' details that will be removed. |
+| `PostRawFile` | `bool` | Defines whether the selected raw file is sent to the server remove action. Set `true` to send the raw file; set `false` to send the file name only. |
+
+> **Note:** `AttachmentRemoving` is the *pre-removal* counterpart to `AttachmentRemoved` (which fires *after* the file has been removed). Use `AttachmentRemoving` when you need to intercept or cancel the action, and `AttachmentRemoved` when you only need to react to a completed removal.
 
 ## Handling Attachment Clicks
 

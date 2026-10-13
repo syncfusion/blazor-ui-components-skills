@@ -369,6 +369,7 @@ Navigate to `http://localhost:5000` (or port shown in terminal).
 - **Add Commands**: See `commands-and-toolbar.md` for quick-action prompts
 - **Handle Events**: Review `events-and-methods.md` for event handling patterns
 - **Customize UI**: Check `customization-and-response.md` for appearance customization
+- **Add Voice Input**: See `speech-to-text.md` to enable Speech-to-Text in the prompt editor
 - **Ensure Accessibility**: Read `accessibility-and-globalization.md` for WCAG compliance
 
 ## Resources

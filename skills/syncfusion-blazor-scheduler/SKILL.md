@@ -18,6 +18,7 @@ metadata:
 - Implement recurring events or recurrence patterns
 - Handle appointment CRUD operations (create, read, update, delete)
 - Configure appointment drag-and-drop or resizing
+- Add pre/post-procedure buffer time around appointments
 - Work with resources or grouping
 - Set up timezones or localization
 - Customize Scheduler appearance or behavior
@@ -39,6 +40,7 @@ The Syncfusion Blazor Scheduler is a comprehensive calendar component that allow
 - Handle multiple resources and flexible grouping models
 - Support timezone-aware appointments with IANA timezone conversion
 - Customize appointment appearance with templates, EventRendered events, and CSS classes
+- Render pre and post-procedure buffer segments around appointments with `EnableBuffer` and `BufferTemplate`
 - Prevent or customize overlapping appointments (AllowOverlap property)
 - Configure blocking time slots and read-only appointments
 - Display interactive tooltips with custom templates
@@ -100,6 +102,17 @@ The Syncfusion Blazor Scheduler is a comprehensive calendar component that allow
 - Scroll speed configuration
 - Resize time intervals
 - Preventing specific resizing actions
+
+### Event Buffer
+📄 **Read:** [references/event-buffer.md](references/event-buffer.md)
+- Enable Event Buffer with `EnableBuffer` on `ScheduleEventSettings`
+- Required `BufferBefore` and `BufferAfter` fields on the appointment model
+- Mapping buffer fields with `FieldBufferBefore` and `FieldBufferAfter`
+- Customizing buffer appearance with `BufferTemplate`
+- `BufferTemplateContext` members (`IsBefore`, `Duration`, `Data`)
+- Buffer behavior with `AllowOverlap="false"`
+- Supported views (Day, Week, WorkWeek, TimelineDay, TimelineWeek, TimelineWorkWeek)
+- Buffer re-anchoring during drag and resize
 
 ### Scheduler Views
 📄 **Read:** [references/views.md](references/views.md)
@@ -543,6 +556,7 @@ The Syncfusion Blazor Scheduler is a comprehensive calendar component that allow
 | `EnableMaxHeight` | Appointments occupy full cell height | `EnableMaxHeight="true"` |
 | `EnableIndicator` | Show indicator for multiple appointments | `EnableIndicator="true"` |
 | `EnableAutoRowHeight` | Auto-adjust row heights for content | `EnableAutoRowHeight="true"` |
+| `EnableBuffer` | Render pre/post-procedure buffer segments around appointments (set on `ScheduleEventSettings`) | `EnableBuffer="true"` |
 
 ---
 

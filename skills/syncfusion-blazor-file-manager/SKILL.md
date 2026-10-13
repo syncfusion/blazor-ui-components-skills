@@ -15,6 +15,7 @@ Use this skill when you need to:
 
 - **Create a file management interface** - Build web applications for browsing, uploading, downloading, and managing files
 - **Set up cloud storage integration** - Connect to Azure Blob Storage, Amazon S3, Google Drive, SharePoint, or Firebase
+- **Deploy a unified provider service via Docker** - Run the combined Azure Blob / Amazon S3 provider image and point the Blazor File Manager at it
 - **Implement file operations** - Enable users to create, delete, rename, copy, move, search files and folders
 - **Handle large file sets** - Display thousands of files with virtualization and pagination
 - **Customize the UI** - Tailor toolbar, context menu, views, and navigation to your needs
@@ -92,6 +93,14 @@ The **Syncfusion Blazor FileManager** is a comprehensive component for file and 
 - Firebase Real-time Database
 - SQL Database provider
 - FTP (File Transfer Protocol) provider
+
+### Docker Deployment
+📄 **Read:** [references/docker-deployment.md](references/docker-deployment.md)
+- Unified Docker image for Azure Blob Storage and Amazon S3 providers
+- `FILEMANAGER_PROVIDER` environment variable to switch backends
+- `docker-compose.yml` configuration for both providers
+- Client-side `FileManagerAjaxSettings` wiring to the running container
+- Troubleshooting storage, port, and DNS issues
 
 ### Upload and Download
 📄 **Read:** [references/upload-download.md](references/upload-download.md)
@@ -276,6 +285,11 @@ app.MapControllers();
 - Enable download and preview only
 - Customize navigation and UI
 
+**6. Containerized Cloud Storage Backend**
+- Run the unified `syncfusion/filemanager-provider` Docker image
+- Switch between Azure Blob Storage and Amazon S3 with the `FILEMANAGER_PROVIDER` env var
+- Point the Blazor client's `FileManagerAjaxSettings` at the container's API endpoints
+
 ## Next Steps
 
 1. **Choose your setup**: Start with [Getting Started](references/getting-started.md) for your platform
@@ -284,3 +298,4 @@ app.MapControllers();
 4. **Handle events**: Review [Events and Callbacks](references/events-and-callbacks.md) for required handlers
 5. **Customize UI**: See [Customization](references/customization.md) for toolbar and themes
 6. **Choose storage**: Select provider in [File Providers](references/file-providers.md)
+7. **Containerize the backend**: Deploy the unified Azure / S3 provider with [Docker Deployment](references/docker-deployment.md)

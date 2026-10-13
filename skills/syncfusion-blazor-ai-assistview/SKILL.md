@@ -69,6 +69,7 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 - Enabling file attachments
 - Configuring attachment settings (file types, size limits)
 - Handling attachment events (upload, click, remove)
+- AttachmentRemoving event (fires before a file is removed; cancellable)
 - Server-side upload implementation
 - Security and validation best practices
 
@@ -86,6 +87,7 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 - Response toolbar actions (copy, like, regenerate)
 - Regenerate responses with navigation and pre-loading
 - Footer toolbar configuration
+- Footer toolbar item alignment (`ItemAlign.Left` / `ItemAlign.Right`)
 - Custom toolbar items and templates
 - Handling toolbar events
 
@@ -94,6 +96,7 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 - BannerTemplate for initial/empty state
 - PromptItemTemplate for custom prompt rendering
 - ResponseItemTemplate for custom response rendering
+- ResponseAnimationTemplate for custom loading indicator while a response is being generated
 - PromptSuggestionItemTemplate for custom suggestions
 - FooterTemplate and ViewTemplate customization
 - Template contexts and available properties
@@ -114,6 +117,23 @@ The **SfAIAssistView** component is a specialized UI control for building AI-pow
 - Integration with OpenAI, Azure, and Ollama streaming APIs
 - Stop responding functionality
 - Performance optimization
+
+### Generative UI
+📄 **Read:** [references/generative-ui.md](references/generative-ui.md)
+- Registering custom tools with the `ToolUIBlock` tag directive
+- Building structured responses with `TextBlock` and `ToolBlock` (`IResponseBlock`)
+- Passing parameters to tools via the `Props` dictionary
+- Combining text and tool blocks in a single response
+- Configuring an AI service to return a `blocks` JSON array
+- Pre-loading generative UI conversations via the `Prompts` collection
+
+### Chain of Thoughts
+📄 **Read:** [references/chain-of-thoughts.md](references/chain-of-thoughts.md)
+- Rendering reasoning blocks with `ThinkingBlock` and `BlockType.Thinking`
+- Adding structured `Stages` with `ThinkingStage`, `ThinkingStageStatus`, and inline `ThinkingContextItem` chips
+- Multi-step streaming pattern (append new thinking blocks as the model reasons)
+- Customizing stage rendering with the `ThinkingStageTemplate` tag
+- Combining thinking blocks with text/tool blocks in a single response
 
 ### Methods & Programmatic API
 📄 **Read:** [references/methods-api.md](references/methods-api.md)

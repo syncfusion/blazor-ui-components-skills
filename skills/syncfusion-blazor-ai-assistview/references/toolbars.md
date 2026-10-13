@@ -6,6 +6,7 @@
 - [Prompt Toolbar](#prompt-toolbar)
 - [Response Toolbar](#response-toolbar)
 - [Footer Toolbar](#footer-toolbar)
+  - [Item alignment (left/right)](#item-alignment-left-right)
 - [Custom Toolbar Items](#custom-toolbar-items)
 - [Toolbar Events](#toolbar-events)
 - [Common Patterns](#common-patterns)
@@ -281,6 +282,42 @@ The `AssistViewFooterToolbar` appears at the bottom of the component, providing 
 | `Visible` | `bool` | Controls item visibility |
 | `Disabled` | `bool` | Controls item enabled state |
 | `Template` | `RenderFragment` | Custom template for item rendering |
+
+### Item alignment (left/right)
+
+You can use the [Align](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.InteractiveChat.AssistViewFooterToolbarItem.html#Syncfusion_Blazor_InteractiveChat_AssistViewFooterToolbarItem_Align) property of `AssistViewFooterToolbarItem` to align the item to the `Left` or `Right` side of the footer. The value comes from the `ItemAlign` enum in `Syncfusion.Blazor.Navigations` (e.g. `ItemAlign.Left`). The default alignment is `ItemAlign.Left`.
+
+```cshtml
+
+@using Syncfusion.Blazor.InteractiveChat
+@using Syncfusion.Blazor.Navigations
+
+<div class="aiassist-container" style="height: 350px; width: 650px;">
+    <SfAIAssistView PromptRequested="PromptRequest" Prompts="@prompts">
+        <AssistViewFooterToolbar ToolbarPosition="ToolbarPosition.Bottom">
+            <AssistViewFooterToolbarItem IconCss="e-icons e-assistview-icon" Align="ItemAlign.Left"></AssistViewFooterToolbarItem>
+        </AssistViewFooterToolbar>
+    </SfAIAssistView>
+</div>
+
+@code {
+    private List<AssistViewPrompt> prompts = new List<AssistViewPrompt>()
+    {
+        new AssistViewPrompt() { Prompt = "What is AI?", Response = "<div>AI stands for Artificial Intelligence, enabling machines to mimic human intelligence for tasks such as learning, problem-solving, and decision-making.</div>" }
+    };
+    private async Task PromptRequest(AssistViewPromptRequestedEventArgs args)
+    {
+        await Task.Delay(1000);
+        var defaultResponse = "For real-time prompt processing, connect the AI AssistView component to your preferred AI service, such as OpenAI or Azure Cognitive Services. Ensure you obtain the necessary API credentials to authenticate and enable seamless integration.";
+        args.Response = defaultResponse;
+    }
+}
+
+```
+
+![Blazor AI AssistView Footer Toolbar custom item](./images/footer-toolbar-item.webp)
+
+> **Note:** `Align` is part of `Syncfusion.Blazor.Navigations`, so add `@using Syncfusion.Blazor.Navigations;` to the component. To align an item to the right instead, set `Align="ItemAlign.Right"`.
 
 ## Custom Toolbar Items
 

@@ -20,6 +20,7 @@ The **SfInlineAIAssist** component enables users to prompt AI services and recei
 - **Markdown:** Automatic conversion of Markdown responses to HTML for rich content rendering.
 - **Streaming Responses:** Supports word-by-word or chunk-based streaming with real-time visual feedback and stop controls.
 - **Indicators:** Shows processing states using inline indicators and skeleton loading in popup mode.
+- **Speech-to-Text:** Built-in voice input powered by the Web Speech API for hands-free prompt entry, with language selection, interim results, and lifecycle events via the `InlineAIAssistSpeechToText` child tag.
 - **Customization:** Supports customization of templates, appearance, and response rendering.
 
 
@@ -69,6 +70,15 @@ The **SfInlineAIAssist** component enables users to prompt AI services and recei
 - Appearance customization with CSSClass
 - EditorTemplate and ResponseTemplate usage
 - Responsive design patterns
+
+### Speech-to-Text
+📄 **Read:** [references/speech-to-text.md](references/speech-to-text.md)
+- Enabling voice input with the `InlineAIAssistSpeechToText` child tag
+- Configuring recognition language and interim results
+- Lifecycle events: `RecognitionStart`, `RecognitionStop`, `TranscriptChanged`, `RecognitionError`
+- Adding the speech-to-text item to a custom `InlineToolbar`
+- Error handling patterns and browser compatibility
+- Real-world example combining voice input with content summarization
 
 ### Accessibility and Globalization
 📄 **Read:** [references/accessibility-and-globalization.md](references/accessibility-and-globalization.md)
