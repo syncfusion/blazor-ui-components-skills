@@ -170,13 +170,17 @@ void OnActionBegin(ActionEventArgs<Order> args)
 | `RowUpdated` | `RowUpdatedEventArgs<T>` | ❌ | After row update is saved |
 | `RowDeleting` | `RowDeletingEventArgs<T>` | ✅ | Before row is deleted |
 | `RowDeleted` | `RowDeletedEventArgs<T>` | ❌ | After row is deleted |
-| `OnCellEdit` | `CellEditArgs<T>` | ✅ | Batch mode: before cell enters edit |
-| `OnCellSave` | `CellSaveArgs<T>` | ✅ | Batch mode: before cell save |
-| `CellSaved` | `CellSavedArgs<T>` | ❌ | Batch mode: after cell saved |
+| `OnCellEdit` | `CellEditArgs<T>` | ✅ | Cell mode: before cell enters edit. Also used in Batch mode. |
+| `OnCellSave` | `CellSaveArgs<T>` | ✅ | Cell mode: before cell value is committed |
+| `CellSaved` | `CellSavedArgs<T>` | ❌ | Cell mode: after cell saved. Also used in Batch mode. |
 | `OnBatchAdd` | `BeforeBatchAddArgs<T>` | ✅ | Batch mode: before add row |
 | `OnBatchSave` | `BeforeBatchSaveArgs<T>` | ✅ | Batch mode: before save all |
 | `OnBatchDelete` | `BeforeBatchDeleteArgs<T>` | ✅ | Batch mode: before delete row |
 | `OnBatchCancel` | `BeforeBatchCancelArgs<T>` | ✅ | Batch mode: before cancel |
+| `OnUndo` | `OnUndoEventArgs<T>` | — | Batch mode: before an undo action is applied (requires `EnableUndoRedo`) |
+| `OnUndoCompleted` | `OnUndoCompletedEventArgs<T>` | ❌ | Batch mode: after an undo action is applied |
+| `OnRedo` | `OnRedoEventArgs<T>` | — | Batch mode: before a redo action is applied (requires `EnableUndoRedo`) |
+| `OnRedoCompleted` | `OnRedoCompletedEventArgs<T>` | ❌ | Batch mode: after a redo action is applied |
 
 ## Sorting Events
 
@@ -280,7 +284,9 @@ void OnActionBegin(ActionEventArgs<Order> args)
 | **Row Edit** | `OnBeginEdit` | `RowUpdating`/`RowUpdated` | `BeginEditArgs<T>`, `RowUpdatingEventArgs<T>` | Validate/intercept edits |
 | **Row Add** | `RowCreating` | `RowCreated` | `RowCreatingEventArgs<T>`, `RowCreatedEventArgs<T>` | Validate new rows |
 | **Row Delete** | `RowDeleting` | `RowDeleted` | `RowDeletingEventArgs<T>`, `RowDeletedEventArgs<T>` | Confirm before delete |
-| **Batch Edit** | `OnCellEdit` | `OnCellSave` | `CellEditArgs<T>`, `CellSaveArgs<T>` | Batch cell editing |
+| **Cell Edit** | `OnCellEdit` | `CellSaved` | `CellEditArgs<T>`, `CellSavedArgs<T>` | Cell mode cell editing (`Mode="EditMode.Cell"`) |
+| **Batch Edit** | `OnCellEdit` | `CellSaved` | `CellEditArgs<T>`, `CellSavedArgs<T>` | Batch mode cell editing |
+| **Batch Undo / Redo** | `OnUndo` / `OnRedo` | `OnUndoCompleted` / `OnRedoCompleted` | `OnUndoEventArgs<T>`, `OnUndoCompletedEventArgs<T>`, `OnRedoEventArgs<T>`, `OnRedoCompletedEventArgs<T>` | Batch mode Undo / Redo (requires `EnableUndoRedo="true"`) |
 | **Row Drag** | `RowDragStarting` | `RowDropped` | `RowDragEventArgs<T>`, `RowDroppedEventArgs<T>` | Validate drag-drop |
 | **Filter Dialog** | `FilterDialogOpening` | `FilterDialogOpened` | `FilterDialogOpeningEventArgs` | Customize filter dialog |
 | **Command Click** | — | `CommandClicked` | `CommandClickEventArgs<T>` | Handle command column button clicks per row |

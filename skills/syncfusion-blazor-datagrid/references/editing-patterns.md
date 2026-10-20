@@ -14,6 +14,7 @@ Advanced editing behaviors, row-level controls, and UI patterns.
 - [Single-Click Editing](#single-click-editing)
 - [Saving a New Row at a Specific Index](#saving-a-new-row-at-a-specific-index)
 - [Inline Template Editing](#inline-template-editing)
+- [Batch Undo / Redo Patterns](#batch-undo--redo-patterns)
 - [Limitations](#limitations)
 
 ## Cancel Edit Based on Condition
@@ -163,6 +164,8 @@ await Grid.DeleteRecordAsync(); // deletes all currently selected rows
 
 ## Single-Click Editing
 
+### Normal / Dialog Mode — via `OnRecordClick`
+
 Trigger edit mode on a single row click using `OnRecordClick`:
 
 ```razor
@@ -187,6 +190,21 @@ Trigger edit mode on a single row click using `OnRecordClick`:
     }
 }
 ```
+
+### Batch Mode — via `AllowEditOnSingleClick`
+
+For **Batch editing**, use the built-in `AllowEditOnSingleClick` property on `GridEditSettings`. Clicking a cell once immediately activates edit mode — no `OnRecordClick` handler needed:
+
+```razor
+<SfGrid DataSource="@Orders" Toolbar="@(new List<string>{ "Add", "Delete", "Update", "Cancel" })">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                      Mode="EditMode.Batch" AllowEditOnSingleClick="true">
+    </GridEditSettings>
+    ...
+</SfGrid>
+```
+
+> `AllowEditOnSingleClick` applies **only to Batch mode**. For Normal and Dialog modes use the `OnRecordClick` approach above.
 
 ## Saving a New Row at a Specific Index
 
@@ -234,6 +252,162 @@ Replace the entire edit row with a fully custom layout using `GridEditSettings.T
 
 > All custom editors must use **`@bind-Value`** for two-way data binding.
 
+## Batch Undo / Redo Patterns
+
+The Data Grid tracks every batch edit action — cell value change, row add, row delete — in an Undo / Redo stack. Patterns below use this stack to build safe, observable, and resumable batch workflows.
+
+📄 **Core API reference:** [editing.md → Undo / Redo in Batch Edit Mode](editing.md#undo--redo-in-batch-edit-mode)  
+📄 **Events:** [events.md → Editing Events](events.md#editing-events)
+
+### Prerequisites
+
+```razor
+<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                  Mode="EditMode.Batch"
+                  EnableUndoRedo="true"
+                  UndoRedoLimit="50">
+</GridEditSettings>
+```
+
+> Undo / Redo applies **only** when `Mode="EditMode.Batch"`. Other modes silently ignore the stack.
+
+### Bound External Buttons
+
+Drive Undo / Redo from external buttons outside the toolbar:
+
+```razor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Grids
+
+<SfButton OnClick="() => Grid.UndoAsync()">Undo</SfButton>
+<SfButton OnClick="() => Grid.RedoAsync()">Redo</SfButton>
+<SfButton OnClick="() => Grid.UndoAllAsync()">Undo All</SfButton>
+<SfButton OnClick="() => Grid.RedoAllAsync()">Redo All</SfButton>
+<SfButton OnClick="() => Grid.ClearUndoRedoAsync()">Reset Stack</SfButton>
+
+<SfGrid @ref="Grid" DataSource="@Orders"
+        Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel", "Undo", "Redo" })">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                      Mode="EditMode.Batch" EnableUndoRedo="true">
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field="OrderID" IsPrimaryKey="true" HeaderText="Order ID" Width="120"></GridColumn>
+        <GridColumn Field="CustomerID" HeaderText="Customer" Width="150"></GridColumn>
+        <GridColumn Field="Freight" HeaderText="Freight" Format="C2" Width="120"></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    SfGrid<Order> Grid;
+}
+```
+
+### Keyboard Shortcuts
+
+The grid listens for these shortcuts whenever focus is inside the grid and a batch action is in scope:
+
+| Key | Action |
+|---|---|
+| `Ctrl+Z` | Undo last batch action |
+| `Ctrl+Y` | Redo last reverted action |
+| `Cmd+Z` (macOS) | Undo last batch action |
+| `Cmd+Shift+Z` (macOS) | Redo last reverted action |
+
+### Conditional Undo / Redo
+
+Block an undo or redo step from `OnUndo` / `OnRedo` when business rules forbid rolling back the action:
+
+```razor
+<GridEvents TValue="Order"
+            OnUndo="OnBeforeUndo"
+            OnRedo="OnBeforeRedo">
+</GridEvents>
+
+@code {
+    void OnBeforeUndo(OnUndoEventArgs<Order> args)
+    {
+        // Block undo if user does not have permission to revert the action
+        if (!HasRevertPermission) args.Cancel = true;
+    }
+
+    void OnBeforeRedo(OnRedoEventArgs<Order> args)
+    {
+        // Block redo when the redo would violate a downstream rule
+        if (ViolatesRule(args.Data)) args.Cancel = true;
+    }
+}
+```
+
+### Auditing Undo / Redo
+
+Run logging or audit-trail logic after an undo / redo is applied:
+
+```razor
+<GridEvents TValue="Order"
+            OnUndoCompleted="OnUndoDone"
+            OnRedoCompleted="OnRedoDone">
+</GridEvents>
+
+@code {
+    void OnUndoDone(OnUndoCompletedEventArgs<Order> args)
+        => Audit.Log("Undo", args.Action, args.Data);
+
+    void OnRedoDone(OnRedoCompletedEventArgs<Order> args)
+        => Audit.Log("Redo", args.Action, args.Data);
+}
+```
+
+### Reset Stack After Save or Cancel
+
+Use `ClearUndoRedoAsync` after a successful save, or after `Cancel` clears pending changes, to start the next batch with a clean stack:
+
+```razor
+<SfButton OnClick="SaveAndReset">Save</SfButton>
+<SfButton OnClick="CancelAndReset">Cancel</SfButton>
+
+@code {
+    SfGrid<Order> Grid;
+
+    async Task SaveAndReset()
+    {
+        await Grid.EndEditAsync();
+        await Grid.ClearUndoRedoAsync();
+    }
+
+    async Task CancelAndReset()
+    {
+        await Grid.CloseEditAsync();
+        await Grid.ClearUndoRedoAsync();
+    }
+}
+```
+
+### Stack Size Tuning
+
+`UndoRedoLimit` caps the stack. Choose a value based on the typical edit session:
+
+| Scenario | Suggested `UndoRedoLimit` |
+|---|---|
+| Quick data correction (few cells) | `10`–`20` (default `20`) |
+| Bulk import / cleanup | `100`–`500` |
+| Memory-constrained clients | `5`–`10` |
+
+> When the limit is reached, the **oldest** action is dropped — recent edits always remain undoable.
+
+### Interaction with Confirm Dialogs
+
+When `ShowDeleteConfirmDialog="true"`, the confirmation dialog appears before the delete is committed. The Undo / Redo stack remains active while the dialog is open and is cleared only after the user confirms **Update** or **Cancel**.
+
+### Limitations
+
+| Limitation | Detail |
+|---|---|
+| **Mode** | Undo / Redo applies to Batch mode only — Normal, Dialog, and Cell modes ignore `EnableUndoRedo` |
+| **Toolbar dependency** | The `Undo` and `Redo` toolbar items only render when `EnableUndoRedo="true"` and `Mode="EditMode.Batch"` |
+| **Stack lifetime** | The stack is in-memory only — it is cleared after a successful save, after cancel, or after `ClearUndoRedoAsync`. It does **not** survive page reload |
+| **Custom edits** | Actions performed through `UpdateCellAsync` / `UpdateRowAsync` outside the standard batch flow are tracked by the stack as long as Batch mode is active |
+| **Remote adaptors** | `EnableUndoRedo` does not affect server requests — Undo / Redo only manipulate the pending batch before it is sent |
+
 ## Limitations
 
 | Limitation | Detail |
@@ -243,6 +417,7 @@ Replace the entire edit row with a fully custom layout using `GridEditSettings.T
 | **`NewRowPosition`** | Supported in Normal and Batch modes only |
 | **`SetCellValueAsync`** | Updates Grid UI only — does **not** persist to the underlying datasource |
 | **`UpdateCellAsync`** | Batch mode only — queues the cell change until `ApplyBatchChangesAsync` is called |
+| **`AllowEditOnSingleClick`** | Batch mode only — single click activates cell edit; Normal and Dialog modes are unaffected |
 | **`AddRecordAsync` / `StartEditAsync`** | Normal and Dialog modes only; not applicable in Batch mode |
 | **Parameterless constructor** | Grid uses `Activator.CreateInstance<TValue>()` — model must have a parameterless constructor, or supply instances via `RowCreating`/`OnBeginEdit` |
 | **`IsIdentity` columns** | Treated as read-only during both add and edit operations |

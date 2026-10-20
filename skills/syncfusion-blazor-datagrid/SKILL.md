@@ -21,13 +21,13 @@ Use this skill when you need to:
 - Set up and configure a DataGrid in Blazor Server, WebAssembly, Web App, or MAUI
 - Bind local or remote data (OData, HTTP, SfDataManager)
 - Configure columns (type, format, template, frozen, reorder, resize, chooser)
-- Implement sorting, filtering (FilterBar/Menu/Excel/CheckBox), or searching
+- Implement sorting, filtering (FilterBar/Menu/Excel/CheckBox), searching, or Find and Highlight
 - Enable grouping with lazy load or caption templates
 - Configure paging with custom templates or SfPager
 - Set up virtual scrolling, infinite scrolling for large datasets
-- Implement editing (Normal/Dialog/Batch/Command column) with validation
+- Implement editing (Normal/Dialog/Batch/Cell/Command column) with validation, including batch Undo / Redo
 - Configure selection (row, cell, checkbox) with programmatic control
-- Use clipboard copy, AutoFill, or Paste features
+- Use clipboard copy, AutoFill, Paste features, or PasteAsync for external button paste
 - Add aggregates (footer, group, caption, reactive)
 - Use row/column templates, detail template, row drag-drop
 - Configure toolbar, context menu, column menu, column chooser
@@ -245,6 +245,9 @@ If unsure:
 📄 **Read:** [references/searching.md](references/searching.md)
 - Toolbar Search, SearchAsync, GridSearchSettings
 
+📄 **Read:** [references/find-highlight.md](references/find-highlight.md)
+- Find and Highlight toolbar, GridFindSettings, AllowSearchHighlight, FindHighlightAsync / FindNextHighlightAsync / FindPreviousHighlightAsync / FindGoToAsync / ResetFindAsync
+
 ### Grouping & Paging
 📄 **Read:** [references/grouping.md](references/grouping.md)
 - AllowGrouping, lazy load grouping, CaptionTemplate, programmatic group/ungroup
@@ -264,13 +267,14 @@ If unsure:
 
 ### Editing
 📄 **Read:** [references/editing.md](references/editing.md)
-- GridEditSettings, EditMode (Normal/Dialog/Batch/CommandColumn), ValidationRules, EditType, EditTemplate, CRUD methods
+- GridEditSettings, EditMode (Normal/Dialog/Batch/Cell/CommandColumn), ValidationRules, EditType, EditTemplate, CRUD methods, AllowEditOnKeyPress, EnterKeyDirection, EnableUndoRedo, UndoRedoLimit
 
  **Read:** [references/editing-patterns.md](references/editing-patterns.md)
 - Cancel edit based on condition, disable editing for specific rows
 - Provide new/edited item via events, default column values, new row position
 - Always-show add-new-row form, delete multiple rows, single-click editing
 - Save new row at a specific index, inline template editing
+- Batch Undo / Redo (EnableUndoRedo, UndoRedoLimit, UndoAsync/RedoAsync, OnUndo/OnRedo events)
 
 📄 **Read:** [references/editing-validation.md](references/editing-validation.md)
 - Per-column `ValidationRules`, Data Annotation attributes (`[Required]`, `[Range]`, etc.)
@@ -282,7 +286,7 @@ If unsure:
 - AllowSelection, SelectionMode, SelectionType, checkbox selection, programmatic selection
 
 📄 **Read:** [references/clipboard.md](references/clipboard.md)
-- Clipboard copy (Ctrl+C / Ctrl+Shift+H), CopyAsync, AutoFill drag handle, Paste (Ctrl+V), batch editing requirements
+- Clipboard copy (Ctrl+C / Ctrl+Shift+H), CopyAsync, AutoFill drag handle, Paste (Ctrl+V), PasteAsync for external button, batch editing requirements
 
 ### Aggregates
 📄 **Read:** [references/aggregates.md](references/aggregates.md)

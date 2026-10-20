@@ -10,7 +10,11 @@
 - [Custom EditTemplate per Column](#custom-edittemplate-per-column)
 - [Normal (Inline) Edit Mode](#normal-inline-edit-mode)
 - [Dialog Edit Mode](#dialog-edit-mode)
+- [Cell Edit Mode](#cell-edit-mode)
+  - [AllowEditOnKeyPress](#alloweditonkeypress)
+  - [EnterKeyDirection](#enterkeydirection)
 - [Batch Edit Mode](#batch-edit-mode)
+  - [Undo / Redo in Batch Edit Mode](#undo--redo-in-batch-edit-mode)
 - [Command Column](#command-column)
 - [Validation](#validation)
 - [Programmatic Editing Methods](#programmatic-editing-methods)
@@ -50,12 +54,17 @@
 | `AllowEditing` | bool | Enable row editing |
 | `AllowAdding` | bool | Enable adding new rows |
 | `AllowDeleting` | bool | Enable row deletion |
-| `Mode` | `EditMode` | Editing mode (`Normal`, `Dialog`, `Batch`) |
+| `Mode` | `EditMode` | Editing mode (`Normal`, `Dialog`, `Batch`, `Cell`) |
 | `AllowEditOnDblClick` | bool | Enable edit on double-click (default `true`) |
+| `AllowEditOnSingleClick` | bool | Enable single-click batch editing — cell enters edit mode on one click; **Batch mode only** |
+| `AllowEditOnKeyPress` | bool | Start cell edit when a printable character is typed on a selected cell; **Cell mode only** |
+| `EnterKeyDirection` | `EnterKeyDirection` | Where focus moves after saving a cell with the Enter key; **Cell mode only** |
 | `ShowDeleteConfirmDialog` | bool | Show confirm dialog before delete |
 | `NewRowPosition` | `NewRowPosition` | Position of new row: `Top` (default) or `Bottom` |
 | `ShowAddNewRow` | bool | Always display a blank add-new-row form (Normal mode only) |
 | `Validator` | `Type` | Custom validator component type for the edit form |
+| `EnableUndoRedo` | bool | Enable Undo / Redo action stack for batch edits; **Batch mode only** |
+| `UndoRedoLimit` | int | Maximum number of actions retained in the Undo / Redo stack; default `20`. When the limit is reached, the oldest action is removed. **Batch mode only** |
 
 > `ShowAddNewRow` is supported in **Normal** mode only. See [editing-patterns.md](editing-patterns.md) for limitations.
 
@@ -74,6 +83,7 @@
 | `Normal` | Inline editing within the row (default) |
 | `Dialog` | Opens a popup dialog for editing |
 | `Batch` | Double-click any cell; save all changes at once |
+| `Cell` | Each cell saves independently on Enter or focus move — inline edits without a separate Update action |
 
 ## Column EditType
 
@@ -305,6 +315,197 @@ Use `GridEditSettings.Template` to replace the **entire row or dialog form** wit
 > - Disable the primary key editor with `Enabled="@(order.OrderID == 0)"` to prevent editing on existing rows.
 > - For validation inside templates, wrap with `<EditForm>` or use `<DataAnnotationsValidator>`.
 
+## Cell Edit Mode
+
+Cell editing (`Mode="EditMode.Cell"`) lets users update individual cells directly. Each cell commits independently on Enter or when focus moves — no explicit Update action is required.
+
+**Enable cell editing:**
+
+```razor
+<SfGrid DataSource="@Orders"
+        Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
+        Height="315">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                      Mode="EditMode.Cell">
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field="OrderID" HeaderText="Order ID" IsPrimaryKey="true"
+                    ValidationRules="@(new ValidationRules{ Required=true })"
+                    TextAlign="TextAlign.Right" Width="120"></GridColumn>
+        <GridColumn Field="CustomerID" HeaderText="Customer Name"
+                    ValidationRules="@(new ValidationRules{ Required=true, MinLength=5 })"
+                    Width="120"></GridColumn>
+        <GridColumn Field="Freight" HeaderText="Freight"
+                    ValidationRules="@(new ValidationRules{ Required=true, Min=1, Max=1000 })"
+                    Format="C2" TextAlign="TextAlign.Right"
+                    EditType="EditType.NumericEdit" Width="120"></GridColumn>
+        <GridColumn Field="ShipCountry" HeaderText="Ship Country"
+                    EditType="EditType.DropDownEdit" Width="150"></GridColumn>
+    </GridColumns>
+</SfGrid>
+```
+
+> **`IsPrimaryKey="true"` is required** on the unique identifier column so updates map to the correct record. Without it, all edits target the first row.
+
+**Cell edit entry points** — a cell enters edit mode when the user:
+
+- Double-clicks the cell
+- Selects the cell and presses **Enter**
+- Selects the cell and presses **F2**
+- Types a printable character on a selected cell (requires `AllowEditOnKeyPress="true"`)
+
+### AllowEditOnKeyPress
+
+Set `AllowEditOnKeyPress="true"` on `GridEditSettings` so that pressing a printable character (letter, digit, symbol) on a selected cell places that cell directly into edit mode and applies the typed character — ideal for spreadsheet-style data entry such as inventory updates and order management.
+
+```razor
+<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                  Mode="EditMode.Cell"
+                  AllowEditOnKeyPress="true">
+</GridEditSettings>
+```
+
+> `AllowEditOnKeyPress` applies **only** when `Mode="EditMode.Cell"`.
+
+### EnterKeyDirection
+
+`EnterKeyDirection` controls where focus moves after saving a cell with the Enter key. Default is `EnterKeyDirection.None` (focus stays on the current cell).
+
+| Enum value | Description |
+|---|---|
+| `EnterKeyDirection.None` | Keeps focus on the current cell after saving |
+| `EnterKeyDirection.NextColumn` | Moves focus to the next column in the current row — row-wise entry |
+| `EnterKeyDirection.NextRow` | Moves focus to the same column in the next row — column-wise entry across records |
+
+```razor
+@using Syncfusion.Blazor.Grids
+
+<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                  Mode="EditMode.Cell"
+                  EnterKeyDirection="EnterKeyDirection.NextRow">
+</GridEditSettings>
+```
+
+The full `EnterKeyDirection` enum lives in the `Syncfusion.Blazor.Grids` namespace. Bind it to a UI control for runtime switching:
+
+```razor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+
+<label>Enter Key Direction</label>
+<SfDropDownList DataSource="@EnterDirectionOptions"
+                @bind-Value="SelectedEnterDirection"
+                TValue="EnterKeyDirection"
+                TItem="DropdownOption<EnterKeyDirection>"
+                PopupHeight="200px"
+                Width="150px">
+    <DropDownListFieldSettings Text="Label" Value="Value"></DropDownListFieldSettings>
+</SfDropDownList>
+
+<SfGrid DataSource="@OrderData"
+        Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
+        Height="315">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                      Mode="EditMode.Cell"
+                      EnterKeyDirection="@SelectedEnterDirection">
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field="OrderID" HeaderText="Order ID" IsPrimaryKey="true" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true })"
+                    TextAlign="TextAlign.Right"></GridColumn>
+        <GridColumn Field="CustomerID" HeaderText="Customer Name" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true, MinLength=5 })"></GridColumn>
+        <GridColumn Field="Freight" HeaderText="Freight" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true, Min=1, Max=1000 })"
+                    Format="C2" TextAlign="TextAlign.Right"
+                    EditType="EditType.NumericEdit"></GridColumn>
+        <GridColumn Field="ShipCountry" HeaderText="Ship Country" Width="150"
+                    EditType="EditType.DropDownEdit"></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    private EnterKeyDirection SelectedEnterDirection { get; set; } = EnterKeyDirection.NextRow;
+
+    private List<DropdownOption<EnterKeyDirection>> EnterDirectionOptions { get; set; } = new List<DropdownOption<EnterKeyDirection>>
+    {
+        new DropdownOption<EnterKeyDirection> { Label = "None",       Value = EnterKeyDirection.None },
+        new DropdownOption<EnterKeyDirection> { Label = "NextRow",    Value = EnterKeyDirection.NextRow },
+        new DropdownOption<EnterKeyDirection> { Label = "NextColumn", Value = EnterKeyDirection.NextColumn }
+    };
+
+    private class DropdownOption<T>
+    {
+        public string? Label { get; set; }
+        public T? Value { get; set; }
+    }
+}
+```
+
+> Both `EnterKeyDirection` and `AllowEditOnKeyPress` apply **only** when `Mode="EditMode.Cell"`.
+
+### Cell Editing Events
+
+| Event | Args | Cancelable | Description |
+|---|---|---|---|
+| `OnCellEdit` | `CellEditArgs<T>` | ✅ | Before a cell enters edit mode (double-click, F2, Enter, or `AllowEditOnKeyPress`). Set `args.Cancel = true` to block. |
+| `OnCellSave` | `CellSaveArgs<T>` | ✅ | Before the edited cell value is committed. Set `args.Cancel = true` to block the save. |
+| `CellSaved` | `CellSavedArgs<T>` | ❌ | After the cell value is saved and the edited value is highlighted in the UI. |
+| `EditCanceling` | `EditCancelingEventArgs<T>` | ✅ | Before an edit operation is canceled — use for confirmation prompts or rollback. |
+| `EditCanceled` | `EditCanceledEventArgs<T>` | ❌ | After an edit operation is canceled. |
+
+> `OnCellEdit`, `OnCellSave`, and `CellSaved` are the cell-level events documented for Cell mode editing.
+
+```razor
+<GridEvents TValue="Order"
+            OnCellEdit="OnCellEdit"
+            OnCellSave="OnCellSave"
+            CellSaved="OnCellSaved"
+            EditCanceling="OnEditCanceling"
+            EditCanceled="OnEditCanceled">
+</GridEvents>
+
+@code {
+    void OnCellEdit(CellEditArgs<Order> args)
+    {
+        // Block editing when order is already shipped
+        if (args.Data.Status == "Shipped") args.Cancel = true;
+    }
+
+    void OnCellSave(CellSaveArgs<Order> args)
+    {
+        // Force value to upper-case before saving
+        if (args.ColumnName == "CustomerID" && args.Value is string s)
+            args.Value = s.ToUpperInvariant();
+    }
+
+    void OnCellSaved(CellSavedArgs<Order> args)
+    {
+        // Auto-update dependent column after a cell save
+    }
+
+    void OnEditCanceling(EditCancelingEventArgs<Order> args)
+    {
+        // Prompt user before discarding changes
+    }
+
+    void OnEditCanceled(EditCanceledEventArgs<Order> args)
+    {
+        // Cleanup after cancel
+    }
+}
+```
+
+### Cell Edit Mode — Troubleshooting
+
+| Issue | Likely cause | Resolution |
+|---|---|---|
+| Double-clicking a cell does not start editing. | `AllowEditing="false"` or `Mode` is not `EditMode.Cell`. | Set `AllowEditing="true"` and `Mode="EditMode.Cell"` on `GridEditSettings`. |
+| Saved changes appear on the wrong record. | The primary key column is missing or `IsPrimaryKey` is not set. | Set `IsPrimaryKey="true"` on the unique identifier column. |
+| Typing into a selected cell does not start editing. | `AllowEditOnKeyPress` is `false` (default). | Set `AllowEditOnKeyPress="true"` on `GridEditSettings`. |
+| Focus does not move after pressing Enter. | `EnterKeyDirection` is set to `None`. | Set `EnterKeyDirection="EnterKeyDirection.NextRow"` or `"EnterKeyDirection.NextColumn"`. |
+| A cell fails to save. | The entered value fails a validation rule on the column. | Adjust the column's `ValidationRules` or correct the entered value. |
+
 ## Batch Edit Mode
 
 Double-click any cell to edit; all changes are committed together:
@@ -318,13 +519,23 @@ Double-click any cell to edit; all changes are committed together:
 </SfGrid>
 ```
 
+**Single-click batch editing** — Set `AllowEditOnSingleClick="true"` so cells enter edit mode on a single click instead of a double-click:
+
+```razor
+<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                  Mode="EditMode.Batch" AllowEditOnSingleClick="true">
+</GridEditSettings>
+```
+
+> `AllowEditOnSingleClick` applies **only to Batch mode**. Normal and Dialog editing modes are not affected.
+
 Auto-update another column from `CellSaved`:
 
 ```razor
 <GridEvents TValue="Order" CellSaved="OnCellSaved"></GridEvents>
 
 @code {
-    async Task OnCellSaved(CellSaveArgs<Order> args)
+    async Task OnCellSaved(CellSavedArgs<Order> args)
     {
         if (args.ColumnName == "UnitPrice" || args.ColumnName == "Quantity")
         {
@@ -352,6 +563,104 @@ Save all pending batch changes programmatically by passing a `BatchChanges<TValu
     }
 }
 ```
+
+### Undo / Redo in Batch Edit Mode
+
+Undo / Redo lets users revert or reapply individual batch edit actions — cell value changes, row additions, and row deletions — without discarding the rest of the pending batch. Undo and Redo are **Batch mode only**.
+
+> The number of stored actions is limited by `UndoRedoLimit` (default `20`). When the limit is reached, the oldest action is removed from the stack.
+
+**Enable with toolbar:**
+
+```razor
+<SfGrid DataSource="@Orders"
+        Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel", "Undo", "Redo" })"
+        Height="315">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                      EnableUndoRedo="true" Mode="EditMode.Batch">
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field="OrderID" IsPrimaryKey="true" HeaderText="Order ID" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true })"
+                    TextAlign="TextAlign.Right"></GridColumn>
+        <GridColumn Field="CustomerID" HeaderText="Customer Name" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true, MinLength=5 })"></GridColumn>
+        <GridColumn Field="Freight" HeaderText="Freight" Width="120"
+                    ValidationRules="@(new ValidationRules{ Required=true, Min=1, Max=1000 })"
+                    Format="C2" TextAlign="TextAlign.Right"
+                    EditType="EditType.NumericEdit"></GridColumn>
+        <GridColumn Field="ShipCountry" HeaderText="Ship Country"
+                    EditType="EditType.DropDownEdit" Width="150"></GridColumn>
+    </GridColumns>
+</SfGrid>
+```
+
+**Customize the stack size** with `UndoRedoLimit`:
+
+```razor
+<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"
+                  EnableUndoRedo="true" UndoRedoLimit="25"
+                  Mode="EditMode.Batch">
+</GridEditSettings>
+```
+
+**Keyboard shortcuts:**
+
+| Keys | Action |
+|---|---|
+| `Ctrl + Z` | Revert the last batch edit action |
+| `Ctrl + Y` | Reapply the last reverted batch edit action |
+| `Cmd + Z` (macOS) | Revert the last batch edit action |
+| `Cmd + Shift + Z` (macOS) | Reapply the last reverted batch edit action |
+
+**API methods:**
+
+| Method | Behavior |
+|---|---|
+| `UndoAsync()` | Revert the last batch edit action |
+| `RedoAsync()` | Reapply the last reverted batch edit action |
+| `UndoAllAsync` | Revert all batch edit actions in the undo stack |
+| `RedoAllAsync` | Reapply all reverted batch edit actions in the redo stack |
+| `ClearUndoRedoAsync` | Clear both the undo stack and the redo stack |
+
+```razor
+@code {
+    SfGrid<Order> Grid;
+
+    async Task UndoLast() => await Grid.UndoAsync();
+    async Task RedoLast() => await Grid.RedoAsync();
+    async Task UndoEverything() => await Grid.UndoAllAsync();
+    async Task RedoEverything() => await Grid.RedoAllAsync();
+    async Task ResetStacks() => await Grid.ClearUndoRedoAsync();
+}
+```
+
+**Events:**
+
+| Event | Args | Description |
+|---|---|---|
+| `OnUndo` | `OnUndoEventArgs<T>` | Fires before an undo action is applied |
+| `OnUndoCompleted` | `OnUndoCompletedEventArgs<T>` | Fires after an undo action is applied |
+| `OnRedo` | `OnRedoEventArgs<T>` | Fires before a redo action is applied |
+| `OnRedoCompleted` | `OnRedoCompletedEventArgs<T>` | Fires after a redo action is applied |
+
+```razor
+<GridEvents TValue="Order"
+            OnUndo="OnUndo"
+            OnUndoCompleted="OnUndoCompleted"
+            OnRedo="OnRedo"
+            OnRedoCompleted="OnRedoCompleted">
+</GridEvents>
+
+@code {
+    void OnUndo(OnUndoEventArgs<Order> args) { /* before undo */ }
+    void OnUndoCompleted(OnUndoCompletedEventArgs<Order> args) { /* after undo */ }
+    void OnRedo(OnRedoEventArgs<Order> args) { /* before redo */ }
+    void OnRedoCompleted(OnRedoCompletedEventArgs<Order> args) { /* after redo */ }
+}
+```
+
+> When `ShowDeleteConfirmDialog` is `true`, the confirm dialog opens before the batch operation completes. The undo / redo stack stays active during the dialog and is cleared only after the user confirms **Update** or **Cancel**.
 
 ## Command Column
 
@@ -473,12 +782,20 @@ public class Order
     // Batch mode: queue a cell change before ApplyBatchChangesAsync
     var idx = await Grid.GetRowIndexByPrimaryKeyAsync(primaryKeyValue);
     await Grid.UpdateCellAsync(idx, "FieldName", newValue);
+
+    // Batch mode: Undo / Redo — require EnableUndoRedo="true" on GridEditSettings
+    await Grid.UndoAsync();             // revert the last batch edit action
+    await Grid.RedoAsync();             // reapply the last reverted action
+    await Grid.UndoAllAsync();          // revert all actions in the undo stack
+    await Grid.RedoAllAsync();          // reapply all actions in the redo stack
+    await Grid.ClearUndoRedoAsync();    // clear both stacks
 }
 ```
 
 > **`SetCellValueAsync`** updates the rendered cell only — use `UpdateRowAsync` to persist to the datasource.  
 > **`UpdateCellAsync`** is Batch mode only — queues the change until `ApplyBatchChangesAsync` is called.  
-> **`ApplyBatchChangesAsync`** requires a `BatchChanges<TValue>` argument containing `AddedRecords`, `ChangedRecords`, and `DeletedRecords` lists.
+> **`ApplyBatchChangesAsync`** requires a `BatchChanges<TValue>` argument containing `AddedRecords`, `ChangedRecords`, and `DeletedRecords` lists.  
+> **`UndoAsync` / `RedoAsync` / `UndoAllAsync` / `RedoAllAsync` / `ClearUndoRedoAsync`** are Batch mode only and require `EnableUndoRedo="true"`.
 
 ## Server-side CRUD Persistence
 
@@ -516,6 +833,23 @@ When the Grid is bound to a **remote data source**, CRUD operations must be pers
 | Delete | `RowDeleting` → `RowDeleted` |
 | Cancel | `EditCanceling` → `EditCanceled` |
 
+### Event Sequence (Cell)
+
+| Operation | Sequence |
+|---|---|
+| Cell enters edit | `OnCellEdit` |
+| Cell saves | `OnCellSave` → `CellSaved` |
+| Edit canceled | `EditCanceling` → `EditCanceled` |
+
+### Event Sequence (Batch)
+
+| Operation | Sequence |
+|---|---|
+| Cell enters edit | `OnCellEdit` |
+| Cell saves | `OnCellSave` → `CellSaved` |
+| Batch save | `OnBatchSave` |
+| Batch cancel | `OnBatchCancel` |
+
 ### Full Reference
 
 | Event | Args | Cancelable | Description |
@@ -532,8 +866,9 @@ When the Grid is bound to a **remote data source**, CRUD operations must be pers
 | `RowDeleted` | `RowDeletedEventArgs<T>` | ❌ | After row deleted |
 | `EditCanceling` | `EditCancelingEventArgs<T>` | ✅ | Before cancel; `args.Cancel = true` to keep edit open |
 | `EditCanceled` | `EditCanceledEventArgs<T>` | ❌ | After edit canceled |
-| `OnCellEdit` | `CellEditArgs<T>` | ✅ | **Batch only** — cell enters edit mode |
-| `CellSaved` | `CellSaveArgs<T>` | ❌ | **Batch only** — batch cell value saved |
+| `OnCellEdit` | `CellEditArgs<T>` | ✅ | Cell mode (and Batch mode): before cell enters edit mode |
+| `OnCellSave` | `CellSaveArgs<T>` | ✅ | Cell mode: before cell value is committed |
+| `CellSaved` | `CellSavedArgs<T>` | ❌ | Cell mode (and Batch mode): after cell value is saved |
 
 **Cancel delete with custom confirmation dialog:**
 

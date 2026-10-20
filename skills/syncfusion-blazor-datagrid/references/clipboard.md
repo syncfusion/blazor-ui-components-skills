@@ -7,6 +7,7 @@
 - [AutoFill](#autofill)
 - [AutoFill Limitations](#autofill-limitations)
 - [Paste](#paste)
+- [Paste Clipboard Content via External Button (PasteAsync)](#paste-clipboard-content-via-external-button-pasteasync)
 - [Paste Limitations](#paste-limitations)
 
 ## Overview
@@ -134,6 +135,109 @@ Paste copies selected cells to a new range using `Ctrl + C` / `Ctrl + V`.
 **Steps:**
 1. Select cells to copy → `Ctrl + C`
 2. Select target cells → `Ctrl + V`
+
+---
+
+## Paste Clipboard Content via External Button (PasteAsync)
+
+The Data Grid supports pasting clipboard content through an external button using the [`PasteAsync`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.Grids.SfGrid-1.html#Syncfusion_Blazor_Grids_SfGrid_1_PasteAsync_System_Nullable_System_Boolean__) method. This lets you integrate the paste operation into custom toolbars, command panels, or any other application UI element without relying on the `Ctrl + V` shortcut.
+
+**Requirements:** Same as AutoFill — cell selection with Box mode and Batch editing must be configured on the grid.
+
+> Enable clipboard access in the browser's site settings. The Data Grid does not perform the paste if access is denied or the clipboard is empty.
+
+**Index.razor**
+
+```razor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+
+<SfButton Content="Paste" OnClick="@Paste"></SfButton>
+
+<SfGrid @ref="Grid" DataSource="@Orders" AllowSelection="true"
+        Toolbar="@(new List<string>() { "Add", "Update", "Cancel" })" Height="348">
+    <GridSelectionSettings CellSelectionMode="CellSelectionMode.Box"
+                           Mode="SelectionMode.Cell"
+                           Type="Syncfusion.Blazor.Grids.SelectionType.Multiple">
+    </GridSelectionSettings>
+    <GridEditSettings AllowAdding="true" AllowDeleting="true"
+                      AllowEditing="true" Mode="EditMode.Batch">
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(OrderData.OrderID) HeaderText="Order ID"
+                    TextAlign="TextAlign.Right" Visible="false" Width="120" IsPrimaryKey="true" />
+        <GridColumn Field=@nameof(OrderData.CustomerID) HeaderText="Customer ID" Width="150" />
+        <GridColumn Field=@nameof(OrderData.ShipCity) HeaderText="Ship City" Width="150" />
+        <GridColumn Field=@nameof(OrderData.ShipName) HeaderText="Ship Name" Width="150" />
+    </GridColumns>
+</SfGrid>
+
+@code {
+    private SfGrid<OrderData> Grid { get; set; }
+    private List<OrderData> Orders { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Orders = OrderData.GetAllRecords();
+    }
+
+    private async Task Paste()
+    {
+        await Grid.PasteAsync();
+    }
+}
+```
+
+**OrderData.cs**
+
+```csharp
+internal sealed class OrderData
+{
+    private static readonly List<OrderData> Data = new List<OrderData>();
+
+    public OrderData(int orderID, string customerID, string shipCity, string shipName)
+    {
+        OrderID = orderID;
+        CustomerID = customerID;
+        ShipCity = shipCity;
+        ShipName = shipName;
+    }
+
+    internal static List<OrderData> GetAllRecords()
+    {
+        if (Data.Count == 0)
+        {
+            Data.Add(new OrderData(10248, "VINET", "Reims", "Vins et alcools Chevalier"));
+            Data.Add(new OrderData(10249, "TOMSP", "Münster", "Toms Spezialitäten"));
+            Data.Add(new OrderData(10250, "HANAR", "Rio de Janeiro", "Hanari Carnes"));
+            Data.Add(new OrderData(10251, "VICTE", "Lyon", "Victuailles en stock"));
+            Data.Add(new OrderData(10252, "SUPRD", "Charleroi", "Suprêmes délices"));
+            Data.Add(new OrderData(10253, "HANAR", "Rio de Janeiro", "Hanari Carnes"));
+            Data.Add(new OrderData(10254, "CHOPS", "Bern", "Chop-suey Chinese"));
+            Data.Add(new OrderData(10255, "RICSU", "Genève", "Richter Supermarkt"));
+            Data.Add(new OrderData(10256, "WELLI", "Resende", "Wellington Import Export"));
+            Data.Add(new OrderData(10257, "HILAA", "San Cristóbal", "Hila Alimentos"));
+            Data.Add(new OrderData(10258, "ERNSH", "Graz", "Ernst Handel"));
+            Data.Add(new OrderData(10259, "CENTC", "México D.F.", "Centro comercial"));
+            Data.Add(new OrderData(10260, "OTTIK", "Köln", "Ottilies Käseladen"));
+            Data.Add(new OrderData(10261, "QUEDE", "Rio de Janeiro", "Que delícia"));
+            Data.Add(new OrderData(10262, "RATTC", "Albuquerque", "Rattlesnake Canyon Grocery"));
+        }
+
+        return Data;
+    }
+
+    public int OrderID { get; set; }
+    public string CustomerID { get; set; }
+    public string ShipCity { get; set; }
+    public string ShipName { get; set; }
+}
+```
+
+**Steps to use:**
+1. Copy content from the Data Grid or another source.
+2. Select the target cell or cells in the Data Grid.
+3. Click the Paste button to insert the copied content.
 
 ### Paste Limitations
 

@@ -38,6 +38,9 @@ Pass a `List<string>` to the `Toolbar` property:
 | `"Update"` | Save current edit |
 | `"Cancel"` | Cancel current edit |
 | `"Search"` | Show search input |
+| `"Find"` | Show find and highlight input — locates and highlights matching text without filtering rows |
+| `"Undo"` | Revert the last batch edit action (Batch mode + `EnableUndoRedo`) |
+| `"Redo"` | Reapply the last reverted batch edit action (Batch mode + `EnableUndoRedo`) |
 | `"Print"` | Print the grid |
 | `"ExcelExport"` | Export to Excel |
 | `"CsvExport"` | Export to CSV |
