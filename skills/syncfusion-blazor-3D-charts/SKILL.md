@@ -1,5 +1,5 @@
 ---
-name: syncfusion-blazor-3D-charts
+name: syncfusion-blazor-3d-charts
 description: Provides guidance for building and customizing Syncfusion Blazor 3D Charts. Trigger this skill whenever the user needs help with SfChart3D, 3D Column/Bar charts, axes, data binding, rotation, tilt, depth, legends, tooltips, or any configuration in Syncfusion.Blazor.Chart3D.
 metadata:
   author: "Syncfusion Inc"
